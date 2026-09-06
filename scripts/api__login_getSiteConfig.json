@@ -1,0 +1,15 @@
+{
+  "massage": "",
+  "data": {
+    "default_frontend_lang": "zh-CN",
+    "currency_code": "MYR",
+    "currency_short": "RM",
+    "currency_name": "Malaysian Ringgit",
+    "enabled_langs": [
+      "zh-CN",
+      "en-US",
+      "ms-MY"
+    ]
+  },
+  "status": 1
+}
