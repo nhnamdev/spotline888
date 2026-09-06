@@ -59,8 +59,8 @@ next-env.d.ts
 .vercel
 
 # Scraping, Automation & Browser Profiles
-scripts/chrome-profile/
-chrome-profile/
+scripts/chrome-profile*/
+chrome-profile*/
 .cache/
 temp/
 tmp/
