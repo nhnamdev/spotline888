@@ -13,16 +13,18 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const pathname = usePathname();
   const currentPath = activePath || pathname || "";
 
+  const isProductActive = currentPath.includes("product");
+  const isProductListActive = currentPath.includes("product/product") || currentPath === "/product";
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
   const isOrderActive = currentPath.includes("order");
   const isDashboardActive =
-    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive;
+    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive;
 
   // State for treeview toggling
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
-    product: false,
+    product: isProductActive,
     loan: false,
     system: false,
     auth: false,
@@ -204,7 +206,11 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 6. 产品管理 (Treeview) */}
-          <li className={`treeview ${openMenus.product ? "menu-open" : ""}`}>
+          <li
+            className={`treeview ${
+              openMenus.product || isProductActive ? "menu-open" : ""
+            }`}
+          >
             <a
               href="javascript:;"
               addtabs="203"
@@ -221,21 +227,24 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <span className="pull-right-container">
                 <i
                   className={`fa fa-angle-left ${
-                    openMenus.product ? "rotate-arrow" : ""
+                    openMenus.product || isProductActive ? "rotate-arrow" : ""
                   }`}
                 ></i>
               </span>
             </a>
-            {openMenus.product && (
+            {(openMenus.product || isProductActive) && (
               <ul className="treeview-menu">
-                <li className="">
+                <li className={isProductListActive ? "active" : ""}>
                   <a
                     href="/coinht.php/product/product?ref=addtabs"
                     addtabs="204"
                     url="/coinht.php/product/product"
                     py="cplb"
                     pinyin="chanpinliebiao"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/product/product");
+                    }}
                   >
                     <i className="fa fa-shopping-bag fa-fw"></i>
                     <span>产品列表</span>
