@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+    <head>
+        <meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit">
+
+<link rel="shortcut icon" href="/assets/img/favicon.ico" />
+<!-- Loading Bootstrap -->
+<link href="/assets/css/backend.css?v=1788771582" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+<!--[if lt IE 9]>
+  <script src="/assets/js/html5shiv.js"></script>
+  <script src="/assets/js/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    var require = {
+        config:  {"site":{"name":"Abbott","version":1788771582,"cdnurl":""},"upload":{"cdnurl":"","uploadurl":"ajax\/upload","bucket":"local","maxsize":"1000mb","mimetype":"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx","multipart":[],"multiple":false},"modulename":"admin","controllername":"dashboard","actionname":"index","jsname":"backend\/dashboard","moduleurl":"\/coinht.php","language":"id-ID","fastadmin":{"usercenter":true,"login_captcha":true,"login_failure_retry":true,"login_unique":false,"login_background":"\/assets\/img\/loginbg.jpg","multiplenav":false,"checkupdate":false,"version":"1.1.01","api_url":"","loginip_check":false},"referer":null,"__PUBLIC__":"\/","__ROOT__":"\/","__CDN__":"","__TMP1__":"\/template\/tmp1","__TMP2__":"\/template\/tmp2","__TMP3__":"\/template\/tmp3","__MB__":"\/template\/mb","__MB1__":"\/template\/mb1","__MB2__":"\/template\/mb2","__MB3__":"\/template\/mb3"}    };
+</script>
+    </head>
+
+    <body class="inside-header inside-aside ">
+        <div id="main" role="main">
+            <div class="tab-content tab-addtabs">
+                <div id="content">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <section class="content-header hide">
+                                <h1>
+                                    Dashboard                                    <small>Control panel</small>
+                                </h1>
+                            </section>
+                                                        <!-- RIBBON -->
+                            <div id="ribbon">
+                                <ol class="breadcrumb pull-left">
+                                    <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                                </ol>
+                                <ol class="breadcrumb pull-right">
+                                                                        <li><a href="javascript:;" data-url="/coinht.php/dashboard/dashboard">控制台</a></li>
+                                                                    </ol>
+                            </div>
+                            <!-- END RIBBON -->
+                                                        <div class="content">
+                                <style type="text/css">
+/* ===== Dashboard Reset ===== */
+.dash-wrap { padding: 0; }
+.dash-wrap *,
+.dash-wrap *::before,
+.dash-wrap *::after { box-sizing: border-box; }
+
+/* ===== Summary Banner ===== */
+.dash-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 18px 28px;
+    margin-bottom: 22px;
+    color: #fff;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.dash-summary .sum-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+.dash-summary .sum-item strong {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+}
+.dash-summary .sum-item i {
+    font-size: 20px;
+    opacity: .85;
+}
+
+/* ===== Time Filter ===== */
+.dash-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+.dash-filter .input-group {
+    max-width: 440px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.dash-filter .input-group .form-control {
+    border: 1px solid #e0e6ed;
+    height: 38px;
+    font-size: 13px;
+}
+.dash-filter .input-group .input-group-addon {
+    background: #f7f9fc;
+    border: 1px solid #e0e6ed;
+    color: #667eea;
+    font-size: 13px;
+}
+.dash-filter .btn-query {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+}
+.dash-filter .btn-query:hover { opacity: .88; }
+
+/* ===== Stat Cards Grid ===== */
+.dash-cards {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 26px;
+}
+@media (max-width: 1400px) { .dash-cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { .dash-cards { grid-template-columns: repeat(2, 1fr); } }
+
+.dash-card {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 20px 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    transition: transform .2s, box-shadow .2s;
+}
+.dash-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+}
+.dash-card .card-deco {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    opacity: .12;
+}
+.dash-card .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 14px;
+}
+.dash-card .card-val {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+}
+.dash-card .card-val-sm {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+.dash-card .card-label {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: .3px;
+}
+.dash-card .card-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+.dash-card .card-link {
+    display: block;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 12px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+.dash-card .card-link:hover { color: #764ba2; }
+
+/* Card color themes */
+.card-icon.ci-blue     { background: linear-gradient(135deg, #667eea, #5a67d8); }
+.card-icon.ci-green    { background: linear-gradient(135deg, #48bb78, #38a169); }
+.card-icon.ci-amber    { background: linear-gradient(135deg, #f6ad55, #ed8936); }
+.card-icon.ci-rose     { background: linear-gradient(135deg, #fc8181, #e53e3e); }
+.card-icon.ci-cyan     { background: linear-gradient(135deg, #4fd1c5, #38b2ac); }
+.card-icon.ci-purple   { background: linear-gradient(135deg, #9f7aea, #805ad5); }
+
+.card-deco.cd-blue     { background: #667eea; }
+.card-deco.cd-green    { background: #48bb78; }
+.card-deco.cd-amber    { background: #f6ad55; }
+.card-deco.cd-rose     { background: #e53e3e; }
+.card-deco.cd-cyan     { background: #4fd1c5; }
+.card-deco.cd-purple   { background: #9f7aea; }
+
+/* ===== Charts Section ===== */
+.dash-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+@media (max-width: 992px) { .dash-charts { grid-template-columns: 1fr; } }
+
+.dash-chart-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.dash-chart-box .chart-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.dash-chart-box .chart-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.dash-chart-box .chart-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 500;
+}
+.chart-area {
+    width: 100%;
+    height: 260px;
+}
+
+/* ===== Online pulse dot ===== */
+.pulse-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48bb78;
+    margin-right: 4px;
+    animation: pulseDot 1.5s infinite;
+    vertical-align: middle;
+}
+@keyframes pulseDot {
+    0%   { box-shadow: 0 0 0 0 rgba(72,187,120,.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(72,187,120,0); }
+    100% { box-shadow: 0 0 0 0 rgba(72,187,120,0); }
+}
+</style>
+
+<div class="dash-wrap">
+
+    <!-- Summary Banner -->
+    <div class="dash-summary">
+        <div class="sum-item">
+            <i class="fa fa-users"></i>
+            <span>总注册用户 <strong>195</strong></span>
+        </div>
+        <div class="sum-item">
+            <i class="fa fa-database"></i>
+            <span>用户总余额 <strong>9808432.41</strong></span>
+        </div>
+    </div>
+
+    <!-- Time Filter -->
+    <form role="form" data-toggle="validator" method="POST" action="">
+        <div class="dash-filter">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input id="zhangbiantime" type="text" name="time_text" value="2026-09-07 00:00:00 - 2026-09-07 23:59:59" class="form-control datetimerange" placeholder="选择时间范围">
+            </div>
+            <button type="submit" class="btn-query"><i class="fa fa-search"></i> 查询</button>
+        </div>
+    </form>
+
+    <!-- Stat Cards -->
+    <div class="dash-cards">
+
+        <!-- 总注册人数 -->
+        <div class="dash-card">
+            <div class="card-deco cd-blue"></div>
+            <div class="card-icon ci-blue"><i class="fa fa-users"></i></div>
+            <div class="card-val">195</div>
+            <div class="card-label">总注册人数</div>
+            <a href="user" class="card-link">查看用户列表 <i class="fa fa-arrow-right"></i></a>
+        </div>
+
+        <!-- 实时在线 -->
+        <div class="dash-card">
+            <div class="card-deco cd-green"></div>
+            <div class="card-icon ci-green"><i class="fa fa-signal"></i></div>
+            <div class="card-val"><span class="pulse-dot"></span> <span id="online">0</span></div>
+            <div class="card-label">实时在线</div>
+            <div class="card-sub">30秒内活跃用户 · 自动刷新</div>
+        </div>
+
+        <!-- 今日注册 -->
+        <div class="dash-card">
+            <div class="card-deco cd-amber"></div>
+            <div class="card-icon ci-amber"><i class="fa fa-user-plus"></i></div>
+            <div class="card-val"><span id="t_people">0</span></div>
+            <div class="card-label">今日注册</div>
+        </div>
+
+        <!-- 今日盈亏 -->
+        <div class="dash-card">
+            <div class="card-deco cd-purple"></div>
+            <div class="card-icon ci-purple"><i class="fa fa-line-chart"></i></div>
+            <div class="card-val"><span id="t_profit">0</span></div>
+            <div class="card-label">今日盈亏</div>
+        </div>
+
+        <!-- 今日充值 -->
+        <div class="dash-card">
+            <div class="card-deco cd-cyan"></div>
+            <div class="card-icon ci-cyan"><i class="fa fa-arrow-circle-up"></i></div>
+            <div class="card-val-sm">
+                CNY: <span id="t_recharge">15933.03</span><br>
+                USDT: <span id="t_recharge_usdt">0</span>
+            </div>
+            <div class="card-label">今日充值</div>
+        </div>
+
+        <!-- 今日提现 -->
+        <div class="dash-card">
+            <div class="card-deco cd-rose"></div>
+            <div class="card-icon ci-rose"><i class="fa fa-arrow-circle-down"></i></div>
+            <div class="card-val-sm">
+                CNY: <span id="t_withdraw">388200.05</span><br>
+                USDT: <span id="t_withdraw_usdt">0</span>
+            </div>
+            <div class="card-label">今日提现</div>
+        </div>
+
+    </div>
+
+    <!-- Charts -->
+    <div class="dash-charts">
+        <div class="dash-chart-box">
+            <div class="chart-hd">
+                <span class="chart-title"><i class="fa fa-bar-chart" style="color:#667eea;margin-right:6px"></i>财务 7 天趋势</span>
+                <span class="chart-badge">近 7 天</span>
+            </div>
+            <div id="echart1" class="chart-area"></div>
+        </div>
+        <div class="dash-chart-box">
+            <div class="chart-hd">
+                <span class="chart-title"><i class="fa fa-area-chart" style="color:#48bb78;margin-right:6px"></i>订单 7 天趋势</span>
+                <span class="chart-badge">近 7 天</span>
+            </div>
+            <div id="echart2" class="chart-area"></div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/clipboard.min.js"></script>
+
+<script>
+    var chatdata = {"timeList":["2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07"],"mark":{"up":[0,0,0,0,0,0,0],"usdtup":[0,0,0,0,0,0,0],"down":[0,0,0,0,0,0,0],"usdtdown":[0,0,0,0,0,0,0]},"order":{"buy":[0,0,0,0,0,0,0],"sell":[0,0,0,0,0,0,0]}};
+</script>
+<script type="text/javascript">
+var clipboard = new Clipboard('.copy-span', {});
+clipboard.on('success', function(e){ alert('复制成功'); });
+clipboard.on('error', function(e) { alert('复制失败'); });
+
+(function(){
+    function refreshOnline(){
+        $.ajax({
+            url: 'dashboard/onlineCount',
+            type: 'GET',
+            dataType: 'json',
+            success: function(res){
+                if(res && res.data && res.data.online !== undefined){
+                    $('#online').text(res.data.online);
+                }
+            }
+        });
+    }
+    refreshOnline();
+    setInterval(refreshOnline, 10000);
+})();
+</script>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/assets/js/require.js" data-main="/assets/js/require-backend.js?v=1788771582"></script>
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a37484d2ae6e09c4',t:'MTc4ODc3MTU4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

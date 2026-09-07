@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+    <head>
+        <!-- 加载样式及META信息 -->
+        <meta charset="utf-8">
+<title>Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit">
+
+<link rel="shortcut icon" href="/assets/img/favicon.ico" />
+<!-- Loading Bootstrap -->
+<link href="/assets/css/backend.css?v=1788771517" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+<!--[if lt IE 9]>
+  <script src="/assets/js/html5shiv.js"></script>
+  <script src="/assets/js/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    var require = {
+        config:  {"site":{"name":"Abbott","version":1788771517,"cdnurl":""},"upload":{"cdnurl":"","uploadurl":"ajax\/upload","bucket":"local","maxsize":"1000mb","mimetype":"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx","multipart":[],"multiple":false},"modulename":"admin","controllername":"index","actionname":"index","jsname":"backend\/index","moduleurl":"\/coinht.php","language":"id-ID","fastadmin":{"usercenter":true,"login_captcha":true,"login_failure_retry":true,"login_unique":false,"login_background":"\/assets\/img\/loginbg.jpg","multiplenav":false,"checkupdate":false,"version":"1.1.01","api_url":"","loginip_check":false},"referer":null,"__PUBLIC__":"\/","__ROOT__":"\/","__CDN__":"","__TMP1__":"\/template\/tmp1","__TMP2__":"\/template\/tmp2","__TMP3__":"\/template\/tmp3","__MB__":"\/template\/mb","__MB1__":"\/template\/mb1","__MB2__":"\/template\/mb2","__MB3__":"\/template\/mb3"}    };
+</script>
+        
+        <!-- 倒计时样式 -->
+        <style>
+            /* 死域名警告容器 */
+            .dead-domain-container {
+                position: absolute;
+                top: 10px;
+                right: 650px;
+                width: auto;
+                max-width: 400px;
+                height: auto;
+                z-index: 1000;
+                display: none; /* 默认隐藏 */
+            }
+            
+            .dead-domain-alert {
+                background: #f8d7da;
+                border: 2px solid #f5c6cb;
+                border-radius: 8px;
+                padding: 10px 15px;
+                color: #721c24;
+                font-size: 12px;
+                font-weight: bold;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .dead-domain-title {
+                color: #dc3545;
+                font-size: 13px;
+                margin-bottom: 5px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .dead-domain-title i {
+                margin-right: 5px;
+            }
+            
+            .dead-domain-list {
+                margin: 5px 0 0 0;
+                padding-left: 20px;
+                max-height: 150px;
+                overflow-y: auto;
+            }
+            
+            .dead-domain-list li {
+                color: #dc3545;
+                margin: 3px 0;
+                word-break: break-all;
+            }
+            
+            /* 域名倒计时容器 */
+            .domain-countdown-container {
+                position: absolute;
+                top: 10px;
+                right: 850px;
+                width: auto;
+                height: auto;
+                z-index: 1000;
+            }
+            
+            .domain-countdown-timer {
+                /* background: linear-gradient(to bottom, #20B2AA 0%, #20B2AA 40%, #20B2AA 40%, #20B2AA 100%); */
+                border-radius: 8px;
+                padding: 12px 16px;
+                color: #333;
+                font-size: 13px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                white-space: nowrap;
+            }
+            
+            .domain-countdown-label {
+                color: #333;
+                margin-right: 5px;
+            }
+            
+            .domain-countdown-days,
+            .domain-countdown-hours,
+            .domain-countdown-minutes,
+            .domain-countdown-seconds {
+                color: #FF4444;
+                font-weight: bold;
+                margin: 0 2px;
+            }
+            
+            .domain-countdown-unit {
+                color: #333;
+                margin-right: 8px;
+            }
+            
+            .domain-countdown-reset-btn {
+                margin-top: 8px;
+                padding: 6px 12px;
+                background: transparent;
+                color: #FF4444;
+                border: 2px solid #FF4444;
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                width: 100%;
+                display: block;
+            }
+            
+            .domain-countdown-reset-btn:hover {
+                background: #FF4444;
+                color: #fff;
+            }
+            
+            .countdown-container {
+                position: absolute;
+                top: 10px;
+                right: 300px;
+                width: auto;
+                height: auto;
+                z-index: 1000;
+            }
+            
+            .countdown-timer {
+                /* background: linear-gradient(to bottom, #20B2AA 0%, #20B2AA 40%, #20B2AA 40%, #20B2AA 100%); */
+                border-radius: 8px;
+                padding: 12px 16px;
+                color: #333;
+                font-size: 13px;
+                font-weight: bold;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                white-space: nowrap;
+            }
+            
+            .countdown-label {
+                color: #333;
+                margin-right: 5px;
+            }
+            
+            .countdown-days,
+            .countdown-hours,
+            .countdown-minutes,
+            .countdown-seconds {
+                color: #FF4444;
+                font-weight: bold;
+                margin: 0 2px;
+            }
+            
+            .countdown-unit {
+                color: #333;
+                margin-right: 8px;
+            }
+            
+            /* 响应式设计 */
+            @media (max-width: 768px) {
+                .dead-domain-container {
+                    position: relative;
+                    top: auto;
+                    right: auto;
+                    margin: 10px auto;
+                    text-align: center;
+                    max-width: 90%;
+                }
+                
+                .domain-countdown-container {
+                    position: relative;
+                    top: auto;
+                    right: auto;
+                    margin: 10px auto;
+                    text-align: center;
+                }
+                
+                .countdown-container {
+                    position: relative;
+                    top: auto;
+                    right: auto;
+                    margin: 10px auto;
+                    text-align: center;
+                }
+                
+                .countdown-timer {
+                    display: inline-block;
+                }
+            }
+        </style>
+    </head>
+    <body class="hold-transition skin-green sidebar-mini fixed " id="tabs">
+        <div class="wrapper">
+
+            <!-- 头部区域 -->
+            <header id="header" class="main-header">
+                <!-- Logo -->
+<a href="javascript:;" class="logo">
+    <!-- 迷你模式下Logo的大小为50X50 -->
+    <span class="logo-mini">ABBO</span>
+    <!-- 普通模式下Logo -->
+    <span class="logo-lg"><b>Abbo</b>tt</span>
+</a>
+
+<!-- 顶部通栏样式 -->
+<nav class="navbar navbar-static-top">
+
+    <!--第一级菜单-->
+    <div id="firstnav">
+        <!-- 边栏切换按钮-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+
+        <!--如果不想在顶部显示角标,则给ul加上disable-top-badge类即可-->
+        <ul class="nav nav-tabs nav-addtabs disable-top-badge hidden-xs" role="tablist">
+            <li role="presentation" id="tab_1" class="active"><a href="#con_1" node-id="1" aria-controls="1" role="tab" data-toggle="tab"><i class="fa fa-dashboard fa-fw fa-fw"></i> <span>控制台</span> </a></li>        </ul>
+
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+
+                <li>
+                    <a href="/" target="_blank"><i class="fa fa-home" style="font-size:14px;"></i></a>
+                </li>
+
+                <!-- 清除缓存 -->
+                <li>
+                    <a href="javascript:;" data-toggle="dropdown" title="Wipe cache">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                    <ul class="dropdown-menu wipecache">
+                        <li><a href="javascript:;" data-type="all"><i class="fa fa-trash"></i> Wipe all cache</a></li>
+                        <li class="divider"></li>
+                        <li><a href="javascript:;" data-type="content"><i class="fa fa-file-text"></i> Wipe content cache</a></li>
+                        <li><a href="javascript:;" data-type="template"><i class="fa fa-file-image-o"></i> Wipe template cache</a></li>
+                        <li><a href="javascript:;" data-type="addons"><i class="fa fa-rocket"></i> Wipe addons cache</a></li>
+                    </ul>
+                </li>
+
+                
+
+                <!-- 全屏按钮 -->
+                <li class="hidden-xs">
+                    <a href="#" data-toggle="fullscreen"><i class="fa fa-arrows-alt"></i></a>
+                </li>
+
+                <!-- 账号信息下拉框 -->
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <img src="/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg" class="user-image" alt="Spot">
+                        <span class="hidden-xs">Spot</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- User image -->
+                        <li class="user-header">
+                            <img src="/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg" class="img-circle" alt="">
+
+                            <p>
+                                Spot                                <small>2026-09-07 16:58:21</small>
+                            </p>
+                        </li>
+                       
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a href="general/profile" class="btn btn-primary addtabsit"><i class="fa fa-user"></i>
+                                    Profile</a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="/coinht.php/index/logout" class="btn btn-danger"><i class="fa fa-sign-out"></i>
+                                    Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- 控制栏切换按钮 -->
+                <li class="hidden-xs">
+                    <a href="javascript:;" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    </nav>
+                
+                <!-- 死域名警告显示 -->
+                <div class="dead-domain-container" id="deadDomainContainer">
+                    <div class="dead-domain-alert">
+                        <div class="dead-domain-title">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span>域名不可访问警告</span>
+                        </div>
+                        <ul class="dead-domain-list" id="deadDomainList">
+                            <!-- 死域名列表将通过JS动态填充 -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 域名倒计时显示 -->
+                <!--<div class="domain-countdown-container">-->
+                <!--    <div class="domain-countdown-timer">-->
+                <!--        <span class="domain-countdown-label">域名到期:</span>-->
+                <!--        <span class="domain-countdown-days" id="domain-countdown-days">0</span><span class="domain-countdown-unit">天</span>-->
+                <!--        <span class="domain-countdown-hours" id="domain-countdown-hours">0</span><span class="domain-countdown-unit">时</span>-->
+                <!--        <span class="domain-countdown-minutes" id="domain-countdown-minutes">0</span><span class="domain-countdown-unit">分</span>-->
+                <!--        <span class="domain-countdown-seconds" id="domain-countdown-seconds">0</span><span class="domain-countdown-unit">秒</span>-->
+                <!--    </div>-->
+                <!--    <button class="domain-countdown-reset-btn" id="domainCountdownResetBtn">-->
+                <!--        <i class="fa fa-refresh"></i> 重置倒计时-->
+                <!--    </button>-->
+                <!--</div>-->
+                
+                <!-- 倒计时显示 -->
+                <div class="countdown-container">
+                    <div class="countdown-timer">
+                        <span class="countdown-label">到期时间:</span>
+                        <span class="countdown-days" id="countdown-days">0</span><span class="countdown-unit">天</span>
+                        <span class="countdown-hours" id="countdown-hours">0</span><span class="countdown-unit">时</span>
+                        <span class="countdown-minutes" id="countdown-minutes">0</span><span class="countdown-unit">分</span>
+                        <span class="countdown-seconds" id="countdown-seconds">0</span><span class="countdown-unit">秒</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 左侧菜单栏 -->
+            <aside class="main-sidebar">
+                <!-- 左侧菜单栏 -->
+<section class="sidebar">
+    <!-- 管理员信息 -->
+    <div class="user-panel hidden-xs">
+        <div class="pull-left image">
+            <a href="general/profile" class="addtabsit"><img src="/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg" class="img-circle" /></a>
+        </div>
+        <div class="pull-left info">
+            <p>Spot</p>
+            <i class="fa fa-circle text-success"></i> Online        </div>
+    </div>
+
+    <!-- 菜单搜索 -->
+    <form action="" method="get" class="sidebar-form" onsubmit="return false;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search menu">
+            <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                </button>
+            </span>
+            <div class="menuresult list-group sidebar-form hide">
+            </div>
+        </div>
+    </form>
+
+    <!-- 移动端一级菜单 -->
+    <div class="mobilenav visible-xs">
+
+    </div>
+
+    <!--如果想始终显示子菜单,则给ul加上show-submenu类即可,当multiplenav开启的情况下默认为展开-->
+    <ul class="sidebar-menu ">
+
+        <!-- 菜单可以在 后台管理->权限管理->菜单规则 中进行增删改排序 -->
+        <li class=" active"><a href="/coinht.php/dashboard?ref=addtabs" addtabs="1" url="/coinht.php/dashboard" py="kzt" pinyin="kongzhitai"><i class="fa fa-dashboard fa-fw"></i> <span>控制台</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/order?ref=addtabs" addtabs="96" url="/coinht.php/order" py="ddgl" pinyin="dingdanguanli"><i class="fa fa-list-ol fa-fw"></i> <span>订单管理</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/user?ref=addtabs" addtabs="66" url="/coinht.php/user" py="hygl" pinyin="huiyuanguanli"><i class="fa fa-users fa-fw"></i> <span>会员管理</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/upmark?ref=addtabs" addtabs="97" url="/coinht.php/upmark" py="czgl" pinyin="chongzhiguanli"><i class="fa fa-hand-o-up fa-fw"></i> <span>充值管理</span> <span class="pull-right-container"> <small class="label pull-right bg-orange"><span id="upmark">0</span></small></span></a> </li><li class=""><a href="/coinht.php/downmark?ref=addtabs" addtabs="98" url="/coinht.php/downmark" py="txgl" pinyin="tixianguanli"><i class="fa fa-hand-o-down fa-fw"></i> <span>提现管理</span> <span class="pull-right-container"> <small class="label pull-right bg-red"><span id="downmark">0</span></small></span></a> </li><li class=" treeview"><a href="javascript:;" addtabs="203" url="javascript:;" py="cpgl" pinyin="chanpinguanli"><i class="fa fa-shopping-bag fa-fw"></i> <span>产品管理</span> <span class="pull-right-container"><i class="fa fa-angle-left"></i> </span></a> <ul class="treeview-menu"><li class=""><a href="/coinht.php/product/product?ref=addtabs" addtabs="204" url="/coinht.php/product/product" py="cplb" pinyin="chanpinliebiao"><i class="fa fa-shopping-bag fa-fw"></i> <span>产品列表</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/product/type?ref=addtabs" addtabs="205" url="/coinht.php/product/type" py="cpfl" pinyin="chanpinfenlei"><i class="fa fa-list-alt fa-fw"></i> <span>产品分类</span> <span class="pull-right-container"> </span></a> </li></ul></li><li class=" treeview"><a href="javascript:;" addtabs="233" url="javascript:;" py="dkgl" pinyin="daikuanguanli"><i class="fa fa-credit-card fa-fw"></i> <span>贷款管理</span> <span class="pull-right-container"><i class="fa fa-angle-left"></i> </span></a> <ul class="treeview-menu"><li class=""><a href="/coinht.php/loan_config?ref=addtabs" addtabs="234" url="/coinht.php/loan_config" py="dkpzgl" pinyin="daikuanpeizhiguanli"><i class="fa fa-cog fa-fw"></i> <span>贷款配置管理</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/loan_record?ref=addtabs" addtabs="239" url="/coinht.php/loan_record" py="dkjlgl" pinyin="daikuanjiluguanli"><i class="fa fa-list fa-fw"></i> <span>贷款记录管理</span> <span class="pull-right-container"> </span></a> </li></ul></li><li class=" treeview"><a href="javascript:;" addtabs="2" url="javascript:;" py="xtsz" pinyin="xitongshezhi"><i class="fa fa-cogs fa-fw"></i> <span>系统设置</span> <span class="pull-right-container"><i class="fa fa-angle-left"></i> </span></a> <ul class="treeview-menu"><li class=""><a href="/coinht.php/general/config?ref=addtabs" addtabs="6" url="/coinht.php/general/config" py="wzpz" pinyin="wangzhanpeizhi"><i class="fa fa-cog fa-fw"></i> <span>网站配置</span> <span class="pull-right-container"> </span></a> </li><li class=" treeview"><a href="javascript:;" addtabs="5" url="javascript:;" py="qxgl" pinyin="quanxianguanli"><i class="fa fa-group fa-fw"></i> <span>权限管理</span> <span class="pull-right-container"><i class="fa fa-angle-left"></i> </span></a> <ul class="treeview-menu"><li class=""><a href="/coinht.php/auth/admin?ref=addtabs" addtabs="9" url="/coinht.php/auth/admin" py="A" pinyin="Admin"><i class="fa fa-user fa-fw"></i> <span>Admin</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/auth/adminlog?ref=addtabs" addtabs="10" url="/coinht.php/auth/adminlog" py="Al" pinyin="Adminlog"><i class="fa fa-list-alt fa-fw"></i> <span>Admin log</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/auth/group?ref=addtabs" addtabs="11" url="/coinht.php/auth/group" py="G" pinyin="Group"><i class="fa fa-group fa-fw"></i> <span>Group</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/auth/rule?ref=addtabs" addtabs="12" url="/coinht.php/auth/rule" py="cdgz" pinyin="caidanguize"><i class="fa fa-bars fa-fw"></i> <span>菜单规则</span> <span class="pull-right-container"> <small class="label pull-right bg-teal">Menu</small></span></a> </li></ul></li><li class=""><a href="/coinht.php/category?ref=addtabs" addtabs="3" url="/coinht.php/category" py="twgl" pinyin="tuwenguanli"><i class="fa fa-leaf fa-fw"></i> <span>图文管理</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/general/attachment?ref=addtabs" addtabs="7" url="/coinht.php/general/attachment" py="A" pinyin="Attachment"><i class="fa fa-file-image-o fa-fw"></i> <span>Attachment</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/general/profile?ref=addtabs" addtabs="8" url="/coinht.php/general/profile" py="P" pinyin="Profile"><i class="fa fa-user fa-fw"></i> <span>Profile</span> <span class="pull-right-container"> </span></a> </li></ul></li><li class=""><a href="/coinht.php/notice?ref=addtabs" addtabs="206" url="/coinht.php/notice" py="xwgg" pinyin="xinwengonggao"><i class="fa fa-newspaper-o fa-fw"></i> <span>新闻公告</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/verify?ref=addtabs" addtabs="229" url="/coinht.php/verify" py="smrz" pinyin="shimingrenzheng"><i class="fa fa-circle-o fa-fw"></i> <span>实名认证</span> <span class="pull-right-container"> <small class="label pull-right bg-yellow"><span id="verifymark">0</span></small></span></a> </li><li class=" treeview"><a href="javascript:;" addtabs="230" url="javascript:;" py="yebgl" pinyin="yuebaoguanli"><i class="fa fa-circle-o fa-fw"></i> <span>余额宝管理</span> <span class="pull-right-container"><i class="fa fa-angle-left"></i> </span></a> <ul class="treeview-menu"><li class=""><a href="/coinht.php/yuebao_order/index?ref=addtabs" addtabs="231" url="/coinht.php/yuebao_order/index" py="yebdd" pinyin="yuebaodingdan"><i class="fa fa-circle-o fa-fw"></i> <span>余额宝订单</span> <span class="pull-right-container"> </span></a> </li><li class=""><a href="/coinht.php/yuebao_config?ref=addtabs" addtabs="232" url="/coinht.php/yuebao_config" py="yebpz" pinyin="yuebaopeizhi"><i class="fa fa-circle-o fa-fw"></i> <span>余额宝配置</span> <span class="pull-right-container"> </span></a> </li></ul></li><li class=""><a href="/coinht.php/index/ipwhitelist?ref=addtabs" addtabs="241" url="/coinht.php/index/ipwhitelist" py="htIbmd" pinyin="houtaiIPbaimingdan"><i class="fa fa-shield fa-fw"></i> <span>后台IP白名单</span> <span class="pull-right-container"> </span></a> </li>
+    </ul>
+</section>
+            </aside>
+
+            <!-- 主体内容区域 -->
+            <div class="content-wrapper tab-content tab-addtabs">
+                                <div role="tabpanel" class="tab-pane active" id="con_1">
+                    <iframe src="/coinht.php/dashboard?addtabs=1" width="100%" height="100%" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling-x="no" scrolling-y="auto" allowtransparency="yes"></iframe>
+                </div>
+                            </div>
+
+            <!-- 底部链接,默认隐藏 -->
+            <footer class="main-footer hide">
+                <div class="pull-right hidden-xs">
+                </div>
+                <strong>Copyright &copy; 2018-2019 <a href="#">ABBO</a>.</strong> All rights reserved.
+            </footer>
+
+            <!-- 右侧控制栏 -->
+            <div class="control-sidebar-bg"></div>
+            <style>
+    .skin-list li{
+        float:left; width: 33.33333%; padding: 5px;
+    }
+    .skin-list li a{
+        display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4);
+    }
+</style>
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li class="active"><a href="#control-sidebar-setting-tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-wrench"></i></a></li>
+        <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+        <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- Home tab content -->
+        <div class="tab-pane active" id="control-sidebar-setting-tab">
+            <h4 class="control-sidebar-heading">Layout Options</h4>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-layout="fixed" class="pull-right"> Fixed Layout</label><p>You can't use fixed and boxed layouts together</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-layout="layout-boxed" class="pull-right"> Boxed Layout</label><p>Activate the boxed layout</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-layout="sidebar-collapse" class="pull-right"> Toggle Sidebar</label><p>Toggle the left sidebar's state (open or collapse)</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-enable="expandOnHover" class="pull-right"> Sidebar Expand on Hover</label><p>Let the sidebar mini expand on hover</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-menu="show-submenu" class="pull-right"> Show sub menu</label><p>Always show sub menu</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-menu="disable-top-badge" class="pull-right"> Disable top menu badge</label><p>Disable top menu badge without left menu</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-controlsidebar="control-sidebar-open" class="pull-right"> Toggle Right Sidebar Slide</label><p>Toggle between slide over content and push content effects</p></div>
+            <div class="form-group"><label class="control-sidebar-subheading"><input type="checkbox" data-sidebarskin="toggle" class="pull-right"> Toggle Right Sidebar Skin</label><p>Toggle between dark and light skins for the right sidebar</p></div>
+            <h4 class="control-sidebar-heading">Skins</h4>
+            <ul class="list-unstyled clearfix skin-list">
+                <li><a href="javascript:;" data-skin="skin-blue" style="" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9;"></span><span class="bg-light-blue" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">Blue</p></li>
+                <li><a href="javascript:;" data-skin="skin-white" class="clearfix full-opacity-hover"><div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe;"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">White</p></li>
+                <li><a href="javascript:;" data-skin="skin-purple" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-purple-active"></span><span class="bg-purple" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">Purple</p></li>
+                <li><a href="javascript:;" data-skin="skin-green" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-green-active"></span><span class="bg-green" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">Green</p></li>
+                <li><a href="javascript:;" data-skin="skin-red" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-red-active"></span><span class="bg-red" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">Red</p></li>
+                <li><a href="javascript:;" data-skin="skin-yellow" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-yellow-active"></span><span class="bg-yellow" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #222d32;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin">Yellow</p></li>
+                <li><a href="javascript:;" data-skin="skin-blue-light" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px; background: #367fa9;"></span><span class="bg-light-blue" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px">Blue Light</p></li>
+                <li><a href="javascript:;" data-skin="skin-white-light" class="clearfix full-opacity-hover"><div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe;"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px">White Light</p></li>
+                <li><a href="javascript:;" data-skin="skin-purple-light" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-purple-active"></span><span class="bg-purple" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px">Purple Light</p></li>
+                <li><a href="javascript:;" data-skin="skin-green-light" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-green-active"></span><span class="bg-green" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px">Green Light</p></li>
+                <li><a href="javascript:;" data-skin="skin-red-light" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-red-active"></span><span class="bg-red" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px">Red Light</p></li>
+                <li><a href="javascript:;" data-skin="skin-yellow-light" class="clearfix full-opacity-hover"><div><span style="display:block; width: 20%; float: left; height: 7px;" class="bg-yellow-active"></span><span class="bg-yellow" style="display:block; width: 80%; float: left; height: 7px;"></span></div><div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc;"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7;"></span></div></a><p class="text-center no-margin" style="font-size: 12px;">Yellow Light</p></li>
+            </ul>
+        </div>
+        <!-- /.tab-pane -->
+        <!-- Home tab content -->
+        <div class="tab-pane" id="control-sidebar-home-tab">
+            <h4 class="control-sidebar-heading">Home</h4>
+        </div>
+        <!-- /.tab-pane -->
+        <!-- Settings tab content -->
+        <div class="tab-pane" id="control-sidebar-settings-tab">
+            <h4 class="control-sidebar-heading">Setting</h4>
+        </div>
+        <!-- /.tab-pane -->
+    </div>
+</aside>
+<!-- /.control-sidebar -->
+        </div>
+
+        <!-- 加载JS脚本 -->
+        <script src="/assets/js/require.js" data-main="/assets/js/require-backend.js?v=1788771517"></script>
+        
+        <script>
+            function stopAudio() {
+                var audio = document.getElementById('downPlay');
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0; // Optional: Reset the audio to the beginning
+                }
+            }
+            
+            function stopAudio1() {
+                var audio = document.getElementById('orderPlay');
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0; // Optional: Reset the audio to the beginning
+                }
+            }
+
+            // 倒计时功能
+            function startCountdown() {
+                // 设置结束时间：2025年9月15日下午6点
+                var endDate = new Date(2025, 9, 27, 17, 0, 0); // 月份从0开始，所以9月是8
+                
+                console.log('倒计时结束时间:', endDate);
+                
+                function updateCountdown() {
+                    var now = new Date();
+                    var timeLeft = endDate.getTime() - now.getTime();
+                    
+                    console.log('当前时间:', now, '剩余时间:', timeLeft);
+                    
+                    if (timeLeft <= 0) {
+                        // 倒计时结束
+                        document.getElementById('countdown-days').textContent = '0';
+                        document.getElementById('countdown-hours').textContent = '0';
+                        document.getElementById('countdown-minutes').textContent = '0';
+                        document.getElementById('countdown-seconds').textContent = '0';
+                        return;
+                    }
+                    
+                    // 计算剩余时间
+                    var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    
+                    // 更新显示
+                    document.getElementById('countdown-days').textContent = days;
+                    document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+                    document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
+                    document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
+                }
+                
+                // 立即更新一次
+                updateCountdown();
+                console.log('倒计时已启动，每秒更新一次');
+                
+                // 每秒更新一次
+                var countdownInterval = setInterval(updateCountdown, 1000);
+                
+                // 添加调试信息
+                setTimeout(function() {
+                    console.log('5秒后检查倒计时是否正常:', document.getElementById('countdown-days').textContent);
+                }, 5000);
+            }
+
+        // 确保DOM加载完成后立即启动倒计时
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成，启动倒计时');
+            startCountdown(); // 启动倒计时
+        });
+        
+        // 备用启动方式
+        window.onload = function() {
+            if (typeof startCountdown === 'function') {
+                console.log('window.onload启动倒计时');
+                startCountdown();
+            }
+        };
+    </script>
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a37483422efe1d2d',t:'MTc4ODc3MTUxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
