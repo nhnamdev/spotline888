@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
-  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product";
+  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig";
 }
 
 export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }: AdminHeaderProps) {
@@ -162,6 +162,44 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
             >
               <i className="fa fa-shopping-bag fa-fw"></i>
               <span>产品列表</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "productType" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/product/type")}
+            >
+              <i className="fa fa-list-alt fa-fw"></i>
+              <span>产品分类</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "loanConfig" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/loan_config")}
+            >
+              <i className="fa fa-cog fa-fw"></i>
+              <span>贷款配置管理</span>
               <span
                 className="close-tab"
                 onClick={(e) => {

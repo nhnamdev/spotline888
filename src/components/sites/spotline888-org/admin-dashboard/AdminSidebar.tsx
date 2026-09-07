@@ -15,17 +15,20 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
 
   const isProductActive = currentPath.includes("product");
   const isProductListActive = currentPath.includes("product/product") || currentPath === "/product";
+  const isProductTypeActive = currentPath.includes("product/type");
+  const isLoanActive = currentPath.includes("loan");
+  const isLoanConfigActive = currentPath.includes("loan_config");
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
   const isOrderActive = currentPath.includes("order");
   const isDashboardActive =
-    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive;
+    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive;
 
   // State for treeview toggling
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     product: isProductActive,
-    loan: false,
+    loan: isLoanActive,
     system: false,
     auth: false,
     yuebao: false,
@@ -251,14 +254,17 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
-                <li className="">
+                <li className={isProductTypeActive ? "active" : ""}>
                   <a
                     href="/coinht.php/product/type?ref=addtabs"
                     addtabs="205"
                     url="/coinht.php/product/type"
                     py="cpfl"
                     pinyin="chanpinfenlei"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/product/type");
+                    }}
                   >
                     <i className="fa fa-list-alt fa-fw"></i>
                     <span>产品分类</span>
@@ -270,7 +276,11 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 7. 贷款管理 (Treeview) */}
-          <li className={`treeview ${openMenus.loan ? "menu-open" : ""}`}>
+          <li
+            className={`treeview ${
+              openMenus.loan || isLoanActive ? "menu-open" : ""
+            }`}
+          >
             <a
               href="javascript:;"
               addtabs="233"
@@ -287,21 +297,24 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <span className="pull-right-container">
                 <i
                   className={`fa fa-angle-left ${
-                    openMenus.loan ? "rotate-arrow" : ""
+                    openMenus.loan || isLoanActive ? "rotate-arrow" : ""
                   }`}
                 ></i>
               </span>
             </a>
-            {openMenus.loan && (
+            {(openMenus.loan || isLoanActive) && (
               <ul className="treeview-menu">
-                <li className="">
+                <li className={isLoanConfigActive ? "active" : ""}>
                   <a
                     href="/coinht.php/loan_config?ref=addtabs"
                     addtabs="234"
                     url="/coinht.php/loan_config"
                     py="dkpzgl"
                     pinyin="daikuanpeizhiguanli"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/loan_config");
+                    }}
                   >
                     <i className="fa fa-cog fa-fw"></i>
                     <span>贷款配置管理</span>
