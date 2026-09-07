@@ -56,7 +56,22 @@ export const IndexTabBar: React.FC<IndexTabBarProps> = ({
             return (
               <div
                 key={tab.key}
-                onClick={() => onTabChange && onTabChange(tab.key)}
+                onClick={() => {
+                  if (tab.href) {
+                    if (
+                      typeof window !== "undefined" &&
+                      (window.location.pathname === "/" ||
+                        window.location.pathname === "")
+                    ) {
+                      window.location.hash = tab.href;
+                    } else if (typeof window !== "undefined") {
+                      window.location.href = "/" + tab.href;
+                    }
+                  }
+                  if (onTabChange) {
+                    onTabChange(tab.key);
+                  }
+                }}
                 className="flex-1 flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform"
               >
                 <div className="w-6 h-6 flex items-center justify-center">

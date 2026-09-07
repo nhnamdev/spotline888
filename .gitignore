@@ -69,3 +69,4 @@ tmp/
 .claude/settings.local.json
 .claude/skills/customize/
 .claude/skills/release/
+.code-graph/

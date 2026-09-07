@@ -45,7 +45,28 @@ function SpotlineIndexPageContent() {
         <IndexTabBar
           t={t}
           activeTab={activeTab}
-          onTabChange={(tab) => setActiveTab(tab)}
+          onTabChange={(tab) => {
+            setActiveTab(tab);
+            const targetHash =
+              tab === "products"
+                ? "#/pages/product/product"
+                : tab === "balance"
+                ? "#/pages/money/money"
+                : tab === "mine"
+                ? "#/pages/user/user"
+                : "#/pages/index/index";
+
+            if (typeof window !== "undefined") {
+              if (
+                window.location.pathname === "/" ||
+                window.location.pathname === ""
+              ) {
+                window.location.hash = targetHash;
+              } else {
+                window.location.href = "/" + targetHash;
+              }
+            }
+          }}
         />
 
         {/* Bottom Sheet Language Drawer */}
