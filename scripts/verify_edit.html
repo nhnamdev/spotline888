@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+    <head>
+        <meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit">
+
+<link rel="shortcut icon" href="/assets/img/favicon.ico" />
+<!-- Loading Bootstrap -->
+<link href="/assets/css/backend.css?v=1788835639" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+<!--[if lt IE 9]>
+  <script src="/assets/js/html5shiv.js"></script>
+  <script src="/assets/js/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    var require = {
+        config:  {"site":{"name":"Abbott","version":1788835639,"cdnurl":""},"upload":{"cdnurl":"","uploadurl":"ajax\/upload","bucket":"local","maxsize":"1000mb","mimetype":"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx","multipart":[],"multiple":false},"modulename":"admin","controllername":"verify","actionname":"edit","jsname":"backend\/verify","moduleurl":"\/coinht.php","language":"id-ID","fastadmin":{"usercenter":true,"login_captcha":true,"login_failure_retry":true,"login_unique":false,"login_background":"\/assets\/img\/loginbg.jpg","multiplenav":false,"checkupdate":false,"version":"1.1.01","api_url":"","loginip_check":false},"referer":null,"__PUBLIC__":"\/","__ROOT__":"\/","__CDN__":"","__TMP1__":"\/template\/tmp1","__TMP2__":"\/template\/tmp2","__TMP3__":"\/template\/tmp3","__MB__":"\/template\/mb","__MB1__":"\/template\/mb1","__MB2__":"\/template\/mb2","__MB3__":"\/template\/mb3"}    };
+</script>
+    </head>
+
+    <body class="inside-header inside-aside ">
+        <div id="main" role="main">
+            <div class="tab-content tab-addtabs">
+                <div id="content">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <section class="content-header hide">
+                                <h1>
+                                    Dashboard                                    <small>Control panel</small>
+                                </h1>
+                            </section>
+                                                        <!-- RIBBON -->
+                            <div id="ribbon">
+                                <ol class="breadcrumb pull-left">
+                                    <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                                </ol>
+                                <ol class="breadcrumb pull-right">
+                                                                        <li><a href="javascript:;" data-url="/coinht.php/verify/verify">实名认证</a></li>
+                                                                    </ol>
+                            </div>
+                            <!-- END RIBBON -->
+                                                        <div class="content">
+                                <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">用户名:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-username" class="form-control" name="row[username]" type="text" value="LeeChiewHo" readonly>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">真实姓名:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-real_name" class="form-control" name="row[real_name]" type="text" value="Lee Chiew Ho">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">证件号码:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-id_card" class="form-control" name="row[id_card]" type="text" value="123312">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">职业:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-profession" class="form-control" name="row[profession]" type="text" value="231123">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">证件类型:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select id="c-gj" class="form-control" name="row[gj]">
+                <option value="id_card" >身份证</option>
+                <option value="passport" >护照</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">身份证正面:</label>
+        <div class="col-xs-12 col-sm-8">
+                        <a href="/uploads/20260908/178883474941402.jpeg" target="_blank">
+                <img src="/uploads/20260908/178883474941402.jpeg" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;" alt="身份证正面">
+            </a>
+            <input type="hidden" name="row[id_img_1]" value="/uploads/20260908/178883474941402.jpeg">
+                    </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">身份证反面:</label>
+        <div class="col-xs-12 col-sm-8">
+                        <a href="/uploads/20260908/178883475343904.jpeg" target="_blank">
+                <img src="/uploads/20260908/178883475343904.jpeg" style="max-width: 400px; max-height: 300px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;" alt="身份证反面">
+            </a>
+            <input type="hidden" name="row[id_img_2]" value="/uploads/20260908/178883475343904.jpeg">
+                    </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">审核状态:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select name="row[is_auth]" class="form-control"><option value="0">未认证</option><option value="1">已提交</option><option value="2" selected="selected">已认证</option><option value="-1">认证失败</option></select>        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">拒绝原因:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-id_auth_error" class="form-control" name="row[id_auth_error]" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">OK</button>
+            <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+        </div>
+    </div>
+</form> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/assets/js/require.js" data-main="/assets/js/require-backend.js?v=1788835639"></script>
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a37aa0bc5f2fb467',t:'MTc4ODgzNTYzOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

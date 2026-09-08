@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
-  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig" | "loanRecord" | "generalConfig" | "authAdmin";
+  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig" | "loanRecord" | "generalConfig" | "authAdmin" | "authAdminLog" | "authGroup" | "authRule" | "category" | "attachment" | "profile" | "notice" | "verify" | "yuebaoOrder" | "yuebaoConfig" | "ipwhitelist";
 }
 
 export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }: AdminHeaderProps) {
@@ -269,6 +269,215 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               </span>
             </div>
           )}
+          {activeTab === "authAdminLog" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/auth/adminlog")}
+            >
+              <i className="fa fa-list-alt fa-fw"></i>
+              <span>Admin log</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "authGroup" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/auth/group")}
+            >
+              <i className="fa fa-group fa-fw"></i>
+              <span>Group</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "authRule" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/auth/rule")}
+            >
+              <i className="fa fa-bars fa-fw"></i>
+              <span>菜单规则</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "category" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/category")}
+            >
+              <i className="fa fa-leaf fa-fw"></i>
+              <span>图文管理</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "attachment" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/attachment")}
+            >
+              <i className="fa fa-file-image-o fa-fw"></i>
+              <span>Attachment</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "profile" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/profile")}
+            >
+              <i className="fa fa-user fa-fw"></i>
+              <span>Profile</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "notice" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/notice")}
+            >
+              <i className="fa fa-newspaper-o fa-fw"></i>
+              <span>新闻公告</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "verify" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/verify")}
+            >
+              <i className="fa fa-circle-o fa-fw"></i>
+              <span>实名认证</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "yuebaoOrder" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/yuebao_order")}
+            >
+              <i className="fa fa-circle-o fa-fw"></i>
+              <span>余额宝订单</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "yuebaoConfig" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/yuebao_config")}
+            >
+              <i className="fa fa-circle-o fa-fw"></i>
+              <span>余额宝配置</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "ipwhitelist" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/ipwhitelist")}
+            >
+              <i className="fa fa-shield fa-fw"></i>
+              <span>后台IP白名单</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Expiration Countdown */}
@@ -386,7 +595,10 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                       <button
                         type="button"
                         className="btn btn-primary btn-flat"
-                        onClick={() => setIsUserMenuOpen(false)}
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          router.push("/general/profile");
+                        }}
                       >
                         Profile
                       </button>

@@ -12,7 +12,7 @@ export const LoginFooter: React.FC = () => {
       <div className="flex items-center gap-3">
         {/* Register link */}
         <Link
-          href="#/pages/register/register"
+          href="/register"
           className="text-[13.5px] text-[#3b82f6] font-semibold hover:underline cursor-pointer"
         >
           {t.registerNow}

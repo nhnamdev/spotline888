@@ -19,16 +19,29 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const isLoanActive = currentPath.includes("loan");
   const isLoanConfigActive = currentPath.includes("loan_config");
   const isLoanRecordActive = currentPath.includes("loan_record");
-  const isAuthAdminActive = currentPath.includes("auth/admin") || currentPath.includes("auth.admin");
+  const isAuthAdminLogActive = currentPath.includes("auth/adminlog") || currentPath.includes("auth.adminlog");
+  const isAuthAdminActive =
+    (currentPath.includes("auth/admin") || currentPath.includes("auth.admin")) && !isAuthAdminLogActive;
+  const isAuthGroupActive = currentPath.includes("auth/group") || currentPath.includes("auth.group");
+  const isAuthRuleActive = currentPath.includes("auth/rule") || currentPath.includes("auth.rule");
+  const isCategoryActive = currentPath.includes("category");
+  const isAttachmentActive = currentPath.includes("attachment");
+  const isProfileActive = currentPath.includes("profile");
   const isAuthActive = currentPath.includes("auth");
-  const isSystemActive = currentPath.includes("general") || isAuthActive;
+  const isSystemActive = currentPath.includes("general") || isAuthActive || isCategoryActive || isAttachmentActive || isProfileActive;
   const isGeneralConfigActive = currentPath.includes("general/config");
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
   const isOrderActive = currentPath.includes("order");
+  const isNoticeActive = currentPath.includes("notice");
+  const isVerifyActive = currentPath.includes("verify");
+  const isYuebaoOrderActive = currentPath.includes("yuebao_order");
+  const isYuebaoConfigActive = currentPath.includes("yuebao_config");
+  const isYuebaoActive = isYuebaoOrderActive || isYuebaoConfigActive || currentPath.includes("yuebao");
+  const isIpWhitelistActive = currentPath.includes("ipwhitelist");
   const isDashboardActive =
-    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive && !isSystemActive && !isAuthActive;
+    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive && !isSystemActive && !isAuthActive && !isCategoryActive && !isAttachmentActive && !isProfileActive && !isNoticeActive && !isVerifyActive && !isYuebaoActive && !isIpWhitelistActive;
 
   // State for treeview toggling
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
@@ -36,7 +49,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
     loan: isLoanActive,
     system: isSystemActive,
     auth: isAuthActive,
-    yuebao: false,
+    yuebao: isYuebaoActive,
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,7 +67,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
         {/* 管理员信息 */}
         <div className="user-panel hidden-xs">
           <div className="pull-left image">
-            <a href="general/profile" className="addtabsit" onClick={(e) => e.preventDefault()}>
+            <a
+              href="/general/profile"
+              className="addtabsit"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/general/profile");
+              }}
+            >
               <Image
                 src="/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"
                 className="img-circle"
@@ -439,42 +459,51 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
-                      <li className="">
+                      <li className={isAuthAdminLogActive ? "active" : ""}>
                         <a
                           href="/coinht.php/auth/adminlog?ref=addtabs"
                           addtabs="10"
                           url="/coinht.php/auth/adminlog"
                           py="Al"
                           pinyin="Adminlog"
-                          onClick={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/general/auth/adminlog");
+                          }}
                         >
                           <i className="fa fa-list-alt fa-fw"></i>
                           <span>Admin log</span>
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
-                      <li className="">
+                      <li className={isAuthGroupActive ? "active" : ""}>
                         <a
                           href="/coinht.php/auth/group?ref=addtabs"
                           addtabs="11"
                           url="/coinht.php/auth/group"
                           py="G"
                           pinyin="Group"
-                          onClick={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/general/auth/group");
+                          }}
                         >
                           <i className="fa fa-group fa-fw"></i>
                           <span>Group</span>
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
-                      <li className="">
+                      <li className={isAuthRuleActive ? "active" : ""}>
                         <a
                           href="/coinht.php/auth/rule?ref=addtabs"
                           addtabs="12"
                           url="/coinht.php/auth/rule"
                           py="cdgz"
                           pinyin="caidanguize"
-                          onClick={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/general/auth/rule");
+                          }}
                         >
                           <i className="fa fa-bars fa-fw"></i>
                           <span>菜单规则</span>
@@ -488,42 +517,51 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     </ul>
                   )}
                 </li>
-                <li className="">
+                <li className={isCategoryActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/category?ref=addtabs"
+                    href="/general/category"
                     addtabs="3"
                     url="/coinht.php/category"
                     py="twgl"
                     pinyin="tuwenguanli"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/general/category");
+                    }}
                   >
                     <i className="fa fa-leaf fa-fw"></i>
                     <span>图文管理</span>
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
-                <li className="">
+                <li className={isAttachmentActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/general/attachment?ref=addtabs"
+                    href="/general/attachment"
                     addtabs="7"
                     url="/coinht.php/general/attachment"
                     py="A"
                     pinyin="Attachment"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/general/attachment");
+                    }}
                   >
                     <i className="fa fa-file-image-o fa-fw"></i>
                     <span>Attachment</span>
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
-                <li className="">
+                <li className={isProfileActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/general/profile?ref=addtabs"
+                    href="/general/profile"
                     addtabs="8"
                     url="/coinht.php/general/profile"
                     py="P"
                     pinyin="Profile"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/general/profile");
+                    }}
                   >
                     <i className="fa fa-user fa-fw"></i>
                     <span>Profile</span>
@@ -535,14 +573,17 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 9. 新闻公告 */}
-          <li className="">
+          <li className={isNoticeActive ? "active" : ""}>
             <a
-              href="/coinht.php/notice?ref=addtabs"
+              href="/notice"
               addtabs="206"
               url="/coinht.php/notice"
               py="xwgg"
               pinyin="xinwengonggao"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/notice");
+              }}
             >
               <i className="fa fa-newspaper-o fa-fw"></i>
               <span>新闻公告</span>
@@ -551,14 +592,17 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 10. 实名认证 */}
-          <li className="">
+          <li className={isVerifyActive ? "active" : ""}>
             <a
-              href="/coinht.php/verify?ref=addtabs"
+              href="/verify"
               addtabs="229"
               url="/coinht.php/verify"
               py="smrz"
               pinyin="shimingrenzheng"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/verify");
+              }}
             >
               <i className="fa fa-circle-o fa-fw"></i>
               <span>实名认证</span>
@@ -595,28 +639,34 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
             </a>
             {openMenus.yuebao && (
               <ul className="treeview-menu">
-                <li className="">
+                <li className={isYuebaoOrderActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/yuebao_order/index?ref=addtabs"
+                    href="/yuebao_order"
                     addtabs="231"
                     url="/coinht.php/yuebao_order/index"
                     py="yebdd"
                     pinyin="yuebaodingdan"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/yuebao_order");
+                    }}
                   >
                     <i className="fa fa-circle-o fa-fw"></i>
                     <span>余额宝订单</span>
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
-                <li className="">
+                <li className={isYuebaoConfigActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/yuebao_config?ref=addtabs"
+                    href="/yuebao_config"
                     addtabs="232"
                     url="/coinht.php/yuebao_config"
                     py="yebpz"
                     pinyin="yuebaopeizhi"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/yuebao_config");
+                    }}
                   >
                     <i className="fa fa-circle-o fa-fw"></i>
                     <span>余额宝配置</span>
@@ -628,14 +678,17 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 12. 后台IP白名单 */}
-          <li className="">
+          <li className={isIpWhitelistActive ? "active" : ""}>
             <a
-              href="/coinht.php/index/ipwhitelist?ref=addtabs"
+              href="/ipwhitelist"
               addtabs="241"
               url="/coinht.php/index/ipwhitelist"
               py="htIbmd"
               pinyin="houtaiIPbaimingdan"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/ipwhitelist");
+              }}
             >
               <i className="fa fa-shield fa-fw"></i>
               <span>后台IP白名单</span>
