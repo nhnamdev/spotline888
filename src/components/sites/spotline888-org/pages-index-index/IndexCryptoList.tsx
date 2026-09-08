@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { IndexTranslations } from "./indexI18n";
 
 interface IndexCryptoListProps {
@@ -112,6 +113,8 @@ const CRYPTO_DATA: CryptoItem[] = [
 ];
 
 export const IndexCryptoList: React.FC<IndexCryptoListProps> = ({ t }) => {
+  const router = useRouter();
+
   return (
     <div className="mt-3.5 select-none">
       {/* Section Title */}
@@ -136,6 +139,13 @@ export const IndexCryptoList: React.FC<IndexCryptoListProps> = ({ t }) => {
             return (
               <div
                 key={item.name}
+                onClick={() =>
+                  router.push(
+                    `/pages/Detail/Detail?id=1&codename=${encodeURIComponent(
+                      item.name
+                    )}`
+                  )
+                }
                 className="px-4 py-3 flex items-center justify-between hover:bg-[#f8f8f8] active:bg-[#f2f2f2] transition-colors cursor-pointer"
               >
                 {/* Left: Coin Icon + Symbol */}

@@ -40,7 +40,8 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabMine: "我的",
     noticeTitle: "公司使命：提供安全且易于使用的数字资产服务",
     noticeTime: "2024-02-08 10:47:59",
-    noticeContent: "致力于打造便捷、透明、人人可参与的数字货币交易环境，提供安全稳定的全球资产流动通道与多重身份验证保障。",
+    noticeContent:
+      "我们是一家专注于线上数字资产服务的平台，致力于让东南亚用户更轻松地访问和管理他们的加密资产。我们的目标是让加密货币交易变得便捷、快速，并让所有用户都能轻松参与。温馨提醒：如果您是高净值收入人群，需要进行大额（175,000,000 IDR）投资，请优先联系客服办理开通本公司的国际VIP通道，避免影响您的投资体验。一次办理，终身享用。",
   },
   "vi-VN": {
     withdraw: "Rút tiền",
@@ -60,7 +61,8 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabMine: "Cá nhân",
     noticeTitle: "Sứ mệnh: Cung cấp dịch vụ tài sản kỹ thuật số an toàn, tiện lợi",
     noticeTime: "2024-02-08 10:47:59",
-    noticeContent: "Cung cấp nền tảng giao dịch tài sản kỹ thuật số an toàn, nhanh chóng và hiệu quả, bảo vệ dữ liệu với xác thực hai lớp và hệ thống đám mây tin cậy.",
+    noticeContent:
+      "Chúng tôi là nền tảng chuyên về dịch vụ tài sản kỹ thuật số trực tuyến, cam kết giúp người dùng Đông Nam Á tiếp cận và quản lý tài sản mã hóa dễ dàng hơn. Mục tiêu của chúng tôi là làm cho giao dịch tiền mã hóa trở nên thuận tiện, nhanh chóng và mọi người dùng đều có thể dễ dàng tham gia. Lưu ý: Nếu quý khách là nhà đầu tư có thu nhập cao cần đầu tư số tiền lớn (175,000,000 IDR), vui lòng ưu tiên liên hệ bộ phận CSKH để mở cổng VIP quốc tế của công ty, tránh ảnh hưởng đến trải nghiệm đầu tư. Đăng ký một lần, sử dụng trọn đời.",
   },
   "en-US": {
     withdraw: "Withdraw",
@@ -73,14 +75,15 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     futureProducts: "Future Products",
     name: "Name",
     latestPrice: "Latest Price",
-    change24h: "24H Change",
+    change24h: "24h Change",
     tabHome: "Home",
     tabProducts: "Products",
-    tabBalance: "Balance",
-    tabMine: "Me",
-    noticeTitle: "Company Mission: Providing secure, user-friendly digital asset services",
+    tabBalance: "Yuebao",
+    tabMine: "Mine",
+    noticeTitle: "Company Mission: Safe and easy-to-use digital asset service",
     noticeTime: "2024-02-08 10:47:59",
-    noticeContent: "Committed to creating a convenient, transparent, and accessible digital asset trading environment with high availability and two-factor security.",
+    noticeContent:
+      "We are a platform focusing on online digital asset services, dedicated to making crypto asset access and management easier for users in Southeast Asia. Our goal is to make cryptocurrency trading convenient, fast, and accessible to everyone. Reminder: If you are investing large amounts (175,000,000 IDR), please contact customer service to activate our international VIP channel.",
   },
   "hk-TW": {
     withdraw: "出金",

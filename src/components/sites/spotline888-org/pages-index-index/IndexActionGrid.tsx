@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { IndexTranslations } from "./indexI18n";
 
 interface IndexActionGridProps {
@@ -9,45 +10,44 @@ interface IndexActionGridProps {
 }
 
 export const IndexActionGrid: React.FC<IndexActionGridProps> = ({ t }) => {
+  const router = useRouter();
+
   const items = [
     {
       title: t.withdraw,
       icon: "/sites/spotline888-org/pages-index-index/menu_withdraw.png",
-      href: "#/pages/withdraw-money/withdraw-money",
+      href: "/pages/withdraw-money/withdraw-money",
     },
     {
       title: t.deposit,
       icon: "/sites/spotline888-org/pages-index-index/menu_deposit.png",
-      href: "#/pages/money/money",
+      href: "/pages/customer-service/customer-service",
     },
     {
       title: t.customerService,
       icon: "/sites/spotline888-org/pages-index-index/kefu.png",
-      href: "https://wa.me/6287844562370?name=&id=0",
-      external: true,
+      href: "/pages/customer-service/customer-service",
     },
     {
       title: t.trade,
       icon: "/sites/spotline888-org/pages-index-index/menu_trade.png",
-      href: "#/pages/order/order",
+      href: "/pages/order/order",
     },
     {
       title: t.systemMessage,
       icon: "/sites/spotline888-org/pages-index-index/menu_messages.png",
       badge: "1",
-      href: "#/pages/message/message",
+      href: "/pages/system-message/system-message",
     },
     {
       title: t.aboutUs,
       icon: "/sites/spotline888-org/pages-index-index/menu_about.png",
-      href: "#/pages/aboutUs/aboutUs",
+      href: "/pages/yinsi/gy",
     },
   ];
 
-  const handleClick = (item: typeof items[0]) => {
-    if (item.external) {
-      window.open(item.href, "_blank", "noopener,noreferrer");
-    }
+  const handleClick = (item: (typeof items)[0]) => {
+    router.push(item.href);
   };
 
   return (

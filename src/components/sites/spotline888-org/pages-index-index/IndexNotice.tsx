@@ -45,30 +45,21 @@ export const IndexNotice: React.FC<IndexNoticeProps> = ({ t }) => {
       {/* Center Announcement Popup */}
       {showModal && (
         <div
-          className="fixed inset-0 z-[99999] bg-black/50 flex items-center justify-center p-6 animate-fade-in"
+          className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="w-full max-w-[310px] bg-white rounded-[12px] p-5 shadow-[0_10px_25px_rgba(15,23,42,0.25)] select-text"
+            className="w-full max-w-[340px] bg-white rounded-[20px] p-6 shadow-[0_15px_35px_rgba(0,0,0,0.25)] select-text flex flex-col animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-[14px] font-bold text-[#1f2937] text-center mb-1 leading-snug">
+            <h3 className="text-[15px] font-bold text-[#111827] leading-[1.4]">
               {t.noticeTitle}
             </h3>
-            <div className="text-[11px] text-[#9ca3af] text-center py-2 border-b border-gray-100">
+            <div className="text-[12.5px] text-[#64748b] mt-2 mb-3 font-normal">
               {t.noticeTime}
             </div>
-            <div className="text-[12.5px] text-[#4b5563] leading-relaxed mt-3">
+            <div className="text-[13.5px] text-[#334155] leading-[1.7] text-justify font-normal">
               {t.noticeContent}
-            </div>
-            <div className="mt-5 flex justify-center">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="w-full py-2 bg-[#f8b83d] text-white rounded-lg text-[13px] font-semibold active:opacity-90 transition-opacity"
-              >
-                确定
-              </button>
             </div>
           </div>
         </div>

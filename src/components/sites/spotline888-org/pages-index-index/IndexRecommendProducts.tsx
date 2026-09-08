@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { IndexTranslations } from "./indexI18n";
 
 interface IndexRecommendProductsProps {
@@ -10,6 +11,7 @@ interface IndexRecommendProductsProps {
 export const IndexRecommendProducts: React.FC<IndexRecommendProductsProps> = ({
   t,
 }) => {
+  const router = useRouter();
   const cards = [
     {
       symbol: "BTC/USDT",
@@ -53,6 +55,13 @@ export const IndexRecommendProducts: React.FC<IndexRecommendProductsProps> = ({
         {cards.map((card) => (
           <div
             key={card.symbol}
+            onClick={() =>
+              router.push(
+                `/pages/Detail/Detail?id=1&codename=${encodeURIComponent(
+                  card.symbol
+                )}`
+              )
+            }
             className="flex-1 min-w-0 bg-white rounded-[8px] p-2 shadow-[0_3px_8px_rgba(15,23,42,0.08)] flex flex-col justify-between cursor-pointer active:scale-[0.98] transition-all"
           >
             <div>
