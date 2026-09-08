@@ -241,6 +241,12 @@ export default function AdminDashboardCharts() {
           position: relative;
         }
 
+        @media (max-width: 767px) {
+          .dash-chart-box {
+            padding: 14px 10px;
+          }
+        }
+
         .chart-hd {
           display: flex;
           align-items: center;
@@ -272,6 +278,15 @@ export default function AdminDashboardCharts() {
           margin-bottom: 10px;
           font-size: 12px;
           color: #333333;
+        }
+
+        @media (max-width: 767px) {
+          .chart-legend {
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 6px 12px;
+            font-size: 11px;
+          }
         }
 
         .legend-item {

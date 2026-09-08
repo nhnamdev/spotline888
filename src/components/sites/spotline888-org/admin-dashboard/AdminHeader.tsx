@@ -49,6 +49,11 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
     }
   };
 
+  const handleSidebarToggle = () => {
+    window.dispatchEvent(new CustomEvent("admin-sidebar-toggle"));
+    onToggleSidebar();
+  };
+
   return (
     <header className="main-header">
       {/* Brand Logo */}
@@ -64,7 +69,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
         <button
           type="button"
           className="sidebar-toggle"
-          onClick={onToggleSidebar}
+          onClick={handleSidebarToggle}
           title="Toggle navigation"
         >
           <i className="fa fa-bars"></i>
@@ -658,8 +663,9 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
 
         @media (max-width: 767px) {
           .main-header .logo {
-            width: 100px;
-            font-size: 16px;
+            width: 75px;
+            font-size: 15px;
+            padding: 0 4px;
           }
         }
 
@@ -672,6 +678,8 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           height: 50px;
           padding: 0 15px;
           position: relative;
+          min-width: 0;
+          overflow: hidden;
         }
 
         .sidebar-toggle {
@@ -685,6 +693,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           align-items: center;
           justify-content: center;
           font-size: 16px;
+          flex-shrink: 0;
         }
 
         .sidebar-toggle:hover {
@@ -695,6 +704,48 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           display: flex;
           align-items: center;
           height: 50px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          flex: 1;
+          min-width: 0;
+        }
+
+        .header-tab-container::-webkit-scrollbar {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .navbar {
+            padding: 0 4px;
+          }
+
+          .sidebar-toggle {
+            padding: 0 8px;
+          }
+
+          .header-tab {
+            padding: 0 8px !important;
+            font-size: 12px !important;
+            gap: 4px !important;
+          }
+
+          .nav-btn,
+          .nav-btn-link,
+          .user-btn {
+            padding: 0 8px !important;
+          }
+
+          .dropdown-menu {
+            max-width: 90vw !important;
+            right: 0 !important;
+          }
+
+          .user-dropdown {
+            max-width: 250px !important;
+          }
         }
 
         .header-tab {

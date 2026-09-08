@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -12,6 +12,36 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const router = useRouter();
   const pathname = usePathname();
   const currentPath = activePath || pathname || "";
+
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = () => {
+      setIsMobileOpen((prev) => !prev);
+    };
+    const handleClose = () => {
+      setIsMobileOpen(false);
+    };
+    window.addEventListener("admin-sidebar-toggle", handleToggle);
+    window.addEventListener("admin-sidebar-close", handleClose);
+    return () => {
+      window.removeEventListener("admin-sidebar-toggle", handleToggle);
+      window.removeEventListener("admin-sidebar-close", handleClose);
+    };
+  }, []);
+
+  // Tự động đóng drawer di động khi chuyển trang
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
+  const handleSidebarClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Đóng drawer khi người dùng bấm vào link chuyển trang (không phải nút mở menu con)
+    if (target.closest("a") && !target.closest(".treeview > a")) {
+      setIsMobileOpen(false);
+    }
+  };
 
   const isProductActive = currentPath.includes("product");
   const isProductListActive = currentPath.includes("product/product") || currentPath === "/product";
@@ -62,10 +92,36 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   };
 
   return (
-    <aside className={`main-sidebar ${isCollapsed ? "sidebar-collapse" : ""}`}>
-      <section className="sidebar">
-        {/* 管理员信息 */}
-        <div className="user-panel hidden-xs">
+    <>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className={`sidebar-backdrop ${isMobileOpen ? "show" : ""}`}
+        onClick={() => setIsMobileOpen(false)}
+      />
+
+      <aside
+        className={`main-sidebar ${isCollapsed ? "sidebar-collapse" : ""} ${
+          isMobileOpen ? "mobile-open" : ""
+        }`}
+      >
+        <section className="sidebar" onClick={handleSidebarClick}>
+          {/* Mobile Header with brand and close button */}
+          <div className="mobile-sidebar-header visible-xs">
+            <div className="mobile-brand-title">
+              <i className="fa fa-cogs"></i> Abbott Admin
+            </div>
+            <button
+              type="button"
+              className="mobile-close-btn"
+              onClick={() => setIsMobileOpen(false)}
+              aria-label="Close menu"
+            >
+              <i className="fa fa-times"></i>
+            </button>
+          </div>
+
+          {/* 管理员信息 */}
+          <div className="user-panel hidden-xs">
           <div className="pull-left image">
             <a
               href="/general/profile"
@@ -1003,7 +1059,92 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           padding-left: 38px;
           background-color: #263339;
         }
+
+        /* Mobile Drawer & Backdrop */
+        .sidebar-backdrop {
+          display: none;
+        }
+
+        .mobile-sidebar-header {
+          display: none;
+        }
+
+        @media (max-width: 767px) {
+          .main-sidebar {
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 240px !important;
+            z-index: 1060 !important;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: none;
+          }
+
+          .main-sidebar.mobile-open {
+            transform: translateX(0);
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5);
+          }
+
+          .sidebar-backdrop.show {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.55);
+            z-index: 1055;
+            backdrop-filter: blur(1px);
+            animation: fadeInBackdrop 0.25s ease;
+          }
+
+          .mobile-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background-color: #1a2226;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+          }
+
+          .mobile-brand-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #18bc9c;
+          }
+
+          .mobile-close-btn {
+            background: transparent;
+            border: none;
+            color: #b8c7ce;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .mobile-close-btn:hover {
+            color: #ffffff;
+          }
+        }
+
+        @keyframes fadeInBackdrop {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
       `}</style>
     </aside>
+  </>
   );
 }

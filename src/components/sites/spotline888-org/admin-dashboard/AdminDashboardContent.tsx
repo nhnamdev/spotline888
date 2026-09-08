@@ -219,6 +219,25 @@ export default function AdminDashboardContent() {
           gap: 10px;
         }
 
+        @media (max-width: 767px) {
+          .content {
+            padding: 12px 10px;
+          }
+
+          .dash-summary {
+            padding: 14px 16px;
+            gap: 8px;
+          }
+
+          .sum-item {
+            font-size: 13px;
+          }
+
+          .sum-item strong {
+            font-size: 18px;
+          }
+        }
+
         .sum-item {
           display: flex;
           align-items: center;
@@ -253,6 +272,7 @@ export default function AdminDashboardContent() {
           display: flex;
           align-items: center;
           max-width: 440px;
+          width: 100%;
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
@@ -277,7 +297,8 @@ export default function AdminDashboardContent() {
           height: 38px;
           padding: 0 12px;
           font-size: 13px;
-          width: 320px;
+          width: 100%;
+          flex: 1;
           outline: none;
           color: #333333;
         }
@@ -302,6 +323,22 @@ export default function AdminDashboardContent() {
           opacity: 0.88;
         }
 
+        @media (max-width: 640px) {
+          .dash-filter {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .dash-filter .input-group {
+            max-width: 100%;
+          }
+
+          .btn-query {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
         .dash-cards {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
@@ -318,6 +355,13 @@ export default function AdminDashboardContent() {
         @media (max-width: 768px) {
           .dash-cards {
             grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .dash-cards {
+            grid-template-columns: 1fr;
           }
         }
 
