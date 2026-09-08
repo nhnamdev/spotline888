@@ -18,18 +18,21 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const isProductTypeActive = currentPath.includes("product/type");
   const isLoanActive = currentPath.includes("loan");
   const isLoanConfigActive = currentPath.includes("loan_config");
+  const isLoanRecordActive = currentPath.includes("loan_record");
+  const isSystemActive = currentPath.includes("general");
+  const isGeneralConfigActive = currentPath.includes("general/config");
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
   const isOrderActive = currentPath.includes("order");
   const isDashboardActive =
-    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive;
+    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive && !isSystemActive;
 
   // State for treeview toggling
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     product: isProductActive,
     loan: isLoanActive,
-    system: false,
+    system: isSystemActive,
     auth: false,
     yuebao: false,
   });
@@ -321,14 +324,17 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
-                <li className="">
+                <li className={isLoanRecordActive ? "active" : ""}>
                   <a
                     href="/coinht.php/loan_record?ref=addtabs"
                     addtabs="239"
                     url="/coinht.php/loan_record"
                     py="dkjlgl"
                     pinyin="daikuanjiluguanli"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/loan_record");
+                    }}
                   >
                     <i className="fa fa-list fa-fw"></i>
                     <span>贷款记录管理</span>
@@ -340,7 +346,11 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           </li>
 
           {/* 8. 系统设置 (Treeview with nested submenus) */}
-          <li className={`treeview ${openMenus.system ? "menu-open" : ""}`}>
+          <li
+            className={`treeview ${
+              openMenus.system || isSystemActive ? "menu-open" : ""
+            }`}
+          >
             <a
               href="javascript:;"
               addtabs="2"
@@ -357,21 +367,24 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <span className="pull-right-container">
                 <i
                   className={`fa fa-angle-left ${
-                    openMenus.system ? "rotate-arrow" : ""
+                    openMenus.system || isSystemActive ? "rotate-arrow" : ""
                   }`}
                 ></i>
               </span>
             </a>
-            {openMenus.system && (
+            {(openMenus.system || isSystemActive) && (
               <ul className="treeview-menu">
-                <li className="">
+                <li className={isGeneralConfigActive ? "active" : ""}>
                   <a
                     href="/coinht.php/general/config?ref=addtabs"
                     addtabs="6"
                     url="/coinht.php/general/config"
                     py="wzpz"
                     pinyin="wangzhanpeizhi"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push("/general/config");
+                    }}
                   >
                     <i className="fa fa-cog fa-fw"></i>
                     <span>网站配置</span>

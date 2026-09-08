@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
-  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig";
+  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig" | "loanRecord" | "generalConfig";
 }
 
 export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }: AdminHeaderProps) {
@@ -200,6 +200,44 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
             >
               <i className="fa fa-cog fa-fw"></i>
               <span>贷款配置管理</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "loanRecord" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/loan_record")}
+            >
+              <i className="fa fa-list fa-fw"></i>
+              <span>贷款记录管理</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "generalConfig" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/config")}
+            >
+              <i className="fa fa-cog fa-fw"></i>
+              <span>网站配置</span>
               <span
                 className="close-tab"
                 onClick={(e) => {

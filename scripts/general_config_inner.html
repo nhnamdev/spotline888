@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="id-ID">
+    <head>
+        <meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit">
+
+<link rel="shortcut icon" href="/assets/img/favicon.ico" />
+<!-- Loading Bootstrap -->
+<link href="/assets/css/backend.css?v=1788831354" rel="stylesheet">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+<!--[if lt IE 9]>
+  <script src="/assets/js/html5shiv.js"></script>
+  <script src="/assets/js/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript">
+    var require = {
+        config:  {"site":{"name":"Abbott","version":1788831354,"cdnurl":""},"upload":{"cdnurl":"","uploadurl":"ajax\/upload","bucket":"local","maxsize":"1000mb","mimetype":"jpg,png,bmp,jpeg,gif,zip,rar,xls,xlsx","multipart":[],"multiple":false},"modulename":"admin","controllername":"general.config","actionname":"index","jsname":"backend\/general\/config","moduleurl":"\/coinht.php","language":"id-ID","fastadmin":{"usercenter":true,"login_captcha":true,"login_failure_retry":true,"login_unique":false,"login_background":"\/assets\/img\/loginbg.jpg","multiplenav":false,"checkupdate":false,"version":"1.1.01","api_url":"","loginip_check":false},"referer":"\/coinht.php\/dashboard","__PUBLIC__":"\/","__ROOT__":"\/","__CDN__":"","__TMP1__":"\/template\/tmp1","__TMP2__":"\/template\/tmp2","__TMP3__":"\/template\/tmp3","__MB__":"\/template\/mb","__MB1__":"\/template\/mb1","__MB2__":"\/template\/mb2","__MB3__":"\/template\/mb3"}    };
+</script>
+    </head>
+
+    <body class="inside-header inside-aside ">
+        <div id="main" role="main">
+            <div class="tab-content tab-addtabs">
+                <div id="content">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <section class="content-header hide">
+                                <h1>
+                                    Dashboard                                    <small>Control panel</small>
+                                </h1>
+                            </section>
+                                                        <!-- RIBBON -->
+                            <div id="ribbon">
+                                <ol class="breadcrumb pull-left">
+                                    <li><a href="dashboard" class="addtabsit"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+                                </ol>
+                                <ol class="breadcrumb pull-right">
+                                                                        <li><a href="javascript:;" data-url="/coinht.php/general.config/general">系统设置</a></li>
+                                                                        <li><a href="javascript:;" data-url="/coinht.php/general/config">网站配置</a></li>
+                                                                    </ol>
+                            </div>
+                            <!-- END RIBBON -->
+                                                        <div class="content">
+                                <style type="text/css">
+    @media (max-width: 375px) {
+        .edit-form tr td input{width:100%;}
+        .edit-form tr th:first-child,.edit-form tr td:first-child{
+            width:20%;
+        }
+        .edit-form tr th:nth-last-of-type(-n+2),.edit-form tr td:nth-last-of-type(-n+2){
+            display: none;
+        }
+    }
+    .edit-form table > tbody > tr td a.btn-delcfg{
+        visibility: hidden;
+    }
+    .edit-form table > tbody > tr:hover td a.btn-delcfg{
+        visibility: visible;
+    }
+</style>
+<div class="panel panel-default panel-intro">
+    <div class="panel-heading">
+        <div class="panel-lead"><em>网站配置</em>Config tips</div>        <ul class="nav nav-tabs">
+             
+            <li class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+             
+            <li class=""><a href="#recharge" data-toggle="tab">充值设置</a></li>
+             
+            <li class=""><a href="#cashout" data-toggle="tab">提现设置</a></li>
+             
+            <li class=""><a href="#stock" data-toggle="tab">行情配置</a></li>
+             
+            <li class=""><a href="#message" data-toggle="tab">消息配置</a></li>
+             
+            <li class=""><a href="#azure" data-toggle="tab">Azure存储配置</a></li>
+             
+            <li class=""><a href="#other" data-toggle="tab">其他设置</a></li>
+                        <li data-toggle="tooltip" title="Add new config">
+                <a href="#addcfg" data-toggle="tab"><i class="fa fa-plus"></i></a>
+            </li>
+                    </ul>
+    </div>
+
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+             
+            <div class="tab-pane fade active in" id="basic">
+                <div class="widget-body no-padding">
+                    <form id="basic-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>前端默认语言</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <select  name="row[default_frontend_lang]" class="form-control selectpicker" data-tip="设置前端APP的默认显示语言" >
+                                                                                                        <option value="zh-CN" selected>简体中文</option>
+                                                                                                        <option value="hk-TW" >繁體中文</option>
+                                                                                                        <option value="en-US" >English</option>
+                                                                                                        <option value="ja-JP" >日本語</option>
+                                                                                                        <option value="th-TH" >ภาษาไทย</option>
+                                                                                                        <option value="vi-VN" >Tiếng Việt</option>
+                                                                                                        <option value="id-ID" >Bahasa Indonesia</option>
+                                                                                                        <option value="ko-KR" >한국어</option>
+                                                                                                        <option value="fr-FR" >Français</option>
+                                                                                                        <option value="de-DE" >Deutsch</option>
+                                                                                                        <option value="ms-MY" >Bahasa Melayu</option>
+                                                                                                    </select>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.default_frontend_lang}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>货币代码</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[currency_code]" value="MYR" class="form-control" data-rule="" data-tip="前端显示的货币代码，如 HKD、USD、IDR、MYR" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.currency_code}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>货币简称</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[currency_short]" value="RM" class="form-control" data-rule="" data-tip="前端显示的货币简称，如 HK、US、Rp、RM" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.currency_short}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>货币名称</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[currency_name]" value="Malaysian Ringgit" class="form-control" data-rule="" data-tip="前端显示的货币名称，如 港币、美元、Rupiah" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.currency_name}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>前台显示语言</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[enabled_langs][]-zh-CN"><input id="row[enabled_langs][]-zh-CN" name="row[enabled_langs][]" type="checkbox" value="zh-CN" data-tip="勾选的语言会在前台语言切换列表中显示" checked /> 简体中文</label>
+                                                                                                <label for="row[enabled_langs][]-hk-TW"><input id="row[enabled_langs][]-hk-TW" name="row[enabled_langs][]" type="checkbox" value="hk-TW" data-tip="勾选的语言会在前台语言切换列表中显示"  /> 繁體中文</label>
+                                                                                                <label for="row[enabled_langs][]-en-US"><input id="row[enabled_langs][]-en-US" name="row[enabled_langs][]" type="checkbox" value="en-US" data-tip="勾选的语言会在前台语言切换列表中显示" checked /> English</label>
+                                                                                                <label for="row[enabled_langs][]-ja-JP"><input id="row[enabled_langs][]-ja-JP" name="row[enabled_langs][]" type="checkbox" value="ja-JP" data-tip="勾选的语言会在前台语言切换列表中显示"  /> 日本語</label>
+                                                                                                <label for="row[enabled_langs][]-th-TH"><input id="row[enabled_langs][]-th-TH" name="row[enabled_langs][]" type="checkbox" value="th-TH" data-tip="勾选的语言会在前台语言切换列表中显示"  /> ภาษาไทย</label>
+                                                                                                <label for="row[enabled_langs][]-vi-VN"><input id="row[enabled_langs][]-vi-VN" name="row[enabled_langs][]" type="checkbox" value="vi-VN" data-tip="勾选的语言会在前台语言切换列表中显示"  /> Tiếng Việt</label>
+                                                                                                <label for="row[enabled_langs][]-id-ID"><input id="row[enabled_langs][]-id-ID" name="row[enabled_langs][]" type="checkbox" value="id-ID" data-tip="勾选的语言会在前台语言切换列表中显示"  /> Bahasa Indonesia</label>
+                                                                                                <label for="row[enabled_langs][]-ko-KR"><input id="row[enabled_langs][]-ko-KR" name="row[enabled_langs][]" type="checkbox" value="ko-KR" data-tip="勾选的语言会在前台语言切换列表中显示"  /> 한국어</label>
+                                                                                                <label for="row[enabled_langs][]-fr-FR"><input id="row[enabled_langs][]-fr-FR" name="row[enabled_langs][]" type="checkbox" value="fr-FR" data-tip="勾选的语言会在前台语言切换列表中显示"  /> Français</label>
+                                                                                                <label for="row[enabled_langs][]-de-DE"><input id="row[enabled_langs][]-de-DE" name="row[enabled_langs][]" type="checkbox" value="de-DE" data-tip="勾选的语言会在前台语言切换列表中显示"  /> Deutsch</label>
+                                                                                                <label for="row[enabled_langs][]-ms-MY"><input id="row[enabled_langs][]-ms-MY" name="row[enabled_langs][]" type="checkbox" value="ms-MY" data-tip="勾选的语言会在前台语言切换列表中显示" checked /> Bahasa Melayu</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.enabled_langs}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>货币图标</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <div class="form-inline">
+                                                    <input id="c-currency_icon" class="form-control" size="50" name="row[currency_icon]" type="text" value="" data-tip="前端显示的法币图标，上传一张货币图标图片">
+                                                    <span><button type="button" id="plupload-currency_icon" class="btn btn-danger plupload" data-input-id="c-currency_icon" data-mimetype="image/*" data-multiple="false" data-preview-id="p-currency_icon"><i class="fa fa-upload"></i> Upload</button></span>
+                                                    <span><button type="button" id="fachoose-currency_icon" class="btn btn-primary fachoose" data-input-id="c-currency_icon" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> Choose</button></span>
+                                                    <span class="msg-box n-right" for="c-currency_icon"></span>
+                                                    <ul class="row list-inline plupload-preview" id="p-currency_icon"></ul>
+                                                </div>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.currency_icon}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>Site name</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[name]" value="Abbott" class="form-control" data-rule="required" data-tip="请填写网站后台名称" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.name}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>邀请码开关</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[invite_code_enable]-1"><input id="row[invite_code_enable]-1" name="row[invite_code_enable]" type="radio" value="1" data-tip="开启后注册时必须填写邀请码，关闭则无需邀请码"  /> 开启</label>
+                                                                                                <label for="row[invite_code_enable]-0"><input id="row[invite_code_enable]-0" name="row[invite_code_enable]" type="radio" value="0" data-tip="开启后注册时必须填写邀请码，关闭则无需邀请码" checked /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.invite_code_enable}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>网站图标</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <div class="form-inline">
+                                                    <input id="c-web_icon" class="form-control" size="50" name="row[web_icon]" type="text" value="/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png" data-tip="">
+                                                    <span><button type="button" id="plupload-web_icon" class="btn btn-danger plupload" data-input-id="c-web_icon" data-mimetype="image/*" data-multiple="false" data-preview-id="p-web_icon"><i class="fa fa-upload"></i> Upload</button></span>
+                                                    <span><button type="button" id="fachoose-web_icon" class="btn btn-primary fachoose" data-input-id="c-web_icon" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> Choose</button></span>
+                                                    <span class="msg-box n-right" for="c-web_icon"></span>
+                                                    <ul class="row list-inline plupload-preview" id="p-web_icon"></ul>
+                                                </div>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_icon}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>绑定账号</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[need_bind_account]-1"><input id="row[need_bind_account]-1" name="row[need_bind_account]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[need_bind_account]-0"><input id="row[need_bind_account]-0" name="row[need_bind_account]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.need_bind_account}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>基本设置</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[chat_setting][]-alert_notice"><input id="row[chat_setting][]-alert_notice" name="row[chat_setting][]" type="checkbox" value="alert_notice" data-tip=""  /> 开启弹窗公告</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.chat_setting}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>网站名称</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_name]" value="Abbott" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_name}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>默认头像</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <div class="form-inline">
+                                                    <input id="c-user_icon" class="form-control" size="50" name="row[user_icon]" type="text" value="/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png" data-tip="注册用户默认头像">
+                                                    <span><button type="button" id="plupload-user_icon" class="btn btn-danger plupload" data-input-id="c-user_icon" data-mimetype="image/*" data-multiple="false" data-preview-id="p-user_icon"><i class="fa fa-upload"></i> Upload</button></span>
+                                                    <span><button type="button" id="fachoose-user_icon" class="btn btn-primary fachoose" data-input-id="c-user_icon" data-mimetype="image/*" data-multiple="false"><i class="fa fa-list"></i> Choose</button></span>
+                                                    <span class="msg-box n-right" for="c-user_icon"></span>
+                                                    <ul class="row list-inline plupload-preview" id="p-user_icon"></ul>
+                                                </div>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.user_icon}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>外置客服链接</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[kefu_script]" value="https://wa.me/6287713795721" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.kefu_script}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>弹窗公告</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <textarea  name="row[alert_notice]" id="editor-alert_notice" class="form-control editor" data-rule="" rows="5" data-tip=""></textarea>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.alert_notice}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>黑名单跳转链接</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[limit_script]" value="https://www.baidu.com/" class="form-control" data-rule="required" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.limit_script}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>Version</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[version]" value="1.0.65" class="form-control" data-rule="required" data-tip="如果静态资源有变动请重新配置该值" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.version}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最大投注额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[bet_max]" value="50000000" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.bet_max}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最小投注额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[bet_min]" value="2000" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.bet_min}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>企业简介</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <textarea  name="row[company_desc]" id="editor-company_desc" class="form-control editor" data-rule="" rows="5" data-tip="">&lt;p&gt;Spot Indonesia &amp;ndash; 官方数字资产平台&lt;br /&gt;我们是 Spot Indonesia，一个致力于帮助东南亚用户以安全、快速、高效的方式访问和管理其加密资产的在线数字资产平台。&lt;/p&gt;
+&lt;p&gt;我们的愿景是打造 便捷、透明、人人可参与 的数字货币交易环境。&lt;/p&gt;
+&lt;p&gt;在 Spot，我们为用户提供一系列核心服务，包括：&lt;/p&gt;
+&lt;p&gt;加密货币即时交易（Spot Trading）&lt;/p&gt;
+&lt;p&gt;安全的数字资产钱包管理（Virtual Asset Wallet）&lt;/p&gt;
+&lt;p&gt;平台内代币兑换服务（Platform Token Exchange）&lt;/p&gt;
+&lt;p&gt;先进技术支持的自动化交易工具（AI Trading、Copy-Trade）&lt;/p&gt;
+&lt;p&gt;面向投资互动的社区功能（Community Investment Interaction&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/uploads/20250928/8d98ef17894597d943c9eb6b8d10d248.jpg&quot; alt=&quot;&quot; width=&quot;1002&quot; height=&quot;462&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;我们的平台采用稳定可靠的云端架构，并配备双重身份验证机制，以保障每笔交易的安全。为了让新手和有经验的用户都能轻松交易，我们持续优化网页与移动端界面，提升整体用户体验。&lt;/p&gt;
+&lt;p&gt;Spot Indonesia 致力于成为东南亚领先的数字资产平台，不断扩大数字生态系统，并为全球用户提供创新、安全的服务。&lt;/p&gt;
+&lt;p&gt;温馨提醒：如果您是高净值收入人群，需要进行大额（175,000,000 IDR）投资，请优先联系客服办理开通本公司的国际VIP通道，避免影响您的投资体验。一次办理，终身享用。&lt;/p&gt;</textarea>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.company_desc}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>客服地址</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[kefu_url]" value="https://wa.me/6287713795721" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.kefu_url}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>交易时间</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[trade_time]" value="00:00-24:00" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.trade_time}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>关闭订单提示音</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[order_voice]" value="0" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.order_voice}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>关闭提现提示音</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[withdraw_voice]" value="0" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.withdraw_voice}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>便捷金额选择</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input id="c-quick_amounts_enable" name="row[quick_amounts_enable]" type="hidden" value="1">
+                                                <a href="javascript:;" class="btn-switcher" data-toggle="switcher" data-input-id="c-quick_amounts_enable" data-yes="1" data-no="0" >
+                                                    <i class="fa fa-toggle-on text-success  fa-2x"></i>
+                                                </a>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.quick_amounts_enable}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>便捷金额列表</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[quick_amounts]" value="100,500,1000,2000,5000,10000" class="form-control" data-rule="" data-tip="用英文逗号分隔，如: 100,500,1000,5000" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.quick_amounts}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="recharge">
+                <div class="widget-body no-padding">
+                    <form id="recharge-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>最低充值金额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[min_chongzhi]" value="100" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.min_chongzhi}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最高充值金额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[max_chongzhi]" value="1000000" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.max_chongzhi}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开户银行</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_bank_name]" value="中国银行" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_bank_name}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开户分行</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_bank_place]" value="北京分行" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_bank_place}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开户户主</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_bank_user]" value="李贝贝" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_bank_user}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开户卡号</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_bank_number]" value="1234567891234567" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_bank_number}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>银行卡上分提示</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[web_bank_tips]" value="Dear valued users: The self-service balance top-up channel is currently undergoing system maintenance and upgrades. If you need to top up your account balance, please contact our online customer service. Thank you for your understanding and we apologize for any inconvenience this may cause." class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.web_bank_tips}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开启银行充值</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[bank_status]-1"><input id="row[bank_status]-1" name="row[bank_status]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[bank_status]-0"><input id="row[bank_status]-0" name="row[bank_status]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.bank_status}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开启USDT充值</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[usdt_status]-1"><input id="row[usdt_status]-1" name="row[usdt_status]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[usdt_status]-0"><input id="row[usdt_status]-0" name="row[usdt_status]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.usdt_status}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>USDT钱包地址</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <dl class="fieldlist" data-name="row[usdt_address]">
+                                                    <dd>
+                                                        <ins>Array key</ins>
+                                                        <ins>Array value</ins>
+                                                    </dd>
+                                                    <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> Append</a></dd>
+                                                    <textarea name="row[usdt_address]" class="form-control hide" cols="30" rows="5">{&quot;aa&quot;:&quot;213213123&quot;,&quot;bb&quot;:&quot;sddddddd&quot;}</textarea>
+                                                </dl>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.usdt_address}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>USDT汇率</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[usdt_cny_rate]" value="4.07" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.usdt_cny_rate}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="cashout">
+                <div class="widget-body no-padding">
+                    <form id="cashout-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>保存提现信息</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[save_bank_info]-1"><input id="row[save_bank_info]-1" name="row[save_bank_info]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[save_bank_info]-0"><input id="row[save_bank_info]-0" name="row[save_bank_info]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.save_bank_info}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开启银行卡提现</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[cny_open]-1"><input id="row[cny_open]-1" name="row[cny_open]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[cny_open]-0"><input id="row[cny_open]-0" name="row[cny_open]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.cny_open}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开启USDT提现</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[usdt_open]-1"><input id="row[usdt_open]-1" name="row[usdt_open]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[usdt_open]-0"><input id="row[usdt_open]-0" name="row[usdt_open]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.usdt_open}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最低提现金额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_min_tixian]" value="100" class="form-control" data-rule="" data-tip="最低提现金额" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_min_tixian}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最高提现金额</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_max_tixian]" value="50000000000" class="form-control" data-rule="" data-tip="最高提现金额" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_max_tixian}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>每日提款次数</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_max_times]" value="50" class="form-control" data-rule="" data-tip="每日提款次数" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_max_times}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>提现起始时间</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[cashout_start_time]" value="0" class="form-control" data-tip="提现起始时间" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.cashout_start_time}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>提现终止时间</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[cashout_end_time]" value="24" class="form-control" data-tip="提现终止时间" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.cashout_end_time}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>提现介绍语编辑</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_text_tixian]" value="" class="form-control" data-rule="" data-tip="提现介绍语编辑" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_text_tixian}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>提现次数超限提示</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_text_chaoxian_cishu]" value="Dear valued members, due to daily withdrawal limits imposed by the national financial regulatory platform, please submit your withdrawal requests on the following day. If you have any questions, please contact our online customer service. Thank you!" class="form-control" data-rule="" data-tip="提现次数超限提示" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_text_chaoxian_cishu}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>非提现时间段提现提示</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_text_no_time]" value="Dear valued members, please submit your withdrawal requests during the designated withdrawal hours. The withdrawal hours on this platform are from 09:00 to 20:00. Thank you!" class="form-control" data-rule="" data-tip="非提现时间段提现提示" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_text_no_time}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>最低提现流水比</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[tx_rate_limit]" value="0" class="form-control" data-tip="最低提现流水比" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_rate_limit}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>提现手续费(%)</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[tx_fee_rate]" value="0" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.tx_fee_rate}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="stock">
+                <div class="widget-body no-padding">
+                    <form id="stock-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>交易类型</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[trade_type]-qc"><input id="row[trade_type]-qc" name="row[trade_type]" type="radio" value="qc" data-tip=""  /> 法币</label>
+                                                                                                <label for="row[trade_type]-usdt"><input id="row[trade_type]-usdt" name="row[trade_type]" type="radio" value="usdt" data-tip="" checked /> USDT</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.trade_type}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>接口KEY</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[api_stock_key]" value="" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.api_stock_key}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>接口CODE</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[api_stock_code]" value="" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.api_stock_code}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="message">
+                <div class="widget-body no-padding">
+                    <form id="message-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>Enable register message</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input id="c-register_message_enable" name="row[register_message_enable]" type="hidden" value="1">
+                                                <a href="javascript:;" class="btn-switcher" data-toggle="switcher" data-input-id="c-register_message_enable" data-yes="1" data-no="0" >
+                                                    <i class="fa fa-toggle-on text-success  fa-2x"></i>
+                                                </a>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.register_message_enable}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>Register message content</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <textarea  name="row[register_message_content]" class="form-control" data-rule="" rows="5" data-tip="Message content sent after successful user registration">Welcome to SPOT! Thank you for choosing our platform. If you experience any problems, please feel free to contact us. Thank you!</textarea>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.register_message_content}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="azure">
+                <div class="widget-body no-padding">
+                    <form id="azure-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>Azure connection string</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <textarea  name="row[azure_connection_string]" class="form-control" data-rule="" rows="5" data-tip="Azure storage connection string for file uploads"></textarea>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.azure_connection_string}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>Azure container name</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[azure_container_name]" value="configs" class="form-control" data-rule="" data-tip="Container name in Azure storage" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.azure_container_name}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>Azure backend domain</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <textarea  name="row[azure_backend_domain]" class="form-control" data-rule="" rows="5" data-tip="Backend domain URL for frontend to access"></textarea>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.azure_backend_domain}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+             
+            <div class="tab-pane fade " id="other">
+                <div class="widget-body no-padding">
+                    <form id="other-form" class="edit-form form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/edit">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">Title</th>
+                                    <th width="68%">Value</th>
+                                    <th width="15%">Name</th>
+                                    <th width="2%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                                                <tr>
+                                    <td>显示会员等级</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[vip_show]-1"><input id="row[vip_show]-1" name="row[vip_show]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[vip_show]-0"><input id="row[vip_show]-0" name="row[vip_show]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.vip_show}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>会员等级</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <dl class="fieldlist" data-name="row[vip]">
+                                                    <dd>
+                                                        <ins>Array key</ins>
+                                                        <ins>Array value</ins>
+                                                    </dd>
+                                                    <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> Append</a></dd>
+                                                    <textarea name="row[vip]" class="form-control hide" cols="30" rows="5">{&quot;1&quot;:&quot;0&quot;,&quot;2&quot;:&quot;1&quot;,&quot;3&quot;:&quot;2&quot;,&quot;4&quot;:&quot;3&quot;,&quot;5&quot;:&quot;4&quot;,&quot;6&quot;:&quot;5&quot;,&quot;7&quot;:&quot;6&quot;,&quot;8&quot;:&quot;7&quot;,&quot;9&quot;:&quot;8&quot;}</textarea>
+                                                </dl>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.vip}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>开启提现密码</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[mpsswd_show]-1"><input id="row[mpsswd_show]-1" name="row[mpsswd_show]" type="radio" value="1" data-tip="" checked /> 开启</label>
+                                                                                                <label for="row[mpsswd_show]-0"><input id="row[mpsswd_show]-0" name="row[mpsswd_show]" type="radio" value="0" data-tip=""  /> 关闭</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.mpsswd_show}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>玩法模式</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <label for="row[play_type]-0"><input id="row[play_type]-0" name="row[play_type]" type="radio" value="0" data-tip=""  /> 默认</label>
+                                                                                                <label for="row[play_type]-1"><input id="row[play_type]-1" name="row[play_type]" type="radio" value="1" data-tip="" checked /> 通赢</label>
+                                                                                                <label for="row[play_type]-2"><input id="row[play_type]-2" name="row[play_type]" type="radio" value="2" data-tip=""  /> 通亏</label>
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.play_type}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>全员盈利时间</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="text" name="row[profit_time]" value="09:00-22:00" class="form-control" data-rule="" data-tip="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.profit_time}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                                <tr>
+                                    <td>域名倒计时结束时间</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-sm-8 col-xs-12">
+                                                                                                <input  type="number" name="row[domain_countdown_endtime]" value="1762931980" class="form-control" data-tip="" data-rule="" />
+                                                                                            </div>
+                                            <div class="col-sm-4"><p style="line-height:30px;color:red"></p></div>
+                                        </div>
+
+                                    </td>
+                                    <td>{$site.domain_countdown_endtime}</td>
+                                    <td></td> 
+                                </tr>
+                                
+                                <!-- 在玩法模式下面添加全员盈利时间配置 -->
+                                <!---->
+                                                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                                        <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </form>
+                </div>
+            </div>
+                        <div class="tab-pane fade" id="addcfg">
+                <form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="/coinht.php/general.config/add">
+                    <div class="form-group">
+                        <label for="type" class="control-label col-xs-12 col-sm-2">Type:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <select name="row[type]" class="form-control selectpicker">
+                                                                <option value="string" selected>String</option>
+                                                                <option value="text" >Text</option>
+                                                                <option value="editor" >Editor</option>
+                                                                <option value="number" >Number</option>
+                                                                <option value="date" >Date</option>
+                                                                <option value="time" >Time</option>
+                                                                <option value="datetime" >Datetime</option>
+                                                                <option value="select" >Select</option>
+                                                                <option value="selects" >Selects</option>
+                                                                <option value="image" >Image</option>
+                                                                <option value="images" >Images</option>
+                                                                <option value="file" >File</option>
+                                                                <option value="files" >Files</option>
+                                                                <option value="switch" >Switch</option>
+                                                                <option value="checkbox" >Checkbox</option>
+                                                                <option value="radio" >Radio</option>
+                                                                <option value="array" >Array</option>
+                                                                <option value="custom" >Custom</option>
+                                                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="group" class="control-label col-xs-12 col-sm-2">Group:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <select name="row[group]" class="form-control selectpicker">
+                                                                <option value="basic" selected>Basic</option>
+                                                                <option value="recharge" >充值设置</option>
+                                                                <option value="cashout" >提现设置</option>
+                                                                <option value="stock" >行情配置</option>
+                                                                <option value="message" >消息配置</option>
+                                                                <option value="azure" >Azure存储配置</option>
+                                                                <option value="other" >其他设置</option>
+                                                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="control-label col-xs-12 col-sm-2">Name:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <input type="text" class="form-control" id="name" name="row[name]" value="" data-rule="required; length(3~30); remote(general/config/check)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="title" class="control-label col-xs-12 col-sm-2">Title:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <input type="text" class="form-control" id="title" name="row[title]" value="" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="value" class="control-label col-xs-12 col-sm-2">Value:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <input type="text" class="form-control" id="value" name="row[value]" value="" data-rule="" />
+                        </div>
+                    </div>
+                    <div class="form-group hide" id="add-content-container">
+                        <label for="content" class="control-label col-xs-12 col-sm-2">Content:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <textarea name="row[content]" id="content" cols="30" rows="5" class="form-control" data-rule="required">value1|title1
+value2|title2</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tip" class="control-label col-xs-12 col-sm-2">Tip:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <input type="text" class="form-control" id="tip" name="row[tip]" value="" data-rule="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule" class="control-label col-xs-12 col-sm-2">Rule:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <input type="text" class="form-control" id="rule" name="row[rule]" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="extend" class="control-label col-xs-12 col-sm-2">Extend:</label>
+                        <div class="col-xs-12 col-sm-4">
+                            <textarea name="row[extend]" id="extend" cols="30" rows="5" class="form-control" data-rule=""></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-12 col-sm-2"></label>
+                        <div class="col-xs-12 col-sm-4">
+                            <button type="submit" class="btn btn-success btn-embossed">OK</button>
+                            <button type="reset" class="btn btn-default btn-embossed">Reset</button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  
+    
+    // 控制全员盈利时间行的显示/隐藏
+    function toggleProfitTimeRow() {
+    
+        
+        // 获取玩法模式的值
+        var playType = null;
+        
+        // 查找玩法模式元素
+        var playTypeElements = $('[name="row[play_type]"]');
+       
+        
+        // 获取选中的值
+        playTypeElements.each(function() {
+            var element = $(this);
+            var tagName = element.prop('tagName').toLowerCase();
+            var value = null;
+            
+            if (tagName === 'input') {
+                if (element.attr('type') === 'radio') {
+                    if (element.is(':checked')) {
+                        value = element.val();
+                    }
+                } else {
+                    value = element.val();
+                }
+            } else if (tagName === 'select') {
+                value = element.val();
+            }
+            
+            if (value !== null && value !== undefined) {
+                playType = value;
+              
+            }
+        });
+        
+  
+        
+        // 根据玩法模式控制显示/隐藏
+        if (playType === '0' || playType === '默认' || playType === 'default') {
+            $('#profit-time-row').show();
+            
+        } else {
+            $('#profit-time-row').hide();
+       
+        }
+    }
+    
+    // 页面加载完成后执行
+    $(document).ready(function() {
+     
+        
+        // 延迟执行，确保所有元素都加载完成
+        setTimeout(function() {
+          
+            toggleProfitTimeRow();
+        }, 1000);
+    });
+    
+    // 监听玩法模式变化事件
+    $(document).on('change', '[name="row[play_type]"]', function() {
+     
+        toggleProfitTimeRow();
+    });
+    
+    // 调试信息
+ 
+    $('[name="row[play_type]"]').each(function(index) {
+        var element = $(this);
+        
+    });
+});
+</script>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/assets/js/require.js" data-main="/assets/js/require-backend.js?v=1788831354"></script>
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a37a381e5eaaa880',t:'MTc4ODgzMTM1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
