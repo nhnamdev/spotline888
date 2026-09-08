@@ -3,8 +3,9 @@ import https from 'https';
 
 const cookie = fs.readFileSync('scripts/auth_cookie.txt', 'utf-8');
 
-function fetchUrl(url, headers = {}) {
+function fetchUrl(url, headers = {}, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
+    if (maxRedirects <= 0) return reject(new Error('Too many redirects'));
     https.get(url, {
       headers: {
         'Cookie': cookie,
@@ -12,6 +13,14 @@ function fetchUrl(url, headers = {}) {
         ...headers
       }
     }, (res) => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        let nextUrl = res.headers.location;
+        if (nextUrl.startsWith('/')) {
+          nextUrl = 'https://spotline888.org' + nextUrl;
+        }
+        console.log('Redirecting to:', nextUrl);
+        return resolve(fetchUrl(nextUrl, headers, maxRedirects - 1));
+      }
       let data = [];
       res.on('data', chunk => data.push(chunk));
       res.on('end', () => {
@@ -22,8 +31,8 @@ function fetchUrl(url, headers = {}) {
 }
 
 async function run() {
-  console.log('Fetching HTML for auth/admin...');
-  const resHtml = await fetchUrl('https://spotline888.org/coinht.php/auth/admin?ref=addtabs');
+  console.log('Fetching HTML for auth/admin?addtabs=1...');
+  const resHtml = await fetchUrl('https://spotline888.org/coinht.php/auth/admin?addtabs=1');
   console.log('HTML status:', resHtml.status, 'size:', resHtml.body.length);
   fs.writeFileSync('scripts/auth_admin_inner.html', resHtml.body);
 

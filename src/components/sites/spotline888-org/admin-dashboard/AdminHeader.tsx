@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
   isSidebarCollapsed: boolean;
-  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig" | "loanRecord" | "generalConfig";
+  activeTab?: "dashboard" | "order" | "user" | "upmark" | "downmark" | "product" | "productType" | "loanConfig" | "loanRecord" | "generalConfig" | "authAdmin";
 }
 
 export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }: AdminHeaderProps) {
@@ -238,6 +238,25 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
             >
               <i className="fa fa-cog fa-fw"></i>
               <span>网站配置</span>
+              <span
+                className="close-tab"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push("/admin/dashboard");
+                }}
+                title="Close tab"
+              >
+                <i className="fa fa-times"></i>
+              </span>
+            </div>
+          )}
+          {activeTab === "authAdmin" && (
+            <div
+              className="header-tab active"
+              onClick={() => router.push("/general/auth/admin")}
+            >
+              <i className="fa fa-user fa-fw"></i>
+              <span>Admin</span>
               <span
                 className="close-tab"
                 onClick={(e) => {

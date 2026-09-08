@@ -19,21 +19,23 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const isLoanActive = currentPath.includes("loan");
   const isLoanConfigActive = currentPath.includes("loan_config");
   const isLoanRecordActive = currentPath.includes("loan_record");
-  const isSystemActive = currentPath.includes("general");
+  const isAuthAdminActive = currentPath.includes("auth/admin") || currentPath.includes("auth.admin");
+  const isAuthActive = currentPath.includes("auth");
+  const isSystemActive = currentPath.includes("general") || isAuthActive;
   const isGeneralConfigActive = currentPath.includes("general/config");
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
   const isOrderActive = currentPath.includes("order");
   const isDashboardActive =
-    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive && !isSystemActive;
+    !isOrderActive && !isUserActive && !isUpmarkActive && !isDownmarkActive && !isProductActive && !isLoanActive && !isSystemActive && !isAuthActive;
 
   // State for treeview toggling
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     product: isProductActive,
     loan: isLoanActive,
     system: isSystemActive,
-    auth: false,
+    auth: isAuthActive,
     yuebao: false,
   });
 
@@ -392,7 +394,11 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                   </a>
                 </li>
                 {/* 嵌套 权限管理 */}
-                <li className={`treeview ${openMenus.auth ? "menu-open" : ""}`}>
+                <li
+                  className={`treeview ${
+                    openMenus.auth || isAuthActive ? "menu-open" : ""
+                  }`}
+                >
                   <a
                     href="javascript:;"
                     addtabs="5"
@@ -409,21 +415,24 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     <span className="pull-right-container">
                       <i
                         className={`fa fa-angle-left ${
-                          openMenus.auth ? "rotate-arrow" : ""
+                          openMenus.auth || isAuthActive ? "rotate-arrow" : ""
                         }`}
                       ></i>
                     </span>
                   </a>
-                  {openMenus.auth && (
+                  {(openMenus.auth || isAuthActive) && (
                     <ul className="treeview-menu level-2">
-                      <li className="">
+                      <li className={isAuthAdminActive ? "active" : ""}>
                         <a
                           href="/coinht.php/auth/admin?ref=addtabs"
                           addtabs="9"
                           url="/coinht.php/auth/admin"
                           py="A"
                           pinyin="Admin"
-                          onClick={(e) => e.preventDefault()}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/general/auth/admin");
+                          }}
                         >
                           <i className="fa fa-user fa-fw"></i>
                           <span>Admin</span>
