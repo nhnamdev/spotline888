@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useI18n, I18nProvider, LanguageCode } from "../pages-login-login/i18n";
 import { USER_TRANSLATIONS, UserTranslations } from "./userI18n";
 import { INDEX_TRANSLATIONS } from "../pages-index-index/indexI18n";
@@ -29,6 +30,7 @@ interface YuebaoData {
 }
 
 function SpotlineUserPageContent() {
+  const router = useRouter();
   const { currentLang } = useI18n();
   const [activeLang, setActiveLang] = useState<LanguageCode>(currentLang);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,20 +54,20 @@ function SpotlineUserPageContent() {
     INDEX_TRANSLATIONS[activeLang] || INDEX_TRANSLATIONS["zh-CN"];
 
   const [userInfo, setUserInfo] = useState<UserInfoData>({
-    username: "user888",
-    real_name: "Nguyen Van A",
+    username: "ak111",
+    real_name: "复**",
     credit_score: 100,
-    money: "0.00",
-    usdt_money: "0.00",
-    yk: "0.00",
-    yk_today: "0.00",
+    money: "2429.00",
+    usdt_money: "335",
+    yk: "0",
+    yk_today: "0",
     user_avatar: USER_ICONS.avatar,
     is_auth: 0,
     id_auth_error: "",
   });
 
   const [yuebaoData, setYuebaoData] = useState<YuebaoData>({
-    all_money: "0.00",
+    all_money: "23",
     today_income: "0.00",
     total_income: "0.00",
   });
@@ -181,9 +183,7 @@ function SpotlineUserPageContent() {
       }
       showToast(t.logoutSuccess);
       setTimeout(() => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/login/login";
-        }
+        router.push("/pages/login/login");
       }, 800);
     }, 600);
   };
@@ -195,9 +195,7 @@ function SpotlineUserPageContent() {
       icon: USER_ICONS.transfer,
       rotate45: true,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/transfer/account-transfer";
-        }
+        router.push("/pages/transfer/account-transfer");
       },
     },
     {
@@ -205,9 +203,7 @@ function SpotlineUserPageContent() {
       icon: USER_ICONS.service,
       rotate45: false,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/customer-service/customer-service";
-        }
+        router.push("/pages/customer-service/customer-service");
       },
     },
   ];
@@ -225,63 +221,49 @@ function SpotlineUserPageContent() {
           : null,
       isAuthTag: true,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/verify/verify";
-        }
+        router.push("/pages/verify/verify");
       },
     },
     {
       title: t.orderRecords,
       icon: USER_ICONS.order,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/order/order";
-        }
+        router.push("/pages/order/order");
       },
     },
     {
       title: t.depositDetails,
       icon: USER_ICONS.depositDetail,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/withdraw-list/withdraw-open";
-        }
+        router.push("/pages/withdraw-list/withdraw-open");
       },
     },
     {
       title: t.withdrawDetails,
       icon: USER_ICONS.withdrawDetail,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/withdraw-list/withdraw-list";
-        }
+        router.push("/pages/withdraw-list/withdraw-list");
       },
     },
     {
       title: t.fundRecords,
       icon: USER_ICONS.fundRecord,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/money-record/money-record";
-        }
+        router.push("/pages/money-record/money-record");
       },
     },
     {
       title: t.withdrawalAccount,
       icon: USER_ICONS.account,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/account/account";
-        }
+        router.push("/pages/account/account");
       },
     },
     {
       title: t.settings,
       icon: USER_ICONS.settings,
       onClick: () => {
-        if (typeof window !== "undefined") {
-          window.location.hash = "#/pages/set/set";
-        }
+        router.push("/pages/set/set");
       },
     },
     {
@@ -460,10 +442,7 @@ function SpotlineUserPageContent() {
             <div
               className="tui-rightItem"
               onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.location.hash =
-                    "#/pages/customer-service/customer-service";
-                }
+                router.push("/pages/customer-service/customer-service");
               }}
             >
               <img src={USER_ICONS.rujin} alt={t.deposit} />
@@ -474,9 +453,7 @@ function SpotlineUserPageContent() {
             <div
               className="tui-rightItem"
               onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.location.hash = "#/pages/money/money";
-                }
+                router.push("/pages/withdraw-money/withdraw-money");
               }}
             >
               <img src={USER_ICONS.chujin} alt={t.withdraw} />
