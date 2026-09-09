@@ -1,4 +1,4 @@
-# Stage 1: Install dependencies with caching
+# Stage 1: Install dependencies
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -6,11 +6,9 @@ WORKDIR /app
 # Copy dependency manifests
 COPY package.json package-lock.json ./
 
-# Install only production dependencies and save a copy for runner
-RUN npm ci --omit=dev && cp -R node_modules prod_node_modules
-
-# Install all dependencies (including devDependencies for Next.js build)
-RUN npm ci
+# Force development environment so devDependencies are always installed during build
+ENV NODE_ENV=development
+RUN npm ci --include=dev
 
 # Stage 2: Build Next.js application
 FROM node:20-alpine AS builder
@@ -21,7 +19,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN npm run build
+# Build Next.js app and prune devDependencies to keep container minimal
+RUN npm run build && npm prune --production
 
 # Stage 3: Minimal production runner
 FROM node:20-alpine AS runner
@@ -38,8 +37,8 @@ RUN apk add --no-cache libc6-compat
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy runtime assets only
-COPY --from=deps --chown=nextjs:nodejs /app/prod_node_modules ./node_modules
+# Copy pruned production node_modules from builder
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/server ./server
@@ -48,7 +47,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
 USER nextjs
 
-# Expose Next.js port for Traefik routing
+# Next.js listening port (Traefik maps to this internal port)
 EXPOSE 3000
 
 CMD ["node", "scripts/start-prod.js"]
