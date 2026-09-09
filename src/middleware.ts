@@ -23,7 +23,10 @@ const LEGACY_ADMIN_REDIRECTS: Record<string, string> = {
   "/category": "/admin/category",
   "/notice": "/admin/notice",
   "/general": "/admin/general",
+  "/product/product": "/admin/product",
+  "/product/type": "/admin/product-type",
 };
+
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
