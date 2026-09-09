@@ -17,8 +17,8 @@ export default function AdminOrderPage() {
         activeTab="order"
       />
 
-      {/* Left Sidebar with activePath set to /order */}
-      <AdminSidebar isCollapsed={isSidebarCollapsed} activePath="/order" />
+      {/* Left Sidebar with activePath set to /admin/order */}
+      <AdminSidebar isCollapsed={isSidebarCollapsed} activePath="/admin/order" />
 
       {/* Content Area */}
       <div

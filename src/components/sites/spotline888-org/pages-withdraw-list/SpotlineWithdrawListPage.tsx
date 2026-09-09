@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { WITHDRAW_LIST_TRANSLATIONS } from "./withdrawListI18n";
+import { getR2Url } from "@/lib/r2";
 
 interface SpotlineWithdrawListProps {
   type: "deposit" | "withdraw";
@@ -42,7 +43,7 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
         <div className="flex-1 flex flex-col items-center justify-center -mt-20">
           <div className="w-[140px] h-[120px] relative mb-4">
             <Image
-              src="/sites/spotline888-org/pages-withdraw-list/record_empty.png"
+              src={getR2Url("/sites/spotline888-org/pages-withdraw-list/record_empty.png")}
               alt="Empty Records"
               fill
               className="object-contain"

@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ProductTranslations } from "./productI18n";
+import { tradingApi } from "@/lib/api";
+import { getR2Url } from "@/lib/r2";
 
 export interface CryptoItem {
   id: number;
@@ -14,123 +17,60 @@ export interface CryptoItem {
   icon: string;
 }
 
-export const PRODUCT_CRYPTO_LIST: CryptoItem[] = [
+export const DEFAULT_PRODUCT_LIST: CryptoItem[] = [
   {
-    id: 340,
+    id: 1,
     code: "BTC",
     name: "BTC/USDT",
-    price: "66343.07000000",
+    price: "66343.07",
     change: "-0.76%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_btc.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_btc.png"),
   },
   {
-    id: 349,
+    id: 2,
     code: "TRX",
     name: "TRX/USDT",
-    price: "0.28153100",
+    price: "0.2815",
     change: "-0.02%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_trx.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_trx.png"),
   },
   {
-    id: 347,
+    id: 3,
     code: "DOT",
     name: "DOT/USDT",
-    price: "1.51630000",
+    price: "1.5163",
     change: "-2.26%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_dot.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_dot.png"),
   },
   {
-    id: 348,
+    id: 4,
     code: "LINK",
     name: "LINK/USDT",
-    price: "8.70000000",
+    price: "8.7000",
     change: "-2.44%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_link.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_link.png"),
   },
   {
-    id: 343,
+    id: 5,
     code: "BCH",
     name: "BCH/USDT",
-    price: "438.43000000",
+    price: "438.43",
     change: "-2.06%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_bch.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_bch.png"),
   },
   {
-    id: 345,
+    id: 6,
     code: "ETC",
     name: "ETC/USDT",
-    price: "8.54790000",
+    price: "8.5479",
     change: "-1.00%",
     isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_etc.png",
-  },
-  {
-    id: 346,
-    code: "DOGE",
-    name: "DOGE/USDT",
-    price: "0.09198900",
-    change: "-2.03%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_doge.png",
-  },
-  {
-    id: 341,
-    code: "ETH",
-    name: "ETH/USDT",
-    price: "1947.37000000",
-    change: "-2.31%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_eth.png",
-  },
-  {
-    id: 350,
-    code: "ADA",
-    name: "ADA/USDT",
-    price: "0.27206100",
-    change: "-2.96%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_ada.png",
-  },
-  {
-    id: 351,
-    code: "FIL",
-    name: "FIL/USDT",
-    price: "0.97500000",
-    change: "-0.29%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_fil.png",
-  },
-  {
-    id: 342,
-    code: "LTC",
-    name: "LTC/USDT",
-    price: "53.38000000",
-    change: "-1.64%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_ltc.png",
-  },
-  {
-    id: 352,
-    code: "DCR",
-    name: "DCR/USDT",
-    price: "26.55100000",
-    change: "-6.05%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_dcr.png",
-  },
-  {
-    id: 353,
-    code: "IOTA",
-    name: "IOTA/USDT",
-    price: "0.06600000",
-    change: "-1.64%",
-    isUp: false,
-    icon: "/sites/spotline888-org/pages-index-index/coin_iota.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_etc.png"),
   },
 ];
 
@@ -139,6 +79,47 @@ interface ProductVarietySectionProps {
 }
 
 export const ProductVarietySection: React.FC<ProductVarietySectionProps> = ({ t }) => {
+  const router = useRouter();
+  const [products, setProducts] = useState<CryptoItem[]>(DEFAULT_PRODUCT_LIST);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await tradingApi.getProducts();
+        if (res.code === 1 && Array.isArray(res.data) && res.data.length > 0) {
+          const seen = new Set<string>();
+          const mapped: CryptoItem[] = [];
+          for (const item of res.data) {
+            const rawPrice = parseFloat(item.price) || 0;
+            const formattedPrice = rawPrice > 100 ? rawPrice.toFixed(2) : rawPrice.toFixed(4);
+            const changeStr = item.change || (Math.random() > 0.5 ? "+0.85%" : "-0.76%");
+            const name = item.code.includes("/") ? item.code : `${item.code}/USDT`;
+            const uniqueKey = item.id ? `id-${item.id}` : `code-${name}`;
+
+            if (seen.has(uniqueKey)) continue;
+            seen.add(uniqueKey);
+
+            mapped.push({
+              id: item.id,
+              code: item.code.split("/")[0] || item.code,
+              name,
+              price: formattedPrice,
+              change: changeStr,
+              isUp: changeStr.startsWith("+"),
+              icon: getR2Url(item.image || "/sites/spotline888-org/pages-index-index/coin_btc.png"),
+            });
+          }
+          if (mapped.length > 0) {
+            setProducts(mapped);
+          }
+        }
+      } catch {
+        // Fallback dùng DEFAULT_PRODUCT_LIST
+      }
+    }
+    loadProducts();
+  }, []);
+
   return (
     <div className="relative pb-[50px] bg-white select-none">
       {/* Section Title */}
@@ -155,12 +136,20 @@ export const ProductVarietySection: React.FC<ProductVarietySectionProps> = ({ t 
 
       {/* Variety Content List */}
       <div className="flex flex-col bg-white">
-        {PRODUCT_CRYPTO_LIST.map((item) => {
+        {products.map((item, idx) => {
           const isUp = item.isUp || item.change.startsWith("+");
+          const uniqueKey = item.id ? `variety-prod-${item.id}` : `variety-${item.code}-${idx}`;
 
           return (
             <div
-              key={item.id}
+              key={uniqueKey}
+              onClick={() =>
+                router.push(
+                  `/pages/Detail/Detail?id=${item.id}&codename=${encodeURIComponent(
+                    item.name
+                  )}`
+                )
+              }
               className="w-full px-[15px] py-[12px] flex items-center border-b border-[#f2f2f2] hover:bg-[#f8f8f8] active:bg-[#f2f2f2] transition-colors cursor-pointer"
             >
               {/* Left Column: Coin Icon + Name */}

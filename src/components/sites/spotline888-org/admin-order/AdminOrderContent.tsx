@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
 
 interface OrderItem {
   id: number;
@@ -24,224 +25,13 @@ interface OrderItem {
   alertReminder: boolean;
 }
 
-const initialOrders: OrderItem[] = [
-  {
-    id: 277,
-    userId: 87,
-    userAccount: "TheLoonChing",
-    realName: "The Loon Ching",
-    note: "",
-    productTitle: "BTC/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: true,
-    buyMoney: "225890.00",
-    balanceBuyAfter: "0.00",
-    buyPrice: "66343.07",
-    sellPrice: "0",
-    buyTime: "2026-07-17 01:08:25",
-    sellTime: "2026-07-17 01:28:25",
-    type: "1200/7.43",
-    ploss: "0",
-    kongType: "default",
-    isSelectKongType: true,
-    alertReminder: true,
-  },
-  {
-    id: 276,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "BTC/USDT",
-    oStyle: "buy_up",
-    isSelectOStyle: true,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1302877.51",
-    buyPrice: "66219.54027102",
-    sellPrice: "0",
-    buyTime: "2026-03-02 20:06:29",
-    sellTime: "2026-03-02 20:09:29",
-    type: "180/3",
-    ploss: "0",
-    kongType: "win",
-    isSelectKongType: true,
-    alertReminder: true,
-  },
-  {
-    id: 275,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "BTC/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1289338.51",
-    buyPrice: "66288.08888781",
-    sellPrice: "66288.09",
-    buyTime: "2026-03-02 20:03:54",
-    sellTime: "2026-03-02 20:06:54",
-    type: "180/3.1",
-    ploss: "10310",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 274,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_up",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1299338.51",
-    buyPrice: "0.091883",
-    sellPrice: "0.091911",
-    buyTime: "2026-03-02 20:03:21",
-    sellTime: "2026-03-02 20:04:21",
-    type: "60/19.42",
-    ploss: "11942",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 273,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1309338.51",
-    buyPrice: "0.09187",
-    sellPrice: "0.09137",
-    buyTime: "2026-03-02 20:03:17",
-    sellTime: "2026-03-02 20:04:17",
-    type: "60/15.97",
-    ploss: "11597",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 272,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_up",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1295960.51",
-    buyPrice: "0.09178711",
-    sellPrice: "0.09179",
-    buyTime: "2026-03-02 20:02:09",
-    sellTime: "2026-03-02 20:03:09",
-    type: "60/14.72",
-    ploss: "11472",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 271,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1305960.51",
-    buyPrice: "0.091801",
-    sellPrice: "0.091774",
-    buyTime: "2026-03-02 20:02:06",
-    sellTime: "2026-03-02 20:03:06",
-    type: "60/19.06",
-    ploss: "11906",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 270,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1271052.51",
-    buyPrice: "0.09177615",
-    sellPrice: "0.091801",
-    buyTime: "2026-03-02 20:01:02",
-    sellTime: "2026-03-02 20:02:02",
-    type: "60/14.57",
-    ploss: "11457",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 269,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1281052.51",
-    buyPrice: "0.09180344",
-    sellPrice: "0.091801",
-    buyTime: "2026-03-02 20:00:50",
-    sellTime: "2026-03-02 20:01:50",
-    type: "60/11",
-    ploss: "11100",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-  {
-    id: 268,
-    userId: 4,
-    userAccount: "124123124124",
-    realName: "124",
-    note: "",
-    productTitle: "DOGE/USDT",
-    oStyle: "buy_down",
-    isSelectOStyle: false,
-    buyMoney: "10000.00",
-    balanceBuyAfter: "1291052.51",
-    buyPrice: "0.09180368",
-    sellPrice: "0.091801",
-    buyTime: "2026-03-02 20:00:45",
-    sellTime: "2026-03-02 20:01:45",
-    type: "60/11.75",
-    ploss: "11175",
-    kongType: "closed",
-    isSelectKongType: false,
-    alertReminder: true,
-  },
-];
-
 export default function AdminOrderContent() {
-  const [orders, setOrders] = useState<OrderItem[]>(initialOrders);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
   // Search filter state
   const [searchForm, setSearchForm] = useState({
@@ -253,6 +43,49 @@ export default function AdminOrderContent() {
     status: "Choose",
     alertReminder: "",
   });
+
+  const fetchOrders = async (customStatus?: string) => {
+    try {
+      setLoading(true);
+      const st = customStatus !== undefined 
+        ? customStatus 
+        : (searchForm.status !== 'Choose' ? searchForm.status : undefined);
+      const res = await adminApi.getOrders(currentPage, pageSize, st);
+      if (res && res.code === 1 && res.data?.rows && res.data.rows.length > 0) {
+        const mapped: OrderItem[] = res.data.rows.map((row: any) => ({
+          id: row.id,
+          userId: row.user_id,
+          userAccount: row.username || `User_${row.user_id}`,
+          realName: row.real_name || '-',
+          note: row.type_desc || '',
+          productTitle: row.product_title || 'BTC/USDT',
+          oStyle: (row.ostyle === 'buy_up' || row.ostyle === '1') ? 'buy_up' : 'buy_down',
+          isSelectOStyle: row.status === 'holding',
+          buyMoney: parseFloat(row.buy_money || 0).toFixed(2),
+          balanceBuyAfter: parseFloat(row.balance_after || 0).toFixed(2),
+          buyPrice: String(row.buy_price || 0),
+          sellPrice: String(row.sell_price || 0),
+          buyTime: row.buy_time ? String(row.buy_time).replace('T', ' ').substring(0, 19) : '',
+          sellTime: row.sell_time ? String(row.sell_time).replace('T', ' ').substring(0, 19) : '',
+          type: row.duration ? `${row.duration}/${row.yield_rate || 85}%` : (row.type_desc || '60/85%'),
+          ploss: parseFloat(row.ploss || 0).toFixed(0),
+          kongType: (row.kong_type || 'default') as "default" | "win" | "loss" | "closed",
+          isSelectKongType: row.status === 'holding',
+          alertReminder: true,
+        }));
+        setOrders(mapped);
+        setTotal(res.data.total || mapped.length);
+      }
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách đơn cược từ CSDL:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [currentPage, pageSize, searchForm.status]);
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -280,21 +113,27 @@ export default function AdminOrderContent() {
     );
   };
 
-  const updateKongType = (
+  const updateKongType = async (
     id: number,
     kong: "default" | "win" | "loss" | "closed"
   ) => {
     setOrders((prev) =>
       prev.map((o) => (o.id === id ? { ...o, kongType: kong } : o))
     );
+    try {
+      await adminApi.controlOrder(id, kong as any);
+    } catch (err) {
+      console.error('Lỗi cập nhật chế độ can thiệp:', err);
+    }
   };
 
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    fetchOrders(searchForm.status !== 'Choose' ? searchForm.status : undefined);
   };
 
   const handleFilterReset = () => {
-    setSearchForm({
+    const reset = {
       userId: "",
       oStyle: "Choose",
       buyTime: "",
@@ -302,7 +141,9 @@ export default function AdminOrderContent() {
       kongType: "Choose",
       status: "Choose",
       alertReminder: "",
-    });
+    };
+    setSearchForm(reset);
+    fetchOrders(undefined);
   };
 
   return (
@@ -468,9 +309,9 @@ export default function AdminOrderContent() {
                 type="button"
                 className="btn btn-primary btn-refresh"
                 title="Refresh"
-                onClick={() => setOrders([...initialOrders])}
+                onClick={() => fetchOrders()}
               >
-                <i className="fa fa-refresh"></i>
+                <i className={`fa fa-refresh ${loading ? "fa-spin" : ""}`}></i>
               </button>
               <button type="button" className="btn btn-danger">
                 取消自动刷新
@@ -516,7 +357,20 @@ export default function AdminOrderContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => {
+                  {loading ? (
+                    <tr>
+                      <td colSpan={19} className="text-center py-8 text-gray-500">
+                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载订单数据 (Đang tải dữ liệu đơn cược từ CSDL)...
+                      </td>
+                    </tr>
+                  ) : orders.length === 0 ? (
+                    <tr>
+                      <td colSpan={19} className="text-center py-8 text-gray-400">
+                        暂无数据 (Không có đơn cược nào)
+                      </td>
+                    </tr>
+                  ) : (
+                    orders.map((order) => {
                     const isSelected = selectedIds.includes(order.id);
                     return (
                       <tr key={order.id} className={isSelected ? "selected" : ""}>
@@ -625,21 +479,24 @@ export default function AdminOrderContent() {
                         </td>
                       </tr>
                     );
-                  })}
-                </tbody>
+                  })
+                )}
+              </tbody>
               </table>
             </div>
 
             {/* Pagination Bar */}
             <div className="pagination-container">
               <div className="pagination-info">
-                <span>显示第 1 到第 10 条记录，总共 277 条记录</span>
+                <span>
+                  Hiển thị {total > 0 ? (currentPage - 1) * pageSize + 1 : 0} đến {Math.min(currentPage * pageSize, total)} trong tổng {total} bản ghi (总共 {total} 条记录)
+                </span>
                 <span className="page-size-select">
                   每页显示{" "}
                   <select
                     className="form-control page-size-control"
                     value={pageSize}
-                    onChange={(e) => setPageSize(Number(e.target.value))}
+                    onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -650,44 +507,20 @@ export default function AdminOrderContent() {
                 </span>
               </div>
               <ul className="pagination">
-                <li className="disabled">
-                  <span>Previous</span>
-                </li>
-                <li className={currentPage === 1 ? "active" : ""}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(1); }}>
-                    1
+                <li className={currentPage <= 1 ? "disabled" : ""}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}>
+                    Previous
                   </a>
                 </li>
-                <li className={currentPage === 2 ? "active" : ""}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(2); }}>
-                    2
-                  </a>
-                </li>
-                <li className={currentPage === 3 ? "active" : ""}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(3); }}>
-                    3
-                  </a>
-                </li>
-                <li className={currentPage === 4 ? "active" : ""}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(4); }}>
-                    4
-                  </a>
-                </li>
-                <li className={currentPage === 5 ? "active" : ""}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(5); }}>
-                    5
-                  </a>
-                </li>
-                <li className="disabled">
-                  <span>...</span>
-                </li>
-                <li>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(28); }}>
-                    28
-                  </a>
-                </li>
-                <li>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(2); }}>
+                {Array.from({ length: Math.min(10, Math.max(1, Math.ceil(total / pageSize))) }, (_, i) => i + 1).map((p) => (
+                  <li key={p} className={currentPage === p ? "active" : ""}>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(p); }}>
+                      {p}
+                    </a>
+                  </li>
+                ))}
+                <li className={currentPage >= Math.ceil(total / pageSize) ? "disabled" : ""}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage < Math.ceil(total / pageSize)) setCurrentPage(currentPage + 1); }}>
                     Next
                   </a>
                 </li>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import { getR2Url } from "@/lib/r2";
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
@@ -63,7 +64,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
   const isDownmarkActive = currentPath.includes("downmark");
   const isUpmarkActive = currentPath.includes("upmark");
   const isUserActive = currentPath.includes("user");
-  const isOrderActive = currentPath.includes("order");
+  const isOrderActive = (currentPath.includes("order") && !currentPath.includes("yuebao")) || currentPath.includes("admin/order");
   const isNoticeActive = currentPath.includes("notice");
   const isVerifyActive = currentPath.includes("verify");
   const isYuebaoOrderActive = currentPath.includes("yuebao_order");
@@ -124,15 +125,15 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           <div className="user-panel hidden-xs">
           <div className="pull-left image">
             <a
-              href="/general/profile"
+              href="/admin/profile"
               className="addtabsit"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/general/profile");
+                router.push("/admin/profile");
               }}
             >
               <Image
-                src="/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"
+                src={getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg")}
                 className="img-circle"
                 alt="Spot"
                 width={45}
@@ -208,14 +209,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 2. 订单管理 */}
           <li className={isOrderActive ? "active" : ""}>
             <a
-              href="/coinht.php/order?ref=addtabs"
+              href="/admin/order"
               addtabs="96"
               url="/coinht.php/order"
               py="ddgl"
               pinyin="dingdanguanli"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/order");
+                router.push("/admin/order");
               }}
             >
               <i className="fa fa-list-ol fa-fw"></i>
@@ -227,14 +228,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 3. 会员管理 */}
           <li className={isUserActive ? "active" : ""}>
             <a
-              href="/coinht.php/user?ref=addtabs"
+              href="/admin/user"
               addtabs="66"
               url="/coinht.php/user"
               py="hygl"
               pinyin="huiyuanguanli"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/user");
+                router.push("/admin/user");
               }}
             >
               <i className="fa fa-users fa-fw"></i>
@@ -246,14 +247,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 4. 充值管理 */}
           <li className={isUpmarkActive ? "active" : ""}>
             <a
-              href="/coinht.php/upmark?ref=addtabs"
+              href="/admin/upmark"
               addtabs="97"
               url="/coinht.php/upmark"
               py="czgl"
               pinyin="chongzhiguanli"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/upmark");
+                router.push("/admin/upmark");
               }}
             >
               <i className="fa fa-hand-o-up fa-fw"></i>
@@ -269,14 +270,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 5. 提现管理 */}
           <li className={isDownmarkActive ? "active" : ""}>
             <a
-              href="/coinht.php/downmark?ref=addtabs"
+              href="/admin/downmark"
               addtabs="98"
               url="/coinht.php/downmark"
               py="txgl"
               pinyin="tixianguanli"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/downmark");
+                router.push("/admin/downmark");
               }}
             >
               <i className="fa fa-hand-o-down fa-fw"></i>
@@ -320,14 +321,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <ul className="treeview-menu">
                 <li className={isProductListActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/product/product?ref=addtabs"
+                    href="/admin/product"
                     addtabs="204"
                     url="/coinht.php/product/product"
                     py="cplb"
                     pinyin="chanpinliebiao"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/product/product");
+                      router.push("/admin/product");
                     }}
                   >
                     <i className="fa fa-shopping-bag fa-fw"></i>
@@ -337,14 +338,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isProductTypeActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/product/type?ref=addtabs"
+                    href="/admin/product-type"
                     addtabs="205"
                     url="/coinht.php/product/type"
                     py="cpfl"
                     pinyin="chanpinfenlei"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/product/type");
+                      router.push("/admin/product-type");
                     }}
                   >
                     <i className="fa fa-list-alt fa-fw"></i>
@@ -387,14 +388,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <ul className="treeview-menu">
                 <li className={isLoanConfigActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/loan_config?ref=addtabs"
+                    href="/admin/loan_config"
                     addtabs="234"
                     url="/coinht.php/loan_config"
                     py="dkpzgl"
                     pinyin="daikuanpeizhiguanli"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/loan_config");
+                      router.push("/admin/loan_config");
                     }}
                   >
                     <i className="fa fa-cog fa-fw"></i>
@@ -404,14 +405,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isLoanRecordActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/loan_record?ref=addtabs"
+                    href="/admin/loan_record"
                     addtabs="239"
                     url="/coinht.php/loan_record"
                     py="dkjlgl"
                     pinyin="daikuanjiluguanli"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/loan_record");
+                      router.push("/admin/loan_record");
                     }}
                   >
                     <i className="fa fa-list fa-fw"></i>
@@ -454,14 +455,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <ul className="treeview-menu">
                 <li className={isGeneralConfigActive ? "active" : ""}>
                   <a
-                    href="/coinht.php/general/config?ref=addtabs"
+                    href="/admin/general"
                     addtabs="6"
                     url="/coinht.php/general/config"
                     py="wzpz"
                     pinyin="wangzhanpeizhi"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/general/config");
+                      router.push("/admin/general");
                     }}
                   >
                     <i className="fa fa-cog fa-fw"></i>
@@ -500,14 +501,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     <ul className="treeview-menu level-2">
                       <li className={isAuthAdminActive ? "active" : ""}>
                         <a
-                          href="/coinht.php/auth/admin?ref=addtabs"
+                          href="/admin/auth/admin"
                           addtabs="9"
                           url="/coinht.php/auth/admin"
                           py="A"
                           pinyin="Admin"
                           onClick={(e) => {
                             e.preventDefault();
-                            router.push("/general/auth/admin");
+                            router.push("/admin/auth/admin");
                           }}
                         >
                           <i className="fa fa-user fa-fw"></i>
@@ -517,14 +518,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                       </li>
                       <li className={isAuthAdminLogActive ? "active" : ""}>
                         <a
-                          href="/coinht.php/auth/adminlog?ref=addtabs"
+                          href="/admin/auth/adminlog"
                           addtabs="10"
                           url="/coinht.php/auth/adminlog"
                           py="Al"
                           pinyin="Adminlog"
                           onClick={(e) => {
                             e.preventDefault();
-                            router.push("/general/auth/adminlog");
+                            router.push("/admin/auth/adminlog");
                           }}
                         >
                           <i className="fa fa-list-alt fa-fw"></i>
@@ -534,14 +535,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                       </li>
                       <li className={isAuthGroupActive ? "active" : ""}>
                         <a
-                          href="/coinht.php/auth/group?ref=addtabs"
+                          href="/admin/auth/group"
                           addtabs="11"
                           url="/coinht.php/auth/group"
                           py="G"
                           pinyin="Group"
                           onClick={(e) => {
                             e.preventDefault();
-                            router.push("/general/auth/group");
+                            router.push("/admin/auth/group");
                           }}
                         >
                           <i className="fa fa-group fa-fw"></i>
@@ -551,14 +552,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                       </li>
                       <li className={isAuthRuleActive ? "active" : ""}>
                         <a
-                          href="/coinht.php/auth/rule?ref=addtabs"
+                          href="/admin/auth/rule"
                           addtabs="12"
                           url="/coinht.php/auth/rule"
                           py="cdgz"
                           pinyin="caidanguize"
                           onClick={(e) => {
                             e.preventDefault();
-                            router.push("/general/auth/rule");
+                            router.push("/admin/auth/rule");
                           }}
                         >
                           <i className="fa fa-bars fa-fw"></i>
@@ -575,14 +576,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isCategoryActive ? "active" : ""}>
                   <a
-                    href="/general/category"
+                    href="/admin/category"
                     addtabs="3"
                     url="/coinht.php/category"
                     py="twgl"
                     pinyin="tuwenguanli"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/general/category");
+                      router.push("/admin/category");
                     }}
                   >
                     <i className="fa fa-leaf fa-fw"></i>
@@ -592,14 +593,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isAttachmentActive ? "active" : ""}>
                   <a
-                    href="/general/attachment"
+                    href="/admin/attachment"
                     addtabs="7"
                     url="/coinht.php/general/attachment"
                     py="A"
                     pinyin="Attachment"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/general/attachment");
+                      router.push("/admin/attachment");
                     }}
                   >
                     <i className="fa fa-file-image-o fa-fw"></i>
@@ -609,14 +610,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isProfileActive ? "active" : ""}>
                   <a
-                    href="/general/profile"
+                    href="/admin/profile"
                     addtabs="8"
                     url="/coinht.php/general/profile"
                     py="P"
                     pinyin="Profile"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/general/profile");
+                      router.push("/admin/profile");
                     }}
                   >
                     <i className="fa fa-user fa-fw"></i>
@@ -631,14 +632,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 9. 新闻公告 */}
           <li className={isNoticeActive ? "active" : ""}>
             <a
-              href="/notice"
+              href="/admin/notice"
               addtabs="206"
               url="/coinht.php/notice"
               py="xwgg"
               pinyin="xinwengonggao"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/notice");
+                router.push("/admin/notice");
               }}
             >
               <i className="fa fa-newspaper-o fa-fw"></i>
@@ -650,14 +651,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 10. 实名认证 */}
           <li className={isVerifyActive ? "active" : ""}>
             <a
-              href="/verify"
+              href="/admin/verify"
               addtabs="229"
               url="/coinht.php/verify"
               py="smrz"
               pinyin="shimingrenzheng"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/verify");
+                router.push("/admin/verify");
               }}
             >
               <i className="fa fa-circle-o fa-fw"></i>
@@ -697,14 +698,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <ul className="treeview-menu">
                 <li className={isYuebaoOrderActive ? "active" : ""}>
                   <a
-                    href="/yuebao_order"
+                    href="/admin/yuebao_order"
                     addtabs="231"
                     url="/coinht.php/yuebao_order/index"
                     py="yebdd"
                     pinyin="yuebaodingdan"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/yuebao_order");
+                      router.push("/admin/yuebao_order");
                     }}
                   >
                     <i className="fa fa-circle-o fa-fw"></i>
@@ -714,14 +715,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                 </li>
                 <li className={isYuebaoConfigActive ? "active" : ""}>
                   <a
-                    href="/yuebao_config"
+                    href="/admin/yuebao_config"
                     addtabs="232"
                     url="/coinht.php/yuebao_config"
                     py="yebpz"
                     pinyin="yuebaopeizhi"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/yuebao_config");
+                      router.push("/admin/yuebao_config");
                     }}
                   >
                     <i className="fa fa-circle-o fa-fw"></i>
@@ -736,14 +737,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           {/* 12. 后台IP白名单 */}
           <li className={isIpWhitelistActive ? "active" : ""}>
             <a
-              href="/ipwhitelist"
+              href="/admin/ipwhitelist"
               addtabs="241"
               url="/coinht.php/index/ipwhitelist"
               py="htIbmd"
               pinyin="houtaiIPbaimingdan"
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/ipwhitelist");
+                router.push("/admin/ipwhitelist");
               }}
             >
               <i className="fa fa-shield fa-fw"></i>

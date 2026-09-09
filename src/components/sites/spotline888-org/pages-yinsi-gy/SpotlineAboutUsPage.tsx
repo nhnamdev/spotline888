@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { ABOUT_US_TRANSLATIONS } from "./aboutUsI18n";
+import { getR2Url } from "@/lib/r2";
 
 function SpotlineAboutUsContent() {
   const router = useRouter();
@@ -76,7 +77,7 @@ function SpotlineAboutUsContent() {
           {/* Philosophy Banner */}
           <div className="relative w-full aspect-[464/170] rounded-[10px] overflow-hidden mt-2 shadow-[0_2px_10px_rgba(0,0,0,0.08)]">
             <Image
-              src="/sites/spotline888-org/pages-yinsi-gy/about_banner.png"
+              src={getR2Url("/sites/spotline888-org/pages-yinsi-gy/about_banner.png")}
               alt="Philosophy"
               fill
               className="object-cover"

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ArrowRight } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { TRANSFER_TRANSLATIONS } from "./transferI18n";
+import { authApi, exchangeApi } from "@/lib/api";
 
 function SpotlineTransferContent() {
   const router = useRouter();
@@ -15,12 +16,34 @@ function SpotlineTransferContent() {
   const [direction, setDirection] = useState<"myrToUsdt" | "usdtToMyr">(
     "myrToUsdt"
   );
-  const [myrBalance, setMyrBalance] = useState(2429.0);
+  const [myrBalance, setMyrBalance] = useState(0.0);
   const [usdtBalance, setUsdtBalance] = useState(0.0);
+  const [rate, setRate] = useState(4.07);
   const [amount, setAmount] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const rate = 4.07; // 1 USDT = RM4.07
+  const fetchWallet = useCallback(async () => {
+    try {
+      const [profRes, rateRes] = await Promise.all([
+        authApi.getProfile(),
+        exchangeApi.getRate(),
+      ]);
+      if (profRes.code === 1 && profRes.data) {
+        setMyrBalance(parseFloat(profRes.data.money || "0"));
+        setUsdtBalance(parseFloat(profRes.data.usdt || "0"));
+      }
+      if (rateRes.code === 1 && rateRes.data) {
+        setRate(parseFloat(rateRes.data.rate || "4.07"));
+      }
+    } catch (err) {
+      console.error("Lỗi nạp số dư đổi tiền:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWallet();
+  }, [fetchWallet]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -35,7 +58,7 @@ function SpotlineTransferContent() {
     setAmount(currentAvailable.toFixed(2));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const val = parseFloat(amount);
     if (isNaN(val) || val <= 0) {
       showToast(t.pleaseEnterAmount);
@@ -46,18 +69,28 @@ function SpotlineTransferContent() {
       return;
     }
 
-    if (direction === "myrToUsdt") {
-      const addedUsdt = val / rate;
-      setMyrBalance((prev) => Number((prev - val).toFixed(2)));
-      setUsdtBalance((prev) => Number((prev + addedUsdt).toFixed(2)));
-    } else {
-      const addedMyr = val * rate;
-      setUsdtBalance((prev) => Number((prev - val).toFixed(2)));
-      setMyrBalance((prev) => Number((prev + addedMyr).toFixed(2)));
-    }
+    try {
+      setLoading(true);
+      const fromCurrency = direction === "myrToUsdt" ? "MYR" : "USDT";
+      const toCurrency = direction === "myrToUsdt" ? "USDT" : "MYR";
+      const res = await exchangeApi.swap({
+        fromCurrency,
+        toCurrency,
+        amount: val,
+      });
 
-    setAmount("");
-    showToast(t.transferSuccess);
+      if (res.code === 1) {
+        showToast(t.transferSuccess);
+        setAmount("");
+        fetchWallet();
+      } else {
+        showToast(res.msg || "Giao dịch thất bại");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Lỗi giao dịch quy đổi");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

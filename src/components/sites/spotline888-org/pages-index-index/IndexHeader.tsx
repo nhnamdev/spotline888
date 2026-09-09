@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { getR2Url } from "@/lib/r2";
 
 interface IndexHeaderProps {
   onOpenLang: () => void;
@@ -13,7 +14,7 @@ export const IndexHeader: React.FC<IndexHeaderProps> = ({ onOpenLang }) => {
       {/* Brand Logo */}
       <div className="w-[75px] h-[30px] flex items-center">
         <Image
-          src="/sites/spotline888-org/pages-login-login/logo.png"
+          src={getR2Url("/sites/spotline888-org/pages-login-login/logo.png")}
           alt="SPOT"
           width={75}
           height={30}
@@ -30,7 +31,7 @@ export const IndexHeader: React.FC<IndexHeaderProps> = ({ onOpenLang }) => {
         className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-[0_3px_8px_rgba(15,23,42,0.18)] hover:bg-gray-50 active:scale-95 transition-all cursor-pointer border-0"
       >
         <Image
-          src="/sites/spotline888-org/pages-login-login/lang_icon.png"
+          src={getR2Url("/sites/spotline888-org/pages-login-login/lang_icon.png")}
           alt="Language"
           width={17}
           height={17}

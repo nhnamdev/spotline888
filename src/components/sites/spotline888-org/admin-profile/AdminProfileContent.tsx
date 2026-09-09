@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { INITIAL_PROFILE_LOGS, ProfileLogItem } from "./profileData";
+import { getR2Url } from "@/lib/r2";
 
 function formatDateTime(timestamp: number): string {
   if (!timestamp) return "-";
@@ -21,7 +22,7 @@ export default function AdminProfileContent() {
     username: "admin",
     email: "admin@admin.com",
     nickname: "Spot",
-    avatar: "/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg",
+    avatar: getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
     password: "",
   });
 
@@ -84,7 +85,7 @@ export default function AdminProfileContent() {
       username: "admin",
       email: "admin@admin.com",
       nickname: "Spot",
-      avatar: "/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg",
+      avatar: getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
       password: "",
     });
     showToast("表单已重置 (Form reset)");
@@ -483,9 +484,9 @@ export default function AdminProfileContent() {
                 <p>选择一个预置头像或输入图片链接：</p>
                 <div className="avatar-options">
                   {[
-                    "/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg",
-                    "/uploads/20251203/d55dd75446d505958e5210985b246bed.png",
-                    "/uploads/20250929/4a595f3800ca1cd81d2a8b46ebb47ec0.png",
+                    getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
+                    getR2Url("/uploads/20251203/d55dd75446d505958e5210985b246bed.png"),
+                    getR2Url("/uploads/20250929/4a595f3800ca1cd81d2a8b46ebb47ec0.png"),
                   ].map((imgUrl, idx) => (
                     <div
                       key={idx}

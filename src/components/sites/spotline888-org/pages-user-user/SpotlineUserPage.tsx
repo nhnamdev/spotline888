@@ -8,6 +8,7 @@ import { USER_TRANSLATIONS, UserTranslations } from "./userI18n";
 import { INDEX_TRANSLATIONS } from "../pages-index-index/indexI18n";
 import { IndexTabBar } from "../pages-index-index/IndexTabBar";
 import { USER_ICONS } from "./userIcons";
+import { authApi, yuebaoApi } from "@/lib/api";
 import "./SpotlineUserPage.css";
 
 interface UserInfoData {
@@ -87,6 +88,7 @@ function SpotlineUserPageContent() {
 
   // Load user data on mount
   useEffect(() => {
+    // 1. Tải cache local nếu có
     try {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
@@ -94,33 +96,53 @@ function SpotlineUserPageContent() {
         setUserInfo((prev) => ({
           ...prev,
           ...parsed,
-          username: parsed.username || prev.username,
-          real_name: parsed.real_name || prev.real_name,
-          credit_score: parsed.credit_score ?? prev.credit_score,
-          money: parsed.money ?? prev.money,
-          usdt_money: parsed.usdt_money ?? prev.usdt_money,
-          yk: parsed.yk ?? prev.yk,
-          yk_today: parsed.yk_today ?? prev.yk_today,
-          user_avatar: parsed.user_avatar || prev.user_avatar,
-          is_auth: parsed.is_auth ?? prev.is_auth,
         }));
       }
+    } catch {}
 
-      const storedYuebao = localStorage.getItem("yuebaoData");
-      if (storedYuebao) {
-        setYuebaoData(JSON.parse(storedYuebao));
-      }
-
-      const siteConfig = localStorage.getItem("siteCurrencyConfig");
-      if (siteConfig) {
-        const parsedCfg = JSON.parse(siteConfig);
-        if (parsedCfg.currency_icon) {
-          setCurrencyIcon(parsedCfg.currency_icon);
+    // 2. Tải dữ liệu thực tế từ API MySQL
+    async function fetchLiveUserData() {
+      try {
+        const res = await authApi.getProfile();
+        if (res.code === 1 && res.data) {
+          const u = res.data;
+          const updatedUser: UserInfoData = {
+            username: u.username || u.account || "ak111",
+            real_name: u.real_name || "Chưa xác minh",
+            credit_score: u.credit_score ?? 100,
+            money: parseFloat(u.money || "0").toFixed(2),
+            usdt_money: parseFloat(u.usdt || "0").toFixed(2),
+            yk: "0.00",
+            yk_today: "0.00",
+            user_avatar: u.avatar || USER_ICONS.avatar,
+            is_auth: u.is_auth ?? 0,
+            id_auth_error: "",
+          };
+          setUserInfo(updatedUser);
+          try {
+            localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+          } catch {}
         }
+      } catch (err) {
+        console.error("Lỗi lấy thông tin cá nhân:", err);
       }
-    } catch {
-      // ignore JSON errors
+
+      try {
+        const yRes = await yuebaoApi.getInfo();
+        if (yRes.code === 1 && yRes.data) {
+          const y = yRes.data;
+          setYuebaoData({
+            all_money: parseFloat(y.balance || "0").toFixed(2),
+            today_income: parseFloat(y.today_profit || "0").toFixed(2),
+            total_income: parseFloat(y.total_profit || "0").toFixed(2),
+          });
+        }
+      } catch (err) {
+        console.error("Lỗi lấy thông tin Yu'e Bao:", err);
+      }
     }
+
+    fetchLiveUserData();
   }, []);
 
   // Compute total assets: userInfo.money + yuebaoData.all_money
@@ -175,17 +197,21 @@ function SpotlineUserPageContent() {
     setTimeout(() => {
       try {
         localStorage.removeItem("token");
+        localStorage.removeItem("user_token");
         localStorage.removeItem("userInfo");
+        localStorage.removeItem("user_info");
         localStorage.removeItem("bannerList");
         localStorage.removeItem("bannerPreloadTime");
+        document.cookie = "user_token=; path=/; max-age=0";
+        document.cookie = "token=; path=/; max-age=0";
       } catch {
         // ignore
       }
       showToast(t.logoutSuccess);
       setTimeout(() => {
-        router.push("/pages/login/login");
-      }, 800);
-    }, 600);
+        window.location.href = "/login";
+      }, 600);
+    }, 400);
   };
 
   // Quick List definitions

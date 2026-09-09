@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { getR2Url } from "@/lib/r2";
 
 interface AdminCaptchaProps {
   onCodeChange?: (code: string) => void;
@@ -103,7 +104,7 @@ export default function AdminCaptcha({ onCodeChange }: AdminCaptchaProps) {
       {clickCount === 0 ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src="/sites/spotline888-org/admin-login/captcha.png"
+          src={getR2Url("/sites/spotline888-org/admin-login/captcha.png")}
           alt="Captcha"
           width={100}
           height={30}

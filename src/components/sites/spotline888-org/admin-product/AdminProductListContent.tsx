@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { getR2Url } from "@/lib/r2";
+import { adminApi } from "@/lib/api";
 
 export interface ProductItem {
   id: number;
@@ -16,146 +18,46 @@ export interface ProductItem {
   ctime: string;
 }
 
-const initialProducts: ProductItem[] = [
-  {
-    id: 340,
-    weigh: 220,
-    code: "BTC",
-    title: "BTC/USDT",
-    image: "/uploads/20251103/e4063309d0783b20b4a4f229b9aeccb2.png",
-    typeName: "虚拟币",
-    price: "66343.07000000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 10:56:46",
-  },
-  {
-    id: 349,
-    weigh: 208,
-    code: "TRX",
-    title: "TRX/USDT",
-    image: "/uploads/20251103/eb48feb407a9617a4723f44265c14f96.png",
-    typeName: "虚拟币",
-    price: "0.28153100",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 11:19:00",
-  },
-  {
-    id: 347,
-    weigh: 207,
-    code: "DOT",
-    title: "DOT/USDT",
-    image: "/uploads/20251103/6c57613336dc4a7cb082d8267aacf0a1.png",
-    typeName: "虚拟币",
-    price: "1.51630000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 11:14:25",
-  },
-  {
-    id: 341,
-    weigh: 206,
-    code: "LINK",
-    title: "LINK/USDT",
-    image: "/uploads/20251103/e7b47802446b12cea02cff2b5aee1ee3.png",
-    typeName: "虚拟币",
-    price: "8.70000000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 10:58:50",
-  },
-  {
-    id: 351,
-    weigh: 205,
-    code: "BCH",
-    title: "BCH/USDT",
-    image: "/uploads/20251103/0a71c2d5dcfcf70fd748ac23561deda9.png",
-    typeName: "虚拟币",
-    price: "438.43000000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 11:22:11",
-  },
-  {
-    id: 343,
-    weigh: 204,
-    code: "ETC",
-    title: "ETC/USDT",
-    image: "/uploads/20251103/5fb3aee9e34e569992f98e6c4ea05ea0.png",
-    typeName: "虚拟币",
-    price: "8.54790000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: true,
-    status: true,
-    ctime: "2024-06-14 11:02:35",
-  },
-  {
-    id: 378,
-    weigh: 200,
-    code: "GOLD",
-    title: "黄金/伦敦金",
-    image: "/uploads/20250811/72eb62a1a0dfc0df8e874945d8b74614.png",
-    typeName: "商品",
-    price: "3971.20000000",
-    updateTime: "2025-11-06 07:18:45",
-    isOpen: false,
-    status: true,
-    ctime: "2025-11-03 04:30:43",
-  },
-  {
-    id: 379,
-    weigh: 199,
-    code: "Silver",
-    title: "白银/伦敦银",
-    image: "/uploads/20250811/d1e1f78eaec7ca09ec6149f1ca92ee14.png",
-    typeName: "商品",
-    price: "47.94300000",
-    updateTime: "2025-11-06 07:18:46",
-    isOpen: false,
-    status: true,
-    ctime: "2025-11-03 04:30:51",
-  },
-  {
-    id: 380,
-    weigh: 198,
-    code: "Aluminum",
-    title: "铝",
-    image: "/uploads/20250811/d854eb0c968f51dfa1f868c62b535d48.png",
-    typeName: "商品",
-    price: "2824.55000000",
-    updateTime: "2025-11-06 07:18:46",
-    isOpen: false,
-    status: true,
-    ctime: "2025-11-03 04:30:59",
-  },
-  {
-    id: 377,
-    weigh: 197,
-    code: "Zinc",
-    title: "锌",
-    image: "/uploads/20250811/e93910c5da8cb4c062c3e100f7e4367c.png",
-    typeName: "商品",
-    price: "3033.69000000",
-    updateTime: "2025-11-06 07:18:46",
-    isOpen: false,
-    status: true,
-    ctime: "2025-11-03 04:30:34",
-  },
-];
-
 export default function AdminProductListContent() {
-  const [products, setProducts] = useState<ProductItem[]>(initialProducts);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showSearchForm, setShowSearchForm] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [imgErrors, setImgErrors] = useState<Record<number, boolean>>({});
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await adminApi.getProducts(1, 100);
+      if (res.code === 1 && res.data) {
+        const rows = res.data.rows || res.data;
+        const mapped: ProductItem[] = rows.map((p: any) => ({
+          id: p.id,
+          weigh: p.weigh,
+          code: p.code,
+          title: p.title,
+          image: getR2Url(p.image),
+          typeName: p.type_name || (p.type_id === 1 ? "虚拟币" : p.type_id === 2 ? "外汇" : "商品"),
+          price: Number(p.price || 0).toFixed(8),
+          updateTime: p.updated_at ? new Date(p.updated_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          isOpen: Boolean(p.is_open),
+          status: Boolean(p.status),
+          ctime: p.created_at ? new Date(p.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+        }));
+        setProducts(mapped);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp danh sách sản phẩm:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   // Commonsearch form fields
   const [searchForm, setSearchForm] = useState({
@@ -241,43 +143,98 @@ export default function AdminProductListContent() {
       title: "",
       status: "Choose",
     });
-    setProducts([...initialProducts]);
+    fetchProducts();
   };
+
 
   // Status toggle
-  const handleToggleIsOpen = (id: number) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, isOpen: !p.isOpen } : p))
-    );
+  const handleToggleIsOpen = async (id: number) => {
+    const p = products.find((item) => item.id === id);
+    if (!p) return;
+    try {
+      await adminApi.saveProduct({
+        id: p.id,
+        code: p.code,
+        title: p.title,
+        price: p.price,
+        weigh: p.weigh,
+        is_open: !p.isOpen ? 1 : 0,
+        status: p.status ? 1 : 0,
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái mở sản phẩm:", err);
+    }
   };
 
-  const handleToggleStatus = (id: number) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: !p.status } : p))
-    );
+  const handleToggleStatus = async (id: number) => {
+    const p = products.find((item) => item.id === id);
+    if (!p) return;
+    try {
+      await adminApi.saveProduct({
+        id: p.id,
+        code: p.code,
+        title: p.title,
+        price: p.price,
+        weigh: p.weigh,
+        is_open: p.isOpen ? 1 : 0,
+        status: !p.status ? 1 : 0,
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái sản phẩm:", err);
+    }
   };
 
   // Delete product
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("确定要删除这条记录吗？")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      setSelectedIds((prev) => prev.filter((i) => i !== id));
+      try {
+        await adminApi.deleteProduct(id);
+        setSelectedIds((prev) => prev.filter((i) => i !== id));
+        fetchProducts();
+      } catch (err) {
+        console.error("Lỗi xóa sản phẩm:", err);
+      }
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (window.confirm(`确定要删除选中的 ${selectedIds.length} 条记录吗？`)) {
-      setProducts((prev) => prev.filter((p) => !selectedIds.includes(p.id)));
-      setSelectedIds([]);
+      try {
+        for (const id of selectedIds) {
+          await adminApi.deleteProduct(id);
+        }
+        setSelectedIds([]);
+        fetchProducts();
+      } catch (err) {
+        console.error("Lỗi xóa nhiều sản phẩm:", err);
+      }
     }
   };
 
-  const handleSetStatusMulti = (val: boolean) => {
+  const handleSetStatusMulti = async (val: boolean) => {
     if (selectedIds.length === 0) return;
-    setProducts((prev) =>
-      prev.map((p) => (selectedIds.includes(p.id) ? { ...p, status: val } : p))
-    );
+    try {
+      for (const id of selectedIds) {
+        const p = products.find((item) => item.id === id);
+        if (p) {
+          await adminApi.saveProduct({
+            id: p.id,
+            code: p.code,
+            title: p.title,
+            price: p.price,
+            weigh: p.weigh,
+            is_open: p.isOpen ? 1 : 0,
+            status: val ? 1 : 0,
+          });
+        }
+      }
+      fetchProducts();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái hàng loạt:", err);
+    }
   };
 
   // Open Edit Modal
@@ -295,44 +252,25 @@ export default function AdminProductListContent() {
   };
 
   // Save Add/Edit
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingProduct.id
-            ? {
-                ...p,
-                code: modalForm.code,
-                title: modalForm.title,
-                typeName: modalForm.typeName,
-                price: modalForm.price,
-                weigh: Number(modalForm.weigh),
-                isOpen: modalForm.isOpen,
-                status: modalForm.status,
-                updateTime: "2026-09-07 17:20:00",
-              }
-            : p
-        )
-      );
-      setEditingProduct(null);
-    } else {
-      const newId = Math.max(...products.map((p) => p.id), 380) + 1;
-      const newProduct: ProductItem = {
-        id: newId,
+    try {
+      const typeId = modalForm.typeName === "虚拟币" ? 1 : modalForm.typeName === "外汇" ? 2 : 3;
+      await adminApi.saveProduct({
+        id: editingProduct ? editingProduct.id : undefined,
+        code: modalForm.code.toUpperCase().trim(),
+        title: modalForm.title.trim(),
+        type_id: typeId,
+        price: parseFloat(modalForm.price || "0"),
         weigh: Number(modalForm.weigh),
-        code: modalForm.code.toUpperCase(),
-        title: modalForm.title,
-        image: "/uploads/20251103/e4063309d0783b20b4a4f229b9aeccb2.png",
-        typeName: modalForm.typeName,
-        price: modalForm.price || "0.00000000",
-        updateTime: "2026-09-07 17:20:00",
-        isOpen: modalForm.isOpen,
-        status: modalForm.status,
-        ctime: "2026-09-07 17:20:00",
-      };
-      setProducts([newProduct, ...products]);
+        is_open: modalForm.isOpen ? 1 : 0,
+        status: modalForm.status ? 1 : 0,
+      });
+      setEditingProduct(null);
       setIsAddModalOpen(false);
+      fetchProducts();
+    } catch (err) {
+      console.error("Lỗi lưu sản phẩm:", err);
     }
   };
 
@@ -528,9 +466,10 @@ export default function AdminProductListContent() {
                   className="btn btn-primary btn-refresh"
                   title="Refresh"
                   onClick={() => {
-                    setProducts([...initialProducts]);
+                    fetchProducts();
                     setSelectedIds([]);
                   }}
+
                 >
                   <i className="fa fa-refresh"></i>
                 </button>

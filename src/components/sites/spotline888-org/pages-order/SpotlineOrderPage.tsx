@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
@@ -8,6 +8,8 @@ import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { ORDER_TRANSLATIONS } from "./orderI18n";
 import { IndexTabBar } from "../pages-index-index/IndexTabBar";
 import { INDEX_TRANSLATIONS } from "../pages-index-index/indexI18n";
+import { tradingApi } from "@/lib/api";
+import { getR2Url } from "@/lib/r2";
 
 interface OrderItem {
   id: string;
@@ -29,7 +31,34 @@ function SpotlineOrderContent() {
   const tIndex = INDEX_TRANSLATIONS[currentLang] || INDEX_TRANSLATIONS["zh-CN"];
 
   const [activeSubTab, setActiveSubTab] = useState<"holding" | "closed">("holding");
-  const [orders] = useState<OrderItem[]>([]);
+  const [orders, setOrders] = useState<OrderItem[]>([]);
+
+  useEffect(() => {
+    async function loadOrders() {
+      try {
+        const res = await tradingApi.getMyOrders("all", 1, 50);
+        if (res.code === 1 && Array.isArray(res.data?.rows || res.data?.list || res.data)) {
+          const raw = res.data?.rows || res.data?.list || res.data;
+          const mapped: OrderItem[] = raw.map((o: any) => ({
+            id: String(o.order_sn || o.id),
+            symbol: o.symbol || "BTC/USDT",
+            direction: o.ostyle === "buy_up" ? "buy" : "sell",
+            openPrice: parseFloat(o.buy_price || "0").toFixed(2),
+            closePrice: o.sell_price ? parseFloat(o.sell_price).toFixed(2) : undefined,
+            amount: parseFloat(o.money || "0").toFixed(2),
+            profit: o.status === "settled" ? (o.is_win === 1 ? `+${(parseFloat(o.money || "0") * 0.85).toFixed(2)}` : `-${parseFloat(o.money || "0").toFixed(2)}`) : "0.00",
+            fee: "0.00",
+            time: o.created_at ? new Date(o.created_at).toLocaleString("vi-VN") : "",
+            status: o.status === "open" ? "holding" : "settled",
+          }));
+          setOrders(mapped);
+        }
+      } catch (err) {
+        console.error("Lỗi tải đơn cược:", err);
+      }
+    }
+    loadOrders();
+  }, []);
 
   const filteredOrders = orders.filter((o) =>
     activeSubTab === "holding" ? o.status === "holding" : o.status === "settled"
@@ -90,7 +119,7 @@ function SpotlineOrderContent() {
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <div className="w-[140px] h-[140px] relative">
                 <Image
-                  src="/sites/spotline888-org/pages-order/order_empty.png"
+                  src={getR2Url("/sites/spotline888-org/pages-order/order_empty.png")}
                   alt="Empty"
                   fill
                   className="object-contain"

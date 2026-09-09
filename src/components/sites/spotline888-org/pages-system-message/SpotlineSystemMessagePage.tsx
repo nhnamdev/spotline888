@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Bell, RefreshCw } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { SYSTEM_MESSAGE_TRANSLATIONS } from "./systemMessageI18n";
+import { contentApi } from "@/lib/api";
 
 interface MessageItem {
   id: number;
@@ -13,23 +14,6 @@ interface MessageItem {
   isRead: boolean;
 }
 
-const initialMessages: MessageItem[] = [
-  {
-    id: 1,
-    content:
-      "Welcome to SPOT! Thank you for choosing our platform. If you experience any problems, please feel free to contact us. Thank you!",
-    date: "2026-06-19 09:50:43",
-    isRead: false,
-  },
-  {
-    id: 2,
-    content:
-      "Security Notice: Please never share your login password or withdrawal password with anyone. Our official customer support will never request your passwords.",
-    date: "2026-06-18 14:20:10",
-    isRead: true,
-  },
-];
-
 function SpotlineSystemMessageContent() {
   const router = useRouter();
   const { currentLang } = useI18n();
@@ -37,26 +21,53 @@ function SpotlineSystemMessageContent() {
     SYSTEM_MESSAGE_TRANSLATIONS[currentLang] ||
     SYSTEM_MESSAGE_TRANSLATIONS["zh-CN"];
 
-  const [messages, setMessages] = useState<MessageItem[]>(initialMessages);
+  const [messages, setMessages] = useState<MessageItem[]>([]);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await contentApi.getUserMessages();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        const mapped: MessageItem[] = res.data.map((m: any) => ({
+          id: m.id,
+          content: m.content || m.title,
+          date: m.date || (m.created_at ? new Date(m.created_at).toISOString().slice(0, 19).replace("T", " ") : "-"),
+          isRead: Boolean(m.is_read),
+        }));
+        setMessages(mapped);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp tin nhắn hộp thư:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 2000);
   };
 
-  const handleMarkAllRead = () => {
-    setMessages((prev) => prev.map((m) => ({ ...m, isRead: true })));
-    showToast(t.allReadSuccess);
+  const handleMarkAllRead = async () => {
+    try {
+      await contentApi.markMessagesRead();
+      setMessages((prev) => prev.map((m) => ({ ...m, isRead: true })));
+      showToast(t.allReadSuccess);
+    } catch {
+      setMessages((prev) => prev.map((m) => ({ ...m, isRead: true })));
+      showToast(t.allReadSuccess);
+    }
   };
 
   const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      showToast(t.refreshSuccess);
-    }, 600);
+    fetchMessages();
+    showToast(t.refreshSuccess);
   };
 
   const toggleRead = (id: number) => {

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { MONEY_RECORD_TRANSLATIONS } from "./moneyRecordI18n";
+import { withdrawApi } from "@/lib/api";
 
 interface RecordItem {
   id: number;
@@ -13,15 +14,6 @@ interface RecordItem {
   amount: string;
 }
 
-const initialRecords: RecordItem[] = [
-  {
-    id: 1,
-    title: "Arbitrage Bot[10天]",
-    time: "2026-09-05 08:28:00",
-    amount: "-23",
-  },
-];
-
 function SpotlineMoneyRecordContent() {
   const router = useRouter();
   const { currentLang } = useI18n();
@@ -29,7 +21,35 @@ function SpotlineMoneyRecordContent() {
     MONEY_RECORD_TRANSLATIONS[currentLang] ||
     MONEY_RECORD_TRANSLATIONS["zh-CN"];
 
-  const [records] = useState<RecordItem[]>(initialRecords);
+  const [records, setRecords] = useState<RecordItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchRecords = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await withdrawApi.getMoneyRecords(1, 50);
+      if (res.code === 1 && res.data) {
+        const rows = res.data.rows || res.data;
+        if (Array.isArray(rows)) {
+          const mapped: RecordItem[] = rows.map((r: any) => ({
+            id: r.id,
+            title: r.memo || (r.type === 'recharge' ? 'Recharge' : 'Withdrawal'),
+            time: r.created_at ? new Date(r.created_at).toISOString().slice(0, 19).replace('T', ' ') : '-',
+            amount: `${parseFloat(r.money || '0') >= 0 ? '+' : ''}${parseFloat(r.money || '0').toFixed(2)}`,
+          }));
+          setRecords(mapped);
+        }
+      }
+    } catch (err) {
+      console.error("Lỗi nạp lịch sử dòng tiền:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#eef2ff] via-[#f8fafc_35%] to-white flex justify-center select-none pb-12">

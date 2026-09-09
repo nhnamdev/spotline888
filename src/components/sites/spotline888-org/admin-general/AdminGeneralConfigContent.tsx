@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
+import { getR2Url } from "@/lib/r2";
+import { Loader2, Check } from "lucide-react";
 
 export default function AdminGeneralConfigContent() {
   const [activeTab, setActiveTab] = useState<
@@ -8,30 +11,31 @@ export default function AdminGeneralConfigContent() {
   >("basic");
 
   const [savedAlert, setSavedAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Form states for all tabs
-  const [basicForm, setBasicForm] = useState({
+  const [basicForm, setBasicForm] = useState<Record<string, any>>({
     default_frontend_lang: "zh-CN",
     currency_code: "MYR",
     currency_short: "RM",
     currency_name: "Malaysian Ringgit",
     enabled_langs: "zh-CN",
     currency_icon: "",
-    name: "Abbott",
+    name: "Spotline",
     invite_code_enable: "0",
-    web_icon: "/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png",
+    web_icon: getR2Url("/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png"),
     need_bind_account: "1",
     chat_setting: "alert_notice",
-    web_name: "Abbott",
-    user_icon: "/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png",
+    web_name: "Spotline",
+    user_icon: getR2Url("/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png"),
     kefu_script: "https://wa.me/6287713795721",
     alert_notice: "",
     limit_script: "https://www.baidu.com/",
     version: "1.0.65",
     bet_max: "50000000",
     bet_min: "2000",
-    company_desc:
-      "<p>Spot Indonesia – 官方数字资产平台<br />我们是 Spot Indonesia，一个致力于帮助东南亚用户以安全、快速、高效的方式访问和管理其加密资产的在线数字资产平台。</p>\n<p>我们的愿景是打造 便捷、透明、人人可参与 的数字货币交易环境。</p>\n<p>在 Spot，我们为用户提供一系列核心服务，包括：</p>\n<p>加密货币即时交易（Spot Trading）</p>\n<p>安全的数字资产钱包管理（Virtual Asset Wallet）</p>\n<p>平台内代币兑换服务（Platform Token Exchange）</p>\n<p>先进技术支持的自动化交易工具（AI Trading、Copy-Trade）</p>\n<p>面向投资互动的社区功能（Community Investment Interaction</p>\n<p><img src=\"/uploads/20250928/8d98ef17894597d943c9eb6b8d10d248.jpg\" alt=\"\" width=\"1002\" height=\"462\" /></p>\n<p>我们的平台采用稳定可靠的云端架构，并配备双重身份验证机制，以保障每笔交易的安全。为了让新手和有经验的用户都能轻松交易，我们持续优化网页与移动端界面，提升整体用户体验。</p>\n<p>Spot Indonesia 致力于成为东南亚领先的数字资产平台，不断扩大数字生态系统，并为全球用户提供创新、安全的服务。</p>\n<p>温馨提醒：如果您是高净值收入人群，需要进行大额（175,000,000 IDR）投资，请优先联系客服办理开通本公司的国际VIP通道，避免影响您的投资体验。一次办理，终身享用。</p>",
+    company_desc: "",
     kefu_url: "https://wa.me/6287713795721",
     trade_time: "00:00-24:00",
     order_voice: "0",
@@ -40,22 +44,22 @@ export default function AdminGeneralConfigContent() {
     quick_amounts: "100,500,1000,2000,5000,10000",
   });
 
-  const [rechargeForm, setRechargeForm] = useState({
+  const [rechargeForm, setRechargeForm] = useState<Record<string, any>>({
     min_chongzhi: "100",
     max_chongzhi: "1000000",
-    web_bank_name: "中国银行",
-    web_bank_place: "北京分行",
-    web_bank_user: "李贝贝",
-    web_bank_number: "1234567891234567",
+    web_bank_name: "Maybank Malaysia",
+    web_bank_place: "Kuala Lumpur Branch",
+    web_bank_user: "SPOTLINE OFFICIAL LTD",
+    web_bank_number: "514271829102",
     web_bank_tips:
       "Dear valued users: The self-service balance top-up channel is currently undergoing system maintenance and upgrades. If you need to top up your account balance, please contact our online customer service. Thank you for your understanding and we apologize for any inconvenience this may cause.",
     bank_status: "1",
     usdt_status: "1",
-    usdt_address: '{"aa":"213213123","bb":"sddddddd"}',
+    usdt_address: "TN7s...trc20address",
     usdt_cny_rate: "4.07",
   });
 
-  const [cashoutForm, setCashoutForm] = useState({
+  const [cashoutForm, setCashoutForm] = useState<Record<string, any>>({
     save_bank_info: "1",
     cny_open: "1",
     usdt_open: "1",
@@ -73,25 +77,25 @@ export default function AdminGeneralConfigContent() {
     tx_fee_rate: "0",
   });
 
-  const [stockForm, setStockForm] = useState({
+  const [stockForm, setStockForm] = useState<Record<string, any>>({
     trade_type: "usdt",
     api_stock_key: "",
     api_stock_code: "",
   });
 
-  const [messageForm, setMessageForm] = useState({
+  const [messageForm, setMessageForm] = useState<Record<string, any>>({
     register_message_enable: "1",
     register_message_content:
       "Welcome to SPOT! Thank you for choosing our platform. If you experience any problems, please feel free to contact us. Thank you!",
   });
 
-  const [azureForm, setAzureForm] = useState({
+  const [azureForm, setAzureForm] = useState<Record<string, any>>({
     azure_connection_string: "",
     azure_container_name: "configs",
     azure_backend_domain: "",
   });
 
-  const [otherForm, setOtherForm] = useState({
+  const [otherForm, setOtherForm] = useState<Record<string, any>>({
     vip_show: "1",
     vip: '{"1":"0","2":"1","3":"2","4":"3","5":"4","6":"5","7":"6","8":"7","9":"8"}',
     mpsswd_show: "1",
@@ -111,10 +115,52 @@ export default function AdminGeneralConfigContent() {
     extend: "",
   });
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchConfigs = async () => {
+      try {
+        setLoading(true);
+        const res = await adminApi.getConfigs();
+        if (res.code === 1 && res.data?.list) {
+          const map: Record<string, string> = {};
+          res.data.list.forEach((item: any) => {
+            map[item.name] = item.value;
+          });
+          setBasicForm((prev) => ({ ...prev, ...map }));
+          setRechargeForm((prev) => ({ ...prev, ...map }));
+          setCashoutForm((prev) => ({ ...prev, ...map }));
+          setOtherForm((prev) => ({ ...prev, ...map }));
+        }
+      } catch (err) {
+        console.error("Lỗi lấy cấu hình:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConfigs();
+  }, []);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedAlert(true);
-    setTimeout(() => setSavedAlert(false), 2500);
+    setSaving(true);
+    let payload: Record<string, any> = {};
+    if (activeTab === "recharge") payload = rechargeForm;
+    else if (activeTab === "basic") payload = basicForm;
+    else if (activeTab === "cashout") payload = cashoutForm;
+    else if (activeTab === "stock") payload = stockForm;
+    else if (activeTab === "message") payload = messageForm;
+    else if (activeTab === "other") payload = otherForm;
+
+    try {
+      const res = await adminApi.updateConfigs(payload);
+      if (res.code === 1) {
+        setSavedAlert(true);
+        setTimeout(() => setSavedAlert(false), 3000);
+      }
+    } catch (err) {
+      console.error("Lỗi cập nhật cấu hình:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

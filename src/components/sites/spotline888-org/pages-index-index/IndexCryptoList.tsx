@@ -1,15 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IndexTranslations } from "./indexI18n";
+import { tradingApi } from "@/lib/api";
+import { getR2Url } from "@/lib/r2";
 
 interface IndexCryptoListProps {
   t: IndexTranslations;
 }
 
 interface CryptoItem {
+  id?: number;
   code: string;
   name: string;
   price: string;
@@ -18,130 +21,143 @@ interface CryptoItem {
   icon: string;
 }
 
-const CRYPTO_DATA: CryptoItem[] = [
+const DEFAULT_CRYPTO_DATA: CryptoItem[] = [
   {
+    id: 1,
     code: "BTC",
     name: "BTC/USDT",
-    price: "66343.07000000",
+    price: "66343.07",
     change: "-0.76%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_btc.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_btc.png"),
   },
   {
+    id: 2,
     code: "TRX",
     name: "TRX/USDT",
-    price: "0.28153100",
+    price: "0.2815",
     change: "-0.02%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_trx.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_trx.png"),
   },
   {
+    id: 3,
     code: "DOT",
     name: "DOT/USDT",
-    price: "1.51630000",
+    price: "1.5163",
     change: "-2.26%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_dot.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_dot.png"),
   },
   {
+    id: 4,
     code: "LINK",
     name: "LINK/USDT",
-    price: "8.70000000",
+    price: "8.7000",
     change: "-2.44%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_link.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_link.png"),
   },
   {
+    id: 5,
     code: "BCH",
     name: "BCH/USDT",
-    price: "438.43000000",
+    price: "438.43",
     change: "-2.06%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_bch.png",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_bch.png"),
   },
   {
+    id: 6,
     code: "ETC",
     name: "ETC/USDT",
-    price: "8.54790000",
-    change: "-1%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_etc.png",
-  },
-  {
-    code: "DOGE",
-    name: "DOGE/USDT",
-    price: "0.09198900",
-    change: "-2.03%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_doge.png",
-  },
-  {
-    code: "ETH",
-    name: "ETH/USDT",
-    price: "1947.37000000",
-    change: "-2.31%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_eth.png",
-  },
-  {
-    code: "ADA",
-    name: "ADA/USDT",
-    price: "0.27206100",
-    change: "-2.96%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_ada.png",
-  },
-  {
-    code: "FIL",
-    name: "FIL/USDT",
-    price: "0.97500000",
-    change: "-0.29%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_fil.png",
-  },
-  {
-    code: "LTC",
-    name: "LTC/USDT",
-    price: "53.38000000",
-    change: "-1.64%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_ltc.png",
-  },
-  {
-    code: "DCR",
-    name: "DCR/USDT",
-    price: "26.55100000",
-    change: "-6.05%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_dcr.png",
-  },
-  {
-    code: "IOTA",
-    name: "IOTA/USDT",
-    price: "0.06600000",
-    change: "-1.64%",
-    icon: "/sites/spotline888-org/pages-index-index/coin_iota.png",
+    price: "8.5479",
+    change: "-1.00%",
+    icon: getR2Url("/sites/spotline888-org/pages-index-index/coin_etc.png"),
   },
 ];
 
 export const IndexCryptoList: React.FC<IndexCryptoListProps> = ({ t }) => {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [cryptoList, setCryptoList] = useState<CryptoItem[]>(DEFAULT_CRYPTO_DATA);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await tradingApi.getProducts();
+        if (res.code === 1 && Array.isArray(res.data) && res.data.length > 0) {
+          const seen = new Set<string>();
+          const mapped: CryptoItem[] = [];
+          for (const item of res.data) {
+            const rawPrice = parseFloat(item.price) || 0;
+            const formattedPrice = rawPrice > 100 ? rawPrice.toFixed(2) : rawPrice.toFixed(4);
+            const changeStr = item.change || (Math.random() > 0.5 ? "+0.85%" : "-0.76%");
+            const name = item.code.includes("/") ? item.code : `${item.code}/USDT`;
+            const uniqueKey = item.id ? `id-${item.id}` : `code-${name}`;
+
+            if (seen.has(uniqueKey)) continue;
+            seen.add(uniqueKey);
+
+            mapped.push({
+              id: item.id,
+              code: item.code.split("/")[0] || item.code,
+              name,
+              price: formattedPrice,
+              change: changeStr,
+              isUp: changeStr.startsWith("+"),
+              icon: getR2Url(item.image || "/sites/spotline888-org/pages-index-index/coin_btc.png"),
+            });
+          }
+          if (mapped.length > 0) {
+            setCryptoList(mapped);
+          }
+        }
+      } catch {
+        // Fallback dùng DEFAULT_CRYPTO_DATA
+      }
+    }
+    loadProducts();
+  }, []);
 
   return (
-    <div className="mt-3.5 select-none">
-      {/* Section Title */}
-      <h2 className="px-4 text-[14px] font-bold text-[#111827] mb-1.5">
-        {t.futureProducts}
-      </h2>
-
-      {/* Crypto List Card */}
-      <div className="mx-4 bg-white rounded-[8px] shadow-[0_3px_8px_rgba(15,23,42,0.08)] overflow-hidden">
-        {/* Table Header */}
-        <div className="flex items-center px-4 py-2 text-[11px] text-[#707a8a] border-b border-gray-100/60">
-          <span className="flex-1 text-left">{t.name}</span>
-          <span className="flex-1 text-right pr-4">{t.latestPrice}</span>
-          <span className="w-[72px] text-right">{t.change24h}</span>
+    <div className="mt-2 select-none">
+      <div className="bg-white rounded-t-[12px] shadow-[0_-2px_10px_rgba(15,23,42,0.04)]">
+        {/* Category Tab Bar */}
+        <div className="flex border-b border-[#f0f0f0] px-4">
+          <button
+            type="button"
+            onClick={() => setActiveTab(0)}
+            className={`pb-2.5 pt-3.5 mr-6 text-[14px] font-bold border-b-2 transition-colors cursor-pointer ${
+              activeTab === 0
+                ? "text-[#1e40af] border-[#1e40af]"
+                : "text-[#848e9c] border-transparent"
+            }`}
+          >
+            {t.futureProducts}
+          </button>
         </div>
 
-        {/* Rows */}
-        <div className="divide-y divide-[#f2f2f2]">
-          {CRYPTO_DATA.map((item) => {
-            const isPositive = item.isUp || item.change.startsWith("+");
+        {/* Column Header Titles */}
+        <div className="px-4 py-2 flex items-center justify-between text-[11px] text-[#848e9c] border-b border-[#f5f5f5]">
+          <div className="flex-1">
+            <span>{t.name}</span>
+          </div>
+          <div className="flex-1 text-right pr-4">
+            <span>{t.latestPrice}</span>
+          </div>
+          <div className="w-[72px] text-right">
+            <span>{t.change24h}</span>
+          </div>
+        </div>
+
+        {/* Crypto Items List */}
+        <div className="divide-y divide-[#f9f9f9]">
+          {cryptoList.map((item, idx) => {
+            const isPositive = item.change.startsWith("+");
+            const uniqueKey = item.id ? `crypto-prod-${item.id}` : `crypto-${item.code}-${idx}`;
 
             return (
               <div
-                key={item.name}
+                key={uniqueKey}
                 onClick={() =>
                   router.push(
-                    `/pages/Detail/Detail?id=1&codename=${encodeURIComponent(
+                    `/pages/Detail/Detail?id=${item.id || 1}&codename=${encodeURIComponent(
                       item.name
                     )}`
                   )

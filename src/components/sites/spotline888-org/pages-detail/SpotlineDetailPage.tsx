@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { DETAIL_TRANSLATIONS } from "./detailI18n";
+import { tradingApi, authApi } from "@/lib/api";
 
 interface Candle {
   time: string;
@@ -94,6 +95,52 @@ function SpotlineDetailInner() {
 
   // Active trades state
   const [trades, setTrades] = useState<ActiveTrade[]>([]);
+
+  // Tải nến K-line thật và số dư thật từ MySQL CSDL
+  useEffect(() => {
+    async function loadLiveDetailData() {
+      try {
+        const [klineRes, profRes, ordersRes] = await Promise.all([
+          tradingApi.getKline(codenameParam, selectedTimeframe),
+          authApi.getProfile(),
+          tradingApi.getMyOrders("all", 1, 20),
+        ]);
+
+        if (klineRes.code === 1 && klineRes.data?.candles?.length > 0) {
+          setCandles(klineRes.data.candles);
+          if (klineRes.data.current_price) {
+            setBasePrice(klineRes.data.current_price);
+          }
+        }
+
+        if (profRes.code === 1 && profRes.data?.money) {
+          setUserBalance(parseFloat(profRes.data.money));
+        }
+
+        if (ordersRes.code === 1 && Array.isArray(ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data)) {
+          const rawOrders = ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data;
+          const mappedOrders: ActiveTrade[] = rawOrders.map((o: any) => ({
+            id: String(o.id || o.order_sn),
+            symbol: o.symbol || codenameParam,
+            direction: o.ostyle === "buy_up" ? "long" : "short",
+            amount: parseFloat(o.money || o.amount || "0"),
+            entryPrice: parseFloat(o.buy_price || "0") || basePrice,
+            duration: Number(o.second || 60),
+            remaining: Math.max(0, Math.floor(((new Date(o.settle_time || o.created_at).getTime() + (Number(o.second || 60) * 1000)) - Date.now()) / 1000)),
+            yieldRate: parseFloat(o.yield_rate || "85") / 100,
+            status: o.status === "open" ? "trading" : (o.is_win === 1 ? "win" : "loss"),
+          }));
+          if (mappedOrders.length > 0) {
+            setTrades(mappedOrders);
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi đồng bộ kline và số dư:", err);
+      }
+    }
+
+    loadLiveDetailData();
+  }, [codenameParam, selectedTimeframe]);
 
   // Periodically fluctuate current price
   useEffect(() => {
@@ -202,7 +249,7 @@ function SpotlineDetailInner() {
     setIsOrderOpen(true);
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const num = parseFloat(investAmount);
     if (isNaN(num) || num <= 0) {
       showToast(t.investAmount);
@@ -213,9 +260,22 @@ function SpotlineDetailInner() {
       return;
     }
 
+    const dirParam = orderDirection === "long" ? "buy_up" : "buy_down";
+    const res = await tradingApi.createOrder({
+      symbol: codenameParam,
+      direction: dirParam,
+      money: num,
+      duration: selectedDuration,
+    });
+
+    if (res.code !== 1) {
+      showToast(res.msg || "Đặt lệnh thất bại");
+      return;
+    }
+
     setUserBalance((prev) => Number((prev - num).toFixed(2)));
     const newTrade: ActiveTrade = {
-      id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+      id: String(res.data?.orderId || Math.random().toString(36).substring(2, 9).toUpperCase()),
       symbol: codenameParam,
       direction: orderDirection,
       amount: num,

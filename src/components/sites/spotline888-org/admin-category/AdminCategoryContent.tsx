@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getR2Url } from "@/lib/r2";
+import { contentApi } from "@/lib/api";
 
 export interface CategoryItem {
   id: number;
@@ -23,7 +25,7 @@ export interface CategoryItem {
   haschild?: number;
 }
 
-const INITIAL_CATEGORIES: CategoryItem[] = [
+const RAW_CATEGORIES: CategoryItem[] = [
   {
     id: 11,
     pid: 0,
@@ -146,6 +148,11 @@ const INITIAL_CATEGORIES: CategoryItem[] = [
   },
 ];
 
+const INITIAL_CATEGORIES: CategoryItem[] = RAW_CATEGORIES.map((item) => ({
+  ...item,
+  image: getR2Url(item.image),
+}));
+
 export default function AdminCategoryContent() {
   const [categories, setCategories] = useState<CategoryItem[]>(INITIAL_CATEGORIES);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -153,6 +160,44 @@ export default function AdminCategoryContent() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchBanners = async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await contentApi.getBanners();
+      if (res && res.code === 1 && Array.isArray(res.data) && res.data.length > 0) {
+        const mapped: CategoryItem[] = res.data.map((item: any) => ({
+          id: item.id,
+          pid: item.pid || 0,
+          type: item.type || 'banner',
+          name: item.name || '',
+          nickname: '',
+          flag: item.flag || '',
+          image: getR2Url(item.image),
+          keywords: item.keywords || '',
+          description: item.description || '',
+          diyname: '',
+          createtime: item.created_at ? Math.floor(new Date(item.created_at).getTime() / 1000) : 0,
+          updatetime: item.updated_at ? Math.floor(new Date(item.updated_at).getTime() / 1000) : 0,
+          weigh: item.weigh || 0,
+          status: item.status || 'normal',
+          type_text: '轮播图',
+          flag_text: '',
+          spacer: '',
+          haschild: 0,
+        }));
+        setCategories(mapped);
+      }
+    } catch {
+      // Giữ INITIAL_CATEGORIES nếu offline
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBanners();
+  }, []);
 
   // Modal dialog state (Add / Edit)
   const [modalMode, setModalMode] = useState<"add" | "edit" | null>(null);

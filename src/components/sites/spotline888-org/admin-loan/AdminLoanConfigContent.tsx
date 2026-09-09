@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { adminApi } from "@/lib/api";
 
 export interface LoanConfigItem {
   id: number;
@@ -14,56 +15,39 @@ export interface LoanConfigItem {
   ctime: string; // 创建时间
 }
 
-const initialConfigs: LoanConfigItem[] = [
-  {
-    id: 1,
-    name: "5天快贷，支持用户存款到达50000元以上贷款。",
-    days: 5,
-    dailyRate: "0.0800%",
-    minAmount: "¥2000.00",
-    maxAmount: "¥50000.00",
-    status: true,
-    weigh: 1,
-    ctime: "2025-10-28 11:10:29",
-  },
-  {
-    id: 4,
-    name: "7天快贷，支持用户存款到达100000元以上贷款。",
-    days: 7,
-    dailyRate: "0.1000%",
-    minAmount: "¥20000.00",
-    maxAmount: "¥100000.00",
-    status: true,
-    weigh: 1,
-    ctime: "2025-10-28 17:29:59",
-  },
-  {
-    id: 2,
-    name: "15天快贷，支持用户存款到达300000元以上贷款。",
-    days: 15,
-    dailyRate: "0.1500%",
-    minAmount: "¥200000.00",
-    maxAmount: "¥500000.00",
-    status: true,
-    weigh: 2,
-    ctime: "2025-10-28 11:10:29",
-  },
-  {
-    id: 7,
-    name: "30天快贷，支持用户存款到达500000元以上贷款。",
-    days: 30,
-    dailyRate: "0.2000%",
-    minAmount: "¥500000.00",
-    maxAmount: "¥1000000.00",
-    status: true,
-    weigh: 4,
-    ctime: "2025-11-04 14:04:50",
-  },
-];
-
 export default function AdminLoanConfigContent() {
-  const [configs, setConfigs] = useState<LoanConfigItem[]>(initialConfigs);
+  const [configs, setConfigs] = useState<LoanConfigItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const fetchConfigs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await adminApi.getLoanConfigs();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        const mapped: LoanConfigItem[] = res.data.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          days: c.days,
+          dailyRate: `${(Number(c.daily_rate) * 100).toFixed(4)}%`,
+          minAmount: `¥${Number(c.min_amount).toFixed(2)}`,
+          maxAmount: `¥${Number(c.max_amount).toFixed(2)}`,
+          status: Boolean(c.status),
+          weigh: c.weigh || 1,
+          ctime: c.created_at ? new Date(c.created_at).toISOString().slice(0, 19).replace('T', ' ') : '-',
+        }));
+        setConfigs(mapped);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp cấu hình gói vay:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchConfigs();
+  }, [fetchConfigs]);
   const [showSearchForm, setShowSearchForm] = useState(true);
   const [quickSearch, setQuickSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -162,29 +146,55 @@ export default function AdminLoanConfigContent() {
       ctime: "",
     });
     setQuickSearch("");
-    setConfigs([...initialConfigs]);
+    fetchConfigs();
   };
 
   // Status toggle
-  const handleToggleStatus = (id: number) => {
-    setConfigs((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, status: !c.status } : c))
-    );
-  };
-
-  // Delete item
-  const handleDelete = (id: number) => {
-    if (window.confirm("确定要删除这条记录吗？")) {
-      setConfigs((prev) => prev.filter((c) => c.id !== id));
-      setSelectedIds((prev) => prev.filter((i) => i !== id));
+  const handleToggleStatus = async (id: number) => {
+    const item = configs.find((c) => c.id === id);
+    if (!item) return;
+    try {
+      await adminApi.saveLoanConfig({
+        id: item.id,
+        name: item.name,
+        days: item.days,
+        daily_rate: parseFloat(item.dailyRate.replace('%', '')) / 100,
+        min_amount: parseFloat(item.minAmount.replace('¥', '')),
+        max_amount: parseFloat(item.maxAmount.replace('¥', '')),
+        status: !item.status ? 1 : 0,
+        weigh: item.weigh,
+      });
+      fetchConfigs();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái gói vay:", err);
     }
   };
 
-  const handleDeleteSelected = () => {
+  // Delete item
+  const handleDelete = async (id: number) => {
+    if (window.confirm("确定要删除这条记录吗？")) {
+      try {
+        await adminApi.deleteLoanConfig(id);
+        setSelectedIds((prev) => prev.filter((i) => i !== id));
+        fetchConfigs();
+      } catch (err) {
+        console.error("Lỗi xóa gói vay:", err);
+      }
+    }
+  };
+
+  const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (window.confirm(`确定要删除选中的 ${selectedIds.length} 条记录吗？`)) {
-      setConfigs((prev) => prev.filter((c) => !selectedIds.includes(c.id)));
-      setSelectedIds([]);
+      try {
+        for (const id of selectedIds) {
+          await adminApi.deleteLoanConfig(id);
+        }
+        setSelectedIds([]);
+        fetchConfigs();
+      } catch (err) {
+        console.error("Lỗi xóa nhiều gói vay:", err);
+      }
     }
   };
 
@@ -203,45 +213,24 @@ export default function AdminLoanConfigContent() {
   };
 
   // Save Add/Edit
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      setConfigs((prev) =>
-        prev.map((c) =>
-          c.id === editingItem.id
-            ? {
-                ...c,
-                name: modalForm.name,
-                days: Number(modalForm.days),
-                dailyRate: modalForm.dailyRate.includes("%")
-                  ? modalForm.dailyRate
-                  : `${modalForm.dailyRate}%`,
-                minAmount: `¥${modalForm.minAmount}`,
-                maxAmount: `¥${modalForm.maxAmount}`,
-                status: modalForm.status,
-                weigh: Number(modalForm.weigh),
-              }
-            : c
-        )
-      );
-      setEditingItem(null);
-    } else {
-      const newId = Math.max(...configs.map((c) => c.id), 0) + 1;
-      const newItem: LoanConfigItem = {
-        id: newId,
+    try {
+      await adminApi.saveLoanConfig({
+        id: editingItem ? editingItem.id : undefined,
         name: modalForm.name,
         days: Number(modalForm.days),
-        dailyRate: modalForm.dailyRate.includes("%")
-          ? modalForm.dailyRate
-          : `${modalForm.dailyRate}%`,
-        minAmount: `¥${modalForm.minAmount}`,
-        maxAmount: `¥${modalForm.maxAmount}`,
-        status: modalForm.status,
+        daily_rate: parseFloat(modalForm.dailyRate.replace('%', '')) / 100,
+        min_amount: parseFloat(modalForm.minAmount),
+        max_amount: parseFloat(modalForm.maxAmount),
+        status: modalForm.status ? 1 : 0,
         weigh: Number(modalForm.weigh),
-        ctime: "2026-09-07 17:30:00",
-      };
-      setConfigs([newItem, ...configs]);
+      });
+      setEditingItem(null);
       setIsAddModalOpen(false);
+      fetchConfigs();
+    } catch (err) {
+      console.error("Lỗi lưu gói vay:", err);
     }
   };
 
@@ -387,9 +376,10 @@ export default function AdminLoanConfigContent() {
                   className="btn btn-primary btn-refresh"
                   title="Refresh"
                   onClick={() => {
-                    setConfigs([...initialConfigs]);
+                    fetchConfigs();
                     setSelectedIds([]);
                   }}
+
                 >
                   <i className="fa fa-refresh"></i>
                 </button>

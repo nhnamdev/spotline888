@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
 
 interface AuthGroup {
   id: number;
@@ -12,44 +13,7 @@ interface AuthGroup {
   updatetime: number;
 }
 
-const INITIAL_GROUPS: AuthGroup[] = [
-  {
-    id: 1,
-    pid: 0,
-    name: "Admin group",
-    rules: "*",
-    status: "normal",
-    createtime: 1490883540,
-    updatetime: 1490883540,
-  },
-  {
-    id: 10,
-    pid: 1,
-    name: "├ 代理",
-    rules: "13,14,16,15,17,146,147,148,218,219,125,126,127,128,129,130,131,132,175,228,149,150,151,152,173,153,154,155,156,174,208,209,210,211,212,213,214,215,216,217,225,226,227,235,236,237,238,240,242,243,244,245,246,231,232,1,96,66,97,98,204,205,203,224,234,239,233,229,230",
-    status: "normal",
-    createtime: 1568640421,
-    updatetime: 1772184854,
-  },
-  {
-    id: 11,
-    pid: 10,
-    name: "│ └ 超级会员",
-    rules: "13,14,16,15,17,146,147,148,125,126,127,128,129,130,131,132,175,149,150,151,152,173,1,96,66,97",
-    status: "normal",
-    createtime: 1594732910,
-    updatetime: 1768714116,
-  },
-  {
-    id: 12,
-    pid: 1,
-    name: "└ 分组",
-    rules: "66,96,125,126,127,128,129,130,131,132,146,147,148,149,150,153,156,174,175,218,219,228,229,97,98",
-    status: "normal",
-    createtime: 1768714337,
-    updatetime: 1768714429,
-  },
-];
+
 
 const PERMISSION_NODES = [
   {
@@ -119,7 +83,7 @@ const PERMISSION_NODES = [
 ];
 
 export default function AdminAuthGroupContent() {
-  const [groups, setGroups] = useState<AuthGroup[]>(INITIAL_GROUPS);
+  const [groups, setGroups] = useState<AuthGroup[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -141,6 +105,21 @@ export default function AdminAuthGroupContent() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  const loadGroups = async () => {
+    try {
+      const res = await adminApi.getAuthGroups();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        setGroups(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load auth groups:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadGroups();
+  }, []);
 
   // Selection handlers (Admin group ID 1 is protected)
   const toggleSelectAll = () => {
@@ -190,44 +169,33 @@ export default function AdminAuthGroupContent() {
   };
 
   // Save Modal Form
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim()) {
       alert("Please enter name");
       return;
     }
 
-    if (modalMode === "add") {
-      const newId = groups.length > 0 ? Math.max(...groups.map((g) => g.id)) + 1 : 1;
-      const prefix = formState.pid === 1 ? "├ " : "│ └ ";
-      const newGroup: AuthGroup = {
-        id: newId,
-        pid: Number(formState.pid),
-        name: prefix + formState.name.trim(),
-        rules: "1,96,66,97,98",
-        status: formState.status,
-        createtime: Math.floor(Date.now() / 1000),
-        updatetime: Math.floor(Date.now() / 1000),
-      };
-      setGroups([...groups, newGroup]);
-      showToast("添加角色组成功！");
-    } else if (modalMode === "edit" && editingGroup) {
-      setGroups(
-        groups.map((item) => {
-          if (item.id === editingGroup.id) {
-            const prefix = Number(formState.pid) === 1 ? "├ " : "│ └ ";
-            return {
-              ...item,
-              pid: Number(formState.pid),
-              name: prefix + formState.name.trim(),
-              status: formState.status,
-              updatetime: Math.floor(Date.now() / 1000),
-            };
-          }
-          return item;
-        })
-      );
-      showToast("更新角色组成功！");
+    const prefix = Number(formState.pid) === 1 ? "├ " : "│ └ ";
+    const payload = {
+      ...(modalMode === "edit" && editingGroup ? { id: editingGroup.id } : {}),
+      pid: Number(formState.pid),
+      name: (modalMode === "add" ? prefix : "") + formState.name.trim(),
+      status: formState.status,
+      rules: editingGroup?.rules || "1,96,66,97,98",
+    };
+
+    try {
+      const res = await adminApi.saveAuthGroup(payload);
+      if (res.code === 1) {
+        showToast(modalMode === "add" ? "添加角色组成功！" : "更新角色组成功！");
+        await loadGroups();
+      } else {
+        alert(res.msg || "Lưu thất bại");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi kết nối");
     }
 
     setModalMode(null);
@@ -244,13 +212,24 @@ export default function AdminAuthGroupContent() {
     setDeleteConfirmIds([id]);
   };
 
-  const executeDelete = () => {
-    if (!deleteConfirmIds) return;
-    setGroups(groups.filter((g) => !deleteConfirmIds.includes(g.id)));
-    setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
+  const executeDelete = async () => {
+    if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
+    try {
+      for (const id of deleteConfirmIds) {
+        if (id !== 1) {
+          await adminApi.deleteAuthGroup(id);
+        }
+      }
+      showToast("删除成功！");
+      await loadGroups();
+      setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Lỗi khi xóa");
+    }
     setDeleteConfirmIds(null);
-    showToast("删除成功！");
   };
+
 
   return (
     <div className="auth-group-wrapper">

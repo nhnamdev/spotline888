@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { INITIAL_RULES, RuleItem } from "./rulesData";
+import React, { useState, useEffect } from "react";
+import { RuleItem } from "./rulesData";
+import { adminApi } from "@/lib/api";
 
 export default function AdminAuthRuleContent() {
-  const [rules, setRules] = useState<RuleItem[]>(INITIAL_RULES);
+  const [rules, setRules] = useState<RuleItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [expandedPids, setExpandedPids] = useState<number[]>([0]); // By default root menus are shown, can expand children
@@ -33,6 +34,21 @@ export default function AdminAuthRuleContent() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  const loadRules = async () => {
+    try {
+      const res = await adminApi.getAuthRules();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        setRules(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load rules:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadRules();
+  }, []);
 
   // Selection handlers
   const toggleSelectAll = () => {
@@ -73,31 +89,37 @@ export default function AdminAuthRuleContent() {
   };
 
   // Toggle status for selected items
-  const handleSetStatus = (status: "normal" | "hidden") => {
+  const handleSetStatus = async (status: "normal" | "hidden") => {
     if (selectedIds.length === 0) return;
-    setRules(
-      rules.map((r) => {
-        if (selectedIds.includes(r.id)) {
-          return { ...r, status };
+    try {
+      for (const id of selectedIds) {
+        const r = rules.find((item) => item.id === id);
+        if (r) {
+          await adminApi.saveAuthRule({ ...r, status });
         }
-        return r;
-      })
-    );
+      }
+      showToast(`批量修改状态为 ${status === "normal" ? "正常" : "隐藏"} 成功！`);
+      await loadRules();
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi cập nhật trạng thái");
+    }
     setIsMoreMenuOpen(false);
-    showToast(`批量修改状态为 ${status === "normal" ? "正常" : "隐藏"} 成功！`);
   };
 
   // Toggle ismenu switch
-  const handleToggleIsmenu = (id: number) => {
-    setRules(
-      rules.map((r) => {
-        if (r.id === id) {
-          return { ...r, ismenu: r.ismenu === 1 ? 0 : 1 };
-        }
-        return r;
-      })
-    );
-    showToast("切换菜单状态成功！");
+  const handleToggleIsmenu = async (id: number) => {
+    const r = rules.find((item) => item.id === id);
+    if (!r) return;
+    const newIsmenu = r.ismenu === 1 ? 0 : 1;
+    try {
+      await adminApi.saveAuthRule({ ...r, ismenu: newIsmenu });
+      showToast("切换菜单状态成功！");
+      await loadRules();
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi cập nhật trạng thái menu");
+    }
   };
 
   // Open Add modal
@@ -136,55 +158,38 @@ export default function AdminAuthRuleContent() {
   };
 
   // Save Modal Form
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim() || !formState.title.trim()) {
       alert("Please fill in Name and Title");
       return;
     }
 
-    if (modalMode === "add") {
-      const newId = rules.length > 0 ? Math.max(...rules.map((r) => r.id)) + 1 : 1;
-      const prefix = formState.pid === 0 ? " " : "├ ";
-      const newRule: RuleItem = {
-        id: newId,
-        pid: Number(formState.pid),
-        name: formState.name.trim(),
-        title: prefix + formState.title.trim(),
-        icon: formState.icon.trim(),
-        weigh: Number(formState.weigh) || 0,
-        condition: formState.condition.trim(),
-        remark: formState.remark.trim(),
-        ismenu: Number(formState.ismenu),
-        status: formState.status,
-        createtime: Math.floor(Date.now() / 1000),
-        updatetime: Math.floor(Date.now() / 1000),
-      };
-      setRules([...rules, newRule]);
-      showToast("添加菜单规则成功！");
-    } else if (modalMode === "edit" && editingRule) {
-      setRules(
-        rules.map((r) => {
-          if (r.id === editingRule.id) {
-            const prefix = Number(formState.pid) === 0 ? " " : "├ ";
-            return {
-              ...r,
-              pid: Number(formState.pid),
-              name: formState.name.trim(),
-              title: prefix + formState.title.trim(),
-              icon: formState.icon.trim(),
-              weigh: Number(formState.weigh) || 0,
-              condition: formState.condition.trim(),
-              remark: formState.remark.trim(),
-              ismenu: Number(formState.ismenu),
-              status: formState.status,
-              updatetime: Math.floor(Date.now() / 1000),
-            };
-          }
-          return r;
-        })
-      );
-      showToast("更新菜单规则成功！");
+    const prefix = formState.pid === 0 ? " " : "├ ";
+    const payload = {
+      ...(modalMode === "edit" && editingRule ? { id: editingRule.id } : {}),
+      pid: Number(formState.pid),
+      name: formState.name.trim(),
+      title: (modalMode === "add" ? prefix : "") + formState.title.trim(),
+      icon: formState.icon.trim(),
+      weigh: Number(formState.weigh) || 0,
+      condition: formState.condition.trim(),
+      remark: formState.remark.trim(),
+      ismenu: Number(formState.ismenu),
+      status: formState.status,
+    };
+
+    try {
+      const res = await adminApi.saveAuthRule(payload);
+      if (res.code === 1) {
+        showToast(modalMode === "add" ? "添加菜单规则成功！" : "更新菜单规则成功！");
+        await loadRules();
+      } else {
+        alert(res.msg || "Lỗi lưu quy tắc");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi kết nối");
     }
 
     setModalMode(null);
@@ -200,13 +205,22 @@ export default function AdminAuthRuleContent() {
     setDeleteConfirmIds([id]);
   };
 
-  const executeDelete = () => {
-    if (!deleteConfirmIds) return;
-    setRules(rules.filter((r) => !deleteConfirmIds.includes(r.id)));
-    setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
+  const executeDelete = async () => {
+    if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteAuthRule(id);
+      }
+      showToast("删除成功！");
+      await loadRules();
+      setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi khi xóa quy tắc");
+    }
     setDeleteConfirmIds(null);
-    showToast("删除成功！");
   };
+
 
   // Determine visibility based on parent expansion
   const isRuleVisible = (rule: RuleItem): boolean => {

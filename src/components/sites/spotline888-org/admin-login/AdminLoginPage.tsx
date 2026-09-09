@@ -2,10 +2,22 @@
 
 import React from "react";
 import AdminLoginForm from "./AdminLoginForm";
+import { getR2Url } from "@/lib/r2";
 
 export default function AdminLoginPage() {
+  const bgUrl = getR2Url("/sites/spotline888-org/admin-login/loginbg.jpg");
+
   return (
-    <div className="admin-login-page-root">
+    <div
+      className="admin-login-page-root"
+      style={{
+        backgroundImage: `url("${bgUrl}")`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center center",
+        backgroundAttachment: "fixed",
+        backgroundSize: "cover",
+      }}
+    >
       <div className="container">
         <div className="login-wrapper">
           <AdminLoginForm />
@@ -18,8 +30,6 @@ export default function AdminLoginPage() {
           min-height: 100vh;
           width: 100%;
           color: #999999;
-          background: url("/sites/spotline888-org/admin-login/loginbg.jpg") no-repeat center center fixed;
-          background-size: cover;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
             Arial, sans-serif;
           font-size: 13px;

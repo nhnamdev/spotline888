@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { getR2Url } from "@/lib/r2";
 
 interface LoginHeaderProps {
   onOpenLang: () => void;
@@ -21,7 +22,7 @@ export const LoginHeader: React.FC<LoginHeaderProps> = ({ onOpenLang }) => {
         className="w-9 h-9 rounded-full bg-white/80 backdrop-blur-[10px] flex items-center justify-center shadow-[0_1px_6px_rgba(0,0,0,0.06)] hover:bg-white active:scale-95 transition-all cursor-pointer border-0"
       >
         <Image
-          src="/sites/spotline888-org/pages-login-login/lang_icon.png"
+          src={getR2Url("/sites/spotline888-org/pages-login-login/lang_icon.png")}
           alt="Language"
           width={18}
           height={18}

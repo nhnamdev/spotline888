@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { getR2Url } from "@/lib/r2";
+import { adminApi } from "@/lib/api";
 
 interface AdminUser {
   id: number;
@@ -17,37 +19,6 @@ interface AdminUser {
   createtime: number;
 }
 
-const INITIAL_ADMINS: AdminUser[] = [
-  {
-    id: 1,
-    username: "admin",
-    nickname: "Spot",
-    room_id: "1(123214313)",
-    avatar: "/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg",
-    email: "admin@admin.com",
-    status: "normal",
-    memo: "",
-    kefu_url: "",
-    groups_text: "Admin group",
-    logintime: 1788831344,
-    createtime: 1492186163,
-  },
-  {
-    id: 2,
-    username: "admin2",
-    nickname: "代理",
-    room_id: "2(124123124213)",
-    avatar: "/assets/img/avatar.png",
-    email: "q806565893@gmail.com",
-    status: "normal",
-    memo: "代理",
-    kefu_url: "https://facebook.com",
-    groups_text: "代理",
-    logintime: 1772185530,
-    createtime: 1772181267,
-  },
-];
-
 function formatDateTime(timestamp: number): string {
   if (!timestamp) return "-";
   const date = new Date(timestamp * 1000);
@@ -61,13 +32,29 @@ function formatDateTime(timestamp: number): string {
 }
 
 export default function AdminAuthAdminContent() {
-  const [admins, setAdmins] = useState<AdminUser[]>(INITIAL_ADMINS);
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCommonSearchOpen, setIsCommonSearchOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const fetchAdmins = useCallback(async () => {
+    try {
+      const res = await adminApi.getAdminUsers();
+      if (res && res.code === 1 && Array.isArray(res.data)) {
+        setAdmins(res.data);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp danh sách admin:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAdmins();
+  }, [fetchAdmins]);
+
   // Commonsearch form fields
+
   const [commonSearch, setCommonSearch] = useState({
     id: "",
     username: "",
@@ -155,53 +142,31 @@ export default function AdminAuthAdminContent() {
   };
 
   // Save Modal Form
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.username.trim()) {
       alert("Please enter username");
       return;
     }
 
-    if (modalMode === "add") {
-      const newAdmin: AdminUser = {
-        id: admins.length > 0 ? Math.max(...admins.map((a) => a.id)) + 1 : 1,
+    try {
+      await adminApi.saveAdminUser({
+        id: modalMode === "edit" && editingAdmin ? editingAdmin.id : undefined,
         username: formState.username.trim(),
         nickname: formState.nickname.trim() || formState.username.trim(),
-        room_id: formState.room_id.trim(),
-        avatar: "/assets/img/avatar.png",
+        password: formState.password.trim() || undefined,
         email: formState.email.trim(),
+        room_id: formState.room_id.trim(),
         status: formState.status,
         memo: formState.memo.trim(),
         kefu_url: formState.kefu_url.trim(),
-        groups_text: formState.group === "10" ? "代理" : "Admin group",
-        logintime: 0,
-        createtime: Math.floor(Date.now() / 1000),
-      };
-      setAdmins([...admins, newAdmin]);
-      showToast("添加管理员成功！");
-    } else if (modalMode === "edit" && editingAdmin) {
-      setAdmins(
-        admins.map((item) => {
-          if (item.id === editingAdmin.id) {
-            return {
-              ...item,
-              username: formState.username.trim(),
-              nickname: formState.nickname.trim(),
-              room_id: formState.room_id.trim(),
-              email: formState.email.trim(),
-              status: formState.status,
-              memo: formState.memo.trim(),
-              kefu_url: formState.kefu_url.trim(),
-              groups_text: formState.group === "10" ? "代理" : "Admin group",
-            };
-          }
-          return item;
-        })
-      );
-      showToast("更新管理员成功！");
+      });
+      showToast(modalMode === "add" ? "添加管理员成功！" : "更新管理员成功！");
+      setModalMode(null);
+      fetchAdmins();
+    } catch (err) {
+      console.error("Lỗi lưu quản trị viên:", err);
     }
-
-    setModalMode(null);
   };
 
   // Confirm delete
@@ -215,12 +180,19 @@ export default function AdminAuthAdminContent() {
     setDeleteConfirmIds([id]);
   };
 
-  const executeDelete = () => {
+  const executeDelete = async () => {
     if (!deleteConfirmIds) return;
-    setAdmins(admins.filter((a) => !deleteConfirmIds.includes(a.id)));
-    setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
-    setDeleteConfirmIds(null);
-    showToast("删除成功！");
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteAdminUser(id);
+      }
+      setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
+      setDeleteConfirmIds(null);
+      showToast("删除成功！");
+      fetchAdmins();
+    } catch (err) {
+      console.error("Lỗi xóa quản trị viên:", err);
+    }
   };
 
   // Filtered rows

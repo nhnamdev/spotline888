@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
 
 interface UserItem {
   uid: number;
@@ -13,113 +14,17 @@ interface UserItem {
   authStatus: string;
   money: string;
   usdtBalance: string;
+  creditScore?: number;
 }
 
-const initialUsers: UserItem[] = [
-  {
-    uid: 196,
-    avatarBg: "#d9534f",
-    account: "WongLeeChu",
-    realName: "Wong Lee Chu",
-    accountType: "客户",
-    phone: "12332",
-    profession: "123213",
-    authStatus: "已认证",
-    money: "482256.73",
-    usdtBalance: "0",
-  },
-  {
-    uid: 195,
-    avatarBg: "#d9534f",
-    account: "simyeekun",
-    realName: "sim yee kun",
-    accountType: "客户",
-    phone: "222",
-    profession: "零",
-    authStatus: "已认证",
-    money: "0.00",
-    usdtBalance: "0",
-  },
-  {
-    uid: 194,
-    avatarBg: "#f0ad4e",
-    account: "CHOOILAIMEI",
-    realName: "CHOOI LAI MEI",
-    accountType: "客户",
-    phone: "222",
-    profession: "退休",
-    authStatus: "已认证",
-    money: "165300.00",
-    usdtBalance: "0",
-  },
-  {
-    uid: 193,
-    avatarBg: "#5bc0de",
-    account: "PONGCHOONYONG",
-    realName: "PONG CHOON YONG",
-    accountType: "客户",
-    phone: "222",
-    profession: "退休",
-    authStatus: "已认证",
-    money: "0.00",
-    usdtBalance: "0",
-  },
-  {
-    uid: 192,
-    avatarBg: "#337ab7",
-    account: "KHORHANKIONG",
-    realName: "KHOR HAN KIONG",
-    accountType: "客户",
-    phone: "12312332",
-    profession: "123123",
-    authStatus: "已认证",
-    money: "72566.73",
-    usdtBalance: "0",
-  },
-  {
-    uid: 191,
-    avatarBg: "#d9534f",
-    account: "LimVuiShing",
-    realName: "Lim Vui Shing",
-    accountType: "客户",
-    phone: "222",
-    profession: "退休",
-    authStatus: "已认证",
-    money: "120369.00",
-    usdtBalance: "0",
-  },
-  {
-    uid: 190,
-    avatarBg: "#337ab7",
-    account: "LimChengYong",
-    realName: "Lim Cheng Yong",
-    accountType: "客户",
-    phone: "222",
-    profession: "安装闭路电视",
-    authStatus: "已认证",
-    money: "44010.28",
-    usdtBalance: "0",
-  },
-  {
-    uid: 189,
-    avatarBg: "#5bc0de",
-    account: "wongchawfung",
-    realName: "wong chaw fung",
-    accountType: "客户",
-    phone: "1233",
-    profession: "123312",
-    authStatus: "已认证",
-    money: "0.00",
-    usdtBalance: "0",
-  },
-];
-
 export default function AdminUserContent() {
-  const [users, setUsers] = useState<UserItem[]>(initialUsers);
+  const [users, setUsers] = useState<UserItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<"users" | "blacklist">("users");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
   // Search filters
   const [searchForm, setSearchForm] = useState({
@@ -149,6 +54,7 @@ export default function AdminUserContent() {
 
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    fetchUsers(searchForm.account);
   };
 
   const handleFilterReset = () => {
@@ -162,7 +68,163 @@ export default function AdminUserContent() {
       riskControl: "Choose",
       status: "Choose",
     });
+    fetchUsers("");
   };
+
+  // Modal State for Balance Adjustment (分数 / 上下分)
+  const [balanceModal, setBalanceModal] = useState<{
+    isOpen: boolean;
+    user: UserItem | null;
+    type: 'add' | 'sub';
+    amount: string;
+    memo: string;
+    loading: boolean;
+  }>({
+    isOpen: false,
+    user: null,
+    type: 'add',
+    amount: '',
+    memo: '',
+    loading: false,
+  });
+
+  // Modal State for Credit Score Adjustment (信誉分)
+  const [creditModal, setCreditModal] = useState<{
+    isOpen: boolean;
+    user: UserItem | null;
+    type: 'add' | 'sub' | 'set';
+    score: string;
+    memo: string;
+    loading: boolean;
+  }>({
+    isOpen: false,
+    user: null,
+    type: 'add',
+    score: '',
+    memo: '',
+    loading: false,
+  });
+
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showToast = (type: 'success' | 'error', text: string) => {
+    setToastMessage({ type, text });
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4000);
+  };
+
+  const fetchUsers = async (customAccount?: string) => {
+    try {
+      setLoading(true);
+      const q = customAccount !== undefined ? customAccount : searchForm.account;
+      const res = await adminApi.getUsers(currentPage, pageSize, q);
+      if (res && res.code === 1 && res.data?.rows) {
+        const colors = ["#d9534f", "#f0ad4e", "#5bc0de", "#337ab7", "#5cb85c"];
+        const mapped: UserItem[] = res.data.rows.map((u: any, idx: number) => ({
+          uid: u.id,
+          avatarBg: colors[idx % colors.length],
+          account: u.account || u.username || 'User_' + u.id,
+          realName: u.real_name || u.account || '-',
+          accountType: u.level > 1 ? 'VIP ' + u.level : '客户',
+          phone: u.phone || '-',
+          profession: u.remark || '普通会员',
+          authStatus: u.is_auth === 2 ? '已认证' : (u.is_auth === 1 ? '待审核' : '未认证'),
+          money: parseFloat(u.money || 0).toFixed(2),
+          usdtBalance: parseFloat(u.usdt || 0).toFixed(2),
+          creditScore: u.credit_score ?? 100,
+        }));
+        setUsers(mapped);
+        setTotal(res.data.total || mapped.length);
+      }
+    } catch (err) {
+      console.error('Lỗi tải danh sách người dùng:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, pageSize]);
+
+  const handleConfirmBalance = async () => {
+    if (!balanceModal.user) return;
+    const numAmount = parseFloat(balanceModal.amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      alert('Vui lòng nhập số tiền hợp lệ (> 0)');
+      return;
+    }
+
+    setBalanceModal(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await adminApi.adjustBalance({
+        userId: balanceModal.user.uid,
+        amount: numAmount,
+        type: balanceModal.type,
+        memo: balanceModal.memo || (balanceModal.type === 'add' ? `Admin cộng tiền: +${numAmount}` : `Admin trừ tiền: -${numAmount}`),
+      });
+
+      if (res && res.code === 1) {
+        const newBalance = res.data?.after_balance !== undefined 
+          ? parseFloat(res.data.after_balance).toFixed(2) 
+          : (
+            balanceModal.type === 'add' 
+              ? (parseFloat(balanceModal.user.money) + numAmount).toFixed(2)
+              : (parseFloat(balanceModal.user.money) - numAmount).toFixed(2)
+          );
+
+        setUsers(prev => prev.map(u => u.uid === balanceModal.user!.uid ? { ...u, money: newBalance } : u));
+        setBalanceModal({ isOpen: false, user: null, type: 'add', amount: '', memo: '', loading: false });
+        showToast('success', `Điều chỉnh số dư thành công! Số dư mới: ${newBalance} MYR`);
+      } else {
+        alert(res?.msg || 'Điều chỉnh số dư thất bại');
+        setBalanceModal(prev => ({ ...prev, loading: false }));
+      }
+    } catch (err: any) {
+      alert('Lỗi kết nối: ' + err.message);
+      setBalanceModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleConfirmCredit = async () => {
+    if (!creditModal.user) return;
+    const numScore = parseFloat(creditModal.score);
+    if (isNaN(numScore)) {
+      alert('Vui lòng nhập số điểm hợp lệ');
+      return;
+    }
+
+    setCreditModal(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await adminApi.adjustCreditScore({
+        userId: creditModal.user.uid,
+        score: numScore,
+        type: creditModal.type,
+        memo: creditModal.memo || `Điều chỉnh điểm tín nhiệm (${creditModal.type}): ${numScore}`,
+      });
+
+      if (res && res.code === 1) {
+        const currentVal = creditModal.user.creditScore ?? 100;
+        const newScore = res.data?.after_score ?? res.data?.credit_score ?? (
+          creditModal.type === 'set' ? Math.min(100, Math.max(0, Math.round(numScore))) :
+          creditModal.type === 'sub' ? Math.max(0, currentVal - Math.round(Math.abs(numScore))) :
+          Math.min(100, currentVal + Math.round(Math.abs(numScore)))
+        );
+
+        setUsers(prev => prev.map(u => u.uid === creditModal.user!.uid ? { ...u, creditScore: newScore } : u));
+        setCreditModal({ isOpen: false, user: null, type: 'add', score: '', memo: '', loading: false });
+        showToast('success', `Cập nhật điểm tín nhiệm thành công! Điểm mới: ${newScore}/100`);
+      } else {
+        alert(res?.msg || 'Điều chỉnh điểm tín nhiệm thất bại');
+        setCreditModal(prev => ({ ...prev, loading: false }));
+      }
+    } catch (err: any) {
+      alert('Lỗi kết nối: ' + err.message);
+      setCreditModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
 
   return (
     <div className="user-page-wrapper">
@@ -383,7 +445,7 @@ export default function AdminUserContent() {
                 type="button"
                 className="btn btn-primary btn-refresh"
                 title="Refresh"
-                onClick={() => setUsers([...initialUsers])}
+                onClick={() => fetchUsers()}
               >
                 <i className="fa fa-refresh"></i>
               </button>
@@ -419,11 +481,25 @@ export default function AdminUserContent() {
                       Money <i className="fa fa-sort text-muted"></i>
                     </th>
                     <th>USDT余额</th>
+                    <th>信誉分</th>
                     <th className="col-operate-header">Operate</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => {
+                  {loading ? (
+                    <tr>
+                      <td colSpan={13} className="text-center py-8 text-gray-500">
+                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载会员数据 (Đang tải dữ liệu hội viên từ CSDL)...
+                      </td>
+                    </tr>
+                  ) : users.length === 0 ? (
+                    <tr>
+                      <td colSpan={13} className="text-center py-8 text-gray-400">
+                        暂无数据 (Không có hội viên nào)
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map((user) => {
                     const isSelected = selectedIds.includes(user.uid);
                     return (
                       <tr key={user.uid} className={isSelected ? "selected" : ""}>
@@ -457,8 +533,13 @@ export default function AdminUserContent() {
                             {user.authStatus}
                           </span>
                         </td>
-                        <td className="text-right">{user.money}</td>
+                        <td className="text-right" style={{ fontWeight: 600, color: '#18bc9c' }}>{user.money}</td>
                         <td>{user.usdtBalance}</td>
+                        <td>
+                          <span className="badge" style={{ backgroundColor: '#f39c12', color: '#fff', padding: '2px 8px', borderRadius: 4, fontWeight: 'bold' }}>
+                            {user.creditScore ?? 100}
+                          </span>
+                        </td>
                         <td className="col-operate">
                           <div className="btn-group-operate">
                             <button
@@ -476,8 +557,17 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-warning"
+                              title="Can thiệp sửa số dư / Nạp - Trừ điểm (修改余额 / 上下分)"
+                              onClick={() => setBalanceModal({
+                                isOpen: true,
+                                user,
+                                type: 'add',
+                                amount: '',
+                                memo: '',
+                                loading: false,
+                              })}
                             >
-                              <i className="fa fa-shopping-cart"></i> 分数
+                              <i className="fa fa-shopping-cart"></i> 分数 (修改余额)
                             </button>
                             <button
                               type="button"
@@ -488,8 +578,17 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-warning"
+                              title="Cộng / Trừ điểm tín nhiệm (增加/扣除信誉分)"
+                              onClick={() => setCreditModal({
+                                isOpen: true,
+                                user,
+                                type: 'add',
+                                score: '',
+                                memo: '',
+                                loading: false,
+                              })}
                             >
-                              <i className="fa fa-shopping-cart"></i> 信誉分
+                              <i className="fa fa-star"></i> 信誉分
                             </button>
                             <button
                               type="button"
@@ -533,7 +632,8 @@ export default function AdminUserContent() {
                         </td>
                       </tr>
                     );
-                  })}
+                  })
+                )}
                 </tbody>
               </table>
             </div>
@@ -541,7 +641,10 @@ export default function AdminUserContent() {
             {/* Pagination */}
             <div className="pagination-container">
               <div className="pagination-info">
-                <span>显示第 1 到第 10 条记录，总共 177 条记录</span>
+                <span>
+                  显示第 {total === 0 ? 0 : (currentPage - 1) * pageSize + 1} 到第{" "}
+                  {Math.min(currentPage * pageSize, total)} 条记录，总共 {total} 条记录
+                </span>
                 <span className="page-size-select">
                   每页显示{" "}
                   <select
@@ -558,84 +661,39 @@ export default function AdminUserContent() {
                 </span>
               </div>
               <ul className="pagination">
-                <li className="disabled">
-                  <span>Previous</span>
-                </li>
-                <li className={currentPage === 1 ? "active" : ""}>
+                <li className={currentPage <= 1 ? "disabled" : ""}>
                   <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage(1);
+                      if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
                   >
-                    1
+                    Previous
                   </a>
                 </li>
-                <li className={currentPage === 2 ? "active" : ""}>
+                {Array.from(
+                  { length: Math.min(10, Math.max(1, Math.ceil(total / pageSize))) },
+                  (_, i) => i + 1
+                ).map((p) => (
+                  <li key={p} className={currentPage === p ? "active" : ""}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(p);
+                      }}
+                    >
+                      {p}
+                    </a>
+                  </li>
+                ))}
+                <li className={currentPage >= Math.ceil(total / pageSize) ? "disabled" : ""}>
                   <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage(2);
-                    }}
-                  >
-                    2
-                  </a>
-                </li>
-                <li className={currentPage === 3 ? "active" : ""}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(3);
-                    }}
-                  >
-                    3
-                  </a>
-                </li>
-                <li className={currentPage === 4 ? "active" : ""}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(4);
-                    }}
-                  >
-                    4
-                  </a>
-                </li>
-                <li className={currentPage === 5 ? "active" : ""}>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(5);
-                    }}
-                  >
-                    5
-                  </a>
-                </li>
-                <li className="disabled">
-                  <span>...</span>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(18);
-                    }}
-                  >
-                    18
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(2);
+                      if (currentPage < Math.ceil(total / pageSize)) setCurrentPage(currentPage + 1);
                     }}
                   >
                     Next
@@ -647,7 +705,415 @@ export default function AdminUserContent() {
         </div>
       </div>
 
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          zIndex: 99999,
+          backgroundColor: toastMessage.type === 'success' ? '#27ae60' : '#e74c3c',
+          color: '#fff',
+          padding: '12px 20px',
+          borderRadius: 6,
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          fontSize: 14,
+          fontWeight: 500,
+        }}>
+          <i className={`fa ${toastMessage.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
+
+      {/* Modal Điều chỉnh số dư hội viên (上下分) */}
+      {balanceModal.isOpen && balanceModal.user && (
+        <div className="modal-backdrop">
+          <div className="modal-box">
+            <div className="modal-header">
+              <h3 className="modal-title">
+                <i className="fa fa-shopping-cart" style={{ color: '#f39c12' }}></i>
+                Điều chỉnh số dư hội viên (上下分)
+              </h3>
+              <button 
+                type="button" 
+                className="close-btn"
+                onClick={() => setBalanceModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="info-badge-row">
+                <div className="info-item">
+                  <span className="info-label">Tài khoản:</span>
+                  <strong className="info-value">{balanceModal.user.account}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">UID:</span>
+                  <strong className="info-value">{balanceModal.user.uid}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Số dư hiện tại:</span>
+                  <strong className="info-value" style={{ color: '#18bc9c' }}>{balanceModal.user.money} MYR</strong>
+                </div>
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">Loại thao tác <span style={{ color: '#e74c3c' }}>*</span></label>
+                <div className="radio-button-group">
+                  <label className={`radio-pill ${balanceModal.type === 'add' ? 'active add' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="balanceType" 
+                      value="add" 
+                      checked={balanceModal.type === 'add'} 
+                      onChange={() => setBalanceModal(prev => ({ ...prev, type: 'add' }))}
+                    />
+                    <i className="fa fa-plus-circle"></i> Cộng tiền (+)
+                  </label>
+                  <label className={`radio-pill ${balanceModal.type === 'sub' ? 'active sub' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="balanceType" 
+                      value="sub" 
+                      checked={balanceModal.type === 'sub'} 
+                      onChange={() => setBalanceModal(prev => ({ ...prev, type: 'sub' }))}
+                    />
+                    <i className="fa fa-minus-circle"></i> Trừ tiền (-)
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">Số tiền điều chỉnh (MYR) <span style={{ color: '#e74c3c' }}>*</span></label>
+                <input 
+                  type="number" 
+                  className="modal-input" 
+                  placeholder="Nhập số tiền (VD: 1000)"
+                  min="0.01"
+                  step="any"
+                  value={balanceModal.amount}
+                  onChange={(e) => setBalanceModal(prev => ({ ...prev, amount: e.target.value }))}
+                />
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">Lý do / Ghi chú</label>
+                <input 
+                  type="text" 
+                  className="modal-input" 
+                  placeholder="Lý do điều chỉnh (tùy chọn)"
+                  value={balanceModal.memo}
+                  onChange={(e) => setBalanceModal(prev => ({ ...prev, memo: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                type="button" 
+                className="btn btn-default"
+                disabled={balanceModal.loading}
+                onClick={() => setBalanceModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-success"
+                disabled={balanceModal.loading}
+                onClick={handleConfirmBalance}
+              >
+                {balanceModal.loading ? 'Đang xử lý...' : 'Xác nhận điều chỉnh'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Điều chỉnh điểm tín nhiệm (信誉分) */}
+      {creditModal.isOpen && creditModal.user && (
+        <div className="modal-backdrop">
+          <div className="modal-box">
+            <div className="modal-header">
+              <h3 className="modal-title">
+                <i className="fa fa-star" style={{ color: '#f39c12' }}></i>
+                Điều chỉnh điểm tín nhiệm (信誉分)
+              </h3>
+              <button 
+                type="button" 
+                className="close-btn"
+                onClick={() => setCreditModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="info-badge-row">
+                <div className="info-item">
+                  <span className="info-label">Tài khoản:</span>
+                  <strong className="info-value">{creditModal.user.account}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">UID:</span>
+                  <strong className="info-value">{creditModal.user.uid}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Điểm hiện tại:</span>
+                  <strong className="info-value" style={{ color: '#f39c12' }}>{creditModal.user.creditScore ?? 100} / 100</strong>
+                </div>
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">Thao tác <span style={{ color: '#e74c3c' }}>*</span></label>
+                <div className="radio-button-group">
+                  <label className={`radio-pill ${creditModal.type === 'add' ? 'active add' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="creditType" 
+                      value="add" 
+                      checked={creditModal.type === 'add'} 
+                      onChange={() => setCreditModal(prev => ({ ...prev, type: 'add' }))}
+                    />
+                    <i className="fa fa-plus-circle"></i> Tăng điểm (+)
+                  </label>
+                  <label className={`radio-pill ${creditModal.type === 'sub' ? 'active sub' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="creditType" 
+                      value="sub" 
+                      checked={creditModal.type === 'sub'} 
+                      onChange={() => setCreditModal(prev => ({ ...prev, type: 'sub' }))}
+                    />
+                    <i className="fa fa-minus-circle"></i> Trừ điểm (-)
+                  </label>
+                  <label className={`radio-pill ${creditModal.type === 'set' ? 'active' : ''}`} style={creditModal.type === 'set' ? { borderColor: '#3498db', backgroundColor: '#ebf5fb', color: '#2980b9' } : {}}>
+                    <input 
+                      type="radio" 
+                      name="creditType" 
+                      value="set" 
+                      checked={creditModal.type === 'set'} 
+                      onChange={() => setCreditModal(prev => ({ ...prev, type: 'set' }))}
+                    />
+                    <i className="fa fa-pencil"></i> Đặt điểm (=)
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">
+                  {creditModal.type === 'set' ? 'Điểm số thiết lập (0 - 100)' : 'Số điểm cần điều chỉnh'}{' '}
+                  <span style={{ color: '#e74c3c' }}>*</span>
+                </label>
+                <input 
+                  type="number" 
+                  className="modal-input" 
+                  placeholder="Nhập số điểm (VD: 10)"
+                  min="0"
+                  max="100"
+                  value={creditModal.score}
+                  onChange={(e) => setCreditModal(prev => ({ ...prev, score: e.target.value }))}
+                />
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">Lý do / Ghi chú</label>
+                <input 
+                  type="text" 
+                  className="modal-input" 
+                  placeholder="Lý do điều chỉnh điểm (tùy chọn)"
+                  value={creditModal.memo}
+                  onChange={(e) => setCreditModal(prev => ({ ...prev, memo: e.target.value }))}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                type="button" 
+                className="btn btn-default"
+                disabled={creditModal.loading}
+                onClick={() => setCreditModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-warning"
+                style={{ color: '#fff', backgroundColor: '#f39c12', borderColor: '#e08e0b' }}
+                disabled={creditModal.loading}
+                onClick={handleConfirmCredit}
+              >
+                {creditModal.loading ? 'Đang xử lý...' : 'Xác nhận cập nhật điểm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
+        /* Modal Popup Styles */
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+        }
+
+        .modal-box {
+          background-color: #ffffff;
+          width: 90%;
+          max-width: 500px;
+          border-radius: 6px;
+          box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+          overflow: hidden;
+        }
+
+        .modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 20px;
+          border-bottom: 1px solid #e7eaec;
+          background-color: #f8f9fa;
+        }
+
+        .modal-title {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333333;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 24px;
+          line-height: 1;
+          color: #999999;
+          cursor: pointer;
+        }
+
+        .close-btn:hover {
+          color: #333333;
+        }
+
+        .modal-body {
+          padding: 20px;
+        }
+
+        .info-badge-row {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          background-color: #f8f9fa;
+          padding: 12px;
+          border-radius: 4px;
+          margin-bottom: 18px;
+          border: 1px solid #e9ecef;
+        }
+
+        .info-item {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .info-label {
+          font-size: 11px;
+          color: #777777;
+        }
+
+        .info-value {
+          font-size: 13px;
+          color: #333333;
+        }
+
+        .form-field-group {
+          margin-bottom: 16px;
+        }
+
+        .field-label {
+          display: block;
+          font-size: 13px;
+          font-weight: 500;
+          color: #444444;
+          margin-bottom: 6px;
+        }
+
+        .radio-button-group {
+          display: flex;
+          gap: 10px;
+        }
+
+        .radio-pill {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 8px 12px;
+          border: 1px solid #dcdcdc;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 500;
+          color: #555555;
+          transition: all 0.2s;
+        }
+
+        .radio-pill input {
+          display: none;
+        }
+
+        .radio-pill.active.add {
+          border-color: #18bc9c;
+          background-color: #e8f8f5;
+          color: #18bc9c;
+        }
+
+        .radio-pill.active.sub {
+          border-color: #e74c3c;
+          background-color: #fdedec;
+          color: #e74c3c;
+        }
+
+        .modal-input {
+          width: 100%;
+          height: 38px;
+          padding: 6px 12px;
+          font-size: 14px;
+          border: 1px solid #cccccc;
+          border-radius: 4px;
+          outline: none;
+          box-sizing: border-box;
+        }
+
+        .modal-input:focus {
+          border-color: #18bc9c;
+          box-shadow: 0 0 5px rgba(24, 188, 156, 0.3);
+        }
+
+        .modal-footer {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 10px;
+          padding: 12px 20px;
+          border-top: 1px solid #e7eaec;
+          background-color: #f8f9fa;
+        }
+
         .user-page-wrapper {
           min-height: calc(100vh - 50px);
           background-color: #f1f4f6;

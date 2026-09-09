@@ -1,13 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import { INITIAL_NOTICES, NoticeItem } from "./noticeData";
+import React, { useState, useEffect, useCallback } from "react";
+import { adminApi } from "@/lib/api";
+import { NoticeItem } from "./noticeData";
 
 export default function AdminNoticeContent() {
-  const [notices, setNotices] = useState<NoticeItem[]>(INITIAL_NOTICES);
+  const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const fetchNotices = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await adminApi.getAdminNotices();
+      if (res && res.code === 1 && Array.isArray(res.data)) {
+        setNotices(res.data);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp thông báo:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotices();
+  }, [fetchNotices]);
 
   // Search form fields
   const [searchForm, setSearchForm] = useState({
@@ -111,73 +130,68 @@ export default function AdminNoticeContent() {
   };
 
   // Save Add / Edit
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.title.trim()) {
       alert("Title cannot be empty");
       return;
     }
 
-    const nowStr = new Date().toISOString().replace("T", " ").substring(0, 19);
-
-    if (modalMode === "add") {
-      const newId = Math.max(...notices.map((n) => n.id), 0) + 1;
-      const newItem: NoticeItem = {
-        id: newId,
+    try {
+      await adminApi.saveAdminNotice({
+        id: modalMode === "edit" && editingItem ? editingItem.id : undefined,
         type: Number(formState.type),
-        title: formState.title,
-        url: null,
+        title: formState.title.trim(),
         short_content: formState.short_content,
         content: formState.content,
         rank: Number(formState.rank) || 1000,
         status: Number(formState.status),
-        ctime: nowStr,
-        rtime: nowStr,
-      };
-      setNotices([newItem, ...notices]);
-      showToast("添加成功 (Notice added successfully)");
-    } else if (modalMode === "edit" && editingItem) {
-      setNotices((prev) =>
-        prev.map((n) =>
-          n.id === editingItem.id
-            ? {
-                ...n,
-                type: Number(formState.type),
-                title: formState.title,
-                short_content: formState.short_content,
-                content: formState.content,
-                rank: Number(formState.rank) || 1000,
-                status: Number(formState.status),
-                rtime: nowStr,
-              }
-            : n
-        )
-      );
-      showToast("修改成功 (Notice updated successfully)");
+      });
+      showToast(modalMode === "add" ? "添加成功 (Notice added successfully)" : "修改成功 (Notice updated successfully)");
+      setModalMode(null);
+      fetchNotices();
+    } catch (err) {
+      console.error("Lỗi lưu thông báo:", err);
     }
-
-    setModalMode(null);
   };
 
   // Delete
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
-    setNotices((prev) => prev.filter((n) => !deleteConfirmIds.includes(n.id)));
-    setSelectedIds((prev) =>
-      prev.filter((id) => !deleteConfirmIds.includes(id))
-    );
-    setDeleteConfirmIds(null);
-    showToast("删除成功 (Notice deleted successfully)");
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteAdminNotice(id);
+      }
+      setSelectedIds((prev) =>
+        prev.filter((id) => !deleteConfirmIds.includes(id))
+      );
+      setDeleteConfirmIds(null);
+      showToast("删除成功 (Notice deleted successfully)");
+      fetchNotices();
+    } catch (err) {
+      console.error("Lỗi xóa thông báo:", err);
+    }
   };
 
   // Toggle status
-  const handleToggleStatus = (id: number) => {
-    setNotices((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, status: n.status === 1 ? 0 : 1 } : n
-      )
-    );
-    showToast("状态已更新 (Status updated)");
+  const handleToggleStatus = async (id: number) => {
+    const target = notices.find((n) => n.id === id);
+    if (!target) return;
+    try {
+      await adminApi.saveAdminNotice({
+        id: target.id,
+        type: target.type,
+        title: target.title,
+        short_content: target.short_content,
+        content: target.content,
+        rank: target.rank,
+        status: target.status === 1 ? 0 : 1,
+      });
+      showToast("状态已更新 (Status updated)");
+      fetchNotices();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái thông báo:", err);
+    }
   };
 
   const renderTypeBadge = (type: number) => {

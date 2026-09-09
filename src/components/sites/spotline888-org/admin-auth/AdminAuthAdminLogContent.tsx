@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
 
 interface AdminLog {
   id: number;
@@ -13,119 +14,6 @@ interface AdminLog {
   useragent: string;
   createtime: number; // Unix timestamp
 }
-
-const INITIAL_LOGS: AdminLog[] = [
-  {
-    id: 57259,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/adminlog?addtabs=1",
-    title: "系统设置 权限管理 Admin log View",
-    content: '{"addtabs":"1"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788832128,
-  },
-  {
-    id: 57258,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/adminlog/index?sort=id&order=desc&offset=0&limit=10&filter=%7B%7D&op=%7B%7D&_=1788832079070",
-    title: "系统设置 权限管理 Admin log View",
-    content: '{"sort":"id","order":"desc","offset":"0","limit":"10","filter":"{}","op":"{}","_":"1788832079070"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
-    createtime: 1788832081,
-  },
-  {
-    id: 57257,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/adminlog?addtabs=1",
-    title: "系统设置 权限管理 Admin log View",
-    content: '{"addtabs":"1"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
-    createtime: 1788832078,
-  },
-  {
-    id: 57256,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin/add?addtabs=1",
-    title: "系统设置 权限管理 Admin Add",
-    content: '{"addtabs":"1"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0",
-    createtime: 1788831752,
-  },
-  {
-    id: 57255,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin?sort=id&order=asc&offset=0&limit=10",
-    title: "系统设置 权限管理 Admin View",
-    content: '{"sort":"id","order":"asc","offset":"0","limit":"10"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831738,
-  },
-  {
-    id: 57254,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin?addtabs=1",
-    title: "系统设置 权限管理 Admin View",
-    content: '{"addtabs":"1"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831738,
-  },
-  {
-    id: 57253,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin?sort=id&order=asc&offset=0&limit=10",
-    title: "系统设置 权限管理 Admin View",
-    content: '{"sort":"id","order":"asc","offset":"0","limit":"10"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831711,
-  },
-  {
-    id: 57252,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/index/index",
-    title: "后台首页",
-    content: "[]",
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831711,
-  },
-  {
-    id: 57251,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin?ref=addtabs",
-    title: "",
-    content: '{"ref":"addtabs"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831710,
-  },
-  {
-    id: 57250,
-    admin_id: 1,
-    username: "admin",
-    url: "/coinht.php/auth/admin?sort=id&order=asc&offset=0&limit=10",
-    title: "系统设置 权限管理 Admin View",
-    content: '{"sort":"id","order":"asc","offset":"0","limit":"10"}',
-    ip: "14.241.251.56",
-    useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    createtime: 1788831700,
-  },
-];
 
 function formatDateTime(timestamp: number): string {
   if (!timestamp) return "-";
@@ -140,7 +28,7 @@ function formatDateTime(timestamp: number): string {
 }
 
 export default function AdminAuthAdminLogContent() {
-  const [logs, setLogs] = useState<AdminLog[]>(INITIAL_LOGS);
+  const [logs, setLogs] = useState<AdminLog[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCommonSearchOpen, setIsCommonSearchOpen] = useState(false);
@@ -164,6 +52,21 @@ export default function AdminAuthAdminLogContent() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  const loadLogs = async () => {
+    try {
+      const res = await adminApi.getAdminLogs(50);
+      if (res.code === 1 && Array.isArray(res.data)) {
+        setLogs(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load admin logs:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadLogs();
+  }, []);
 
   // Selection handlers
   const toggleSelectAll = () => {
@@ -192,12 +95,18 @@ export default function AdminAuthAdminLogContent() {
     setDeleteConfirmIds([id]);
   };
 
-  const executeDelete = () => {
+  const executeDelete = async () => {
     if (!deleteConfirmIds) return;
-    setLogs(logs.filter((l) => !deleteConfirmIds.includes(l.id)));
-    setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
+    try {
+      await adminApi.deleteAdminLogs(deleteConfirmIds);
+      showToast("删除成功！");
+      await loadLogs();
+      setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
+    } catch (err) {
+      console.error("Delete logs failed:", err);
+      alert("Lỗi khi xóa nhật ký");
+    }
     setDeleteConfirmIds(null);
-    showToast("删除成功！");
   };
 
   // Filtered rows

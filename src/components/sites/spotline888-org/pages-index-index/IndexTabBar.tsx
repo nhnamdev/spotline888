@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { IndexTranslations } from "./indexI18n";
+import { getR2Url } from "@/lib/r2";
 
 interface IndexTabBarProps {
   t: IndexTranslations;
@@ -19,29 +20,29 @@ export const IndexTabBar: React.FC<IndexTabBarProps> = ({
     {
       key: "home",
       label: t.tabHome,
-      icon: "/sites/spotline888-org/pages-index-index/index.png",
-      activeIcon: "/sites/spotline888-org/pages-index-index/index_active.png",
+      icon: getR2Url("/sites/spotline888-org/pages-index-index/index.png"),
+      activeIcon: getR2Url("/sites/spotline888-org/pages-index-index/index_active.png"),
       href: "#/pages/index/index",
     },
     {
       key: "products",
       label: t.tabProducts,
-      icon: "/sites/spotline888-org/pages-index-index/chanpin.png",
-      activeIcon: "/sites/spotline888-org/pages-index-index/chanpin_active.png",
+      icon: getR2Url("/sites/spotline888-org/pages-index-index/chanpin.png"),
+      activeIcon: getR2Url("/sites/spotline888-org/pages-index-index/chanpin_active.png"),
       href: "#/pages/product/product",
     },
     {
       key: "balance",
       label: t.tabBalance,
-      icon: "/sites/spotline888-org/pages-index-index/yue.png",
-      activeIcon: "/sites/spotline888-org/pages-index-index/yue_active.png",
+      icon: getR2Url("/sites/spotline888-org/pages-index-index/yue.png"),
+      activeIcon: getR2Url("/sites/spotline888-org/pages-index-index/yue_active.png"),
       href: "#/pages/money/money",
     },
     {
       key: "mine",
       label: t.tabMine,
-      icon: "/sites/spotline888-org/pages-index-index/my.png",
-      activeIcon: "/sites/spotline888-org/pages-index-index/my_active.png",
+      icon: getR2Url("/sites/spotline888-org/pages-index-index/my.png"),
+      activeIcon: getR2Url("/sites/spotline888-org/pages-index-index/my_active.png"),
       href: "#/pages/user/user",
     },
   ];

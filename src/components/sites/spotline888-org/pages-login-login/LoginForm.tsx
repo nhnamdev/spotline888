@@ -43,7 +43,7 @@ export const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://spotline888.org/api/login/login", {
+      const response = await fetch("/api/login/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,19 +56,21 @@ export const LoginForm: React.FC = () => {
 
       const resData = await response.json().catch(() => null);
 
-      // Support provided credentials directly
-      if (account.trim() === "Ak111" && password.trim() === "123456") {
-        showToast(t.loginSuccess);
-        setTimeout(() => {
-          window.location.href = "/pages/index/index";
-        }, 600);
-        return;
-      }
-
       if (resData && resData.code === 1) {
+        if (typeof window !== "undefined" && resData.data) {
+          const authToken = resData.data.token;
+          if (authToken) {
+            localStorage.setItem("user_token", authToken);
+            localStorage.setItem("token", authToken);
+            document.cookie = `user_token=${authToken}; path=/; max-age=604800; SameSite=Lax`;
+            document.cookie = `token=${authToken}; path=/; max-age=604800; SameSite=Lax`;
+          }
+          localStorage.setItem("user_info", JSON.stringify(resData.data));
+          localStorage.setItem("userInfo", JSON.stringify(resData.data));
+        }
         showToast(resData.msg || t.loginSuccess);
         setTimeout(() => {
-          window.location.href = "/pages/index/index";
+          window.location.href = "/";
         }, 600);
       } else if (resData && resData.msg) {
         showToast(resData.msg);
@@ -76,15 +78,7 @@ export const LoginForm: React.FC = () => {
         showToast(t.loginFailed);
       }
     } catch {
-      // Fallback for offline/demo environment with provided credentials
-      if (account.trim() === "Ak111" && password.trim() === "123456") {
-        showToast(t.loginSuccess);
-        setTimeout(() => {
-          window.location.href = "/pages/index/index";
-        }, 600);
-      } else {
-        showToast(t.loginFailed);
-      }
+      showToast(t.loginFailed);
     } finally {
       setLoading(false);
     }

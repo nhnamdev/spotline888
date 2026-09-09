@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { INITIAL_ATTACHMENTS, AttachmentItem } from "./attachmentData";
+import React, { useState, useEffect, useCallback } from "react";
+import { AttachmentItem } from "./attachmentData";
+import { getR2Url } from "@/lib/r2";
+import { adminApi } from "@/lib/api";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
@@ -23,11 +25,51 @@ function formatDateTime(timestamp: number): string {
 }
 
 export default function AdminAttachmentContent() {
-  const [attachments, setAttachments] = useState<AttachmentItem[]>(INITIAL_ATTACHMENTS);
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const fetchAttachments = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await adminApi.getAttachments(1, 100);
+      if (res && res.code === 1 && res.data) {
+        const rows = res.data.rows || res.data;
+        if (Array.isArray(rows)) {
+          const mapped: AttachmentItem[] = rows.map((a: any) => ({
+            id: a.id,
+            admin_id: a.admin_id,
+            user_id: String(a.user_id),
+            url: a.url,
+            imagewidth: String(a.imagewidth || ""),
+            imageheight: String(a.imageheight || ""),
+            imagetype: a.imagetype || "png",
+            imageframes: a.imageframes || 0,
+            filesize: a.filesize || 0,
+            mimetype: a.mimetype || "image/png",
+            extparam: a.extparam || "",
+            createtime: a.createtime || 0,
+            updatetime: a.updatetime || 0,
+            uploadtime: a.uploadtime || 0,
+            storage: a.storage || "local",
+            sha1: a.sha1 || "",
+            fullurl: getR2Url(a.url),
+          }));
+          setAttachments(mapped);
+        }
+      }
+    } catch (err) {
+      console.error("Lỗi nạp tệp đính kèm:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAttachments();
+  }, [fetchAttachments]);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -216,7 +258,7 @@ export default function AdminAttachmentContent() {
     if (modalMode === "add") {
       const newId = Math.max(...attachments.map((c) => c.id), 0) + 1;
       const uploadedUrl =
-        formState.local || formState.url || `/uploads/20260227/sample_${newId}.png`;
+        formState.local || formState.url || getR2Url(`/uploads/20260227/sample_${newId}.png`);
       const newItem: AttachmentItem = {
         id: newId,
         admin_id: 1,
@@ -266,12 +308,19 @@ export default function AdminAttachmentContent() {
   };
 
   // Delete
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
-    setAttachments((prev) => prev.filter((c) => !deleteConfirmIds.includes(c.id)));
-    setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
-    setDeleteConfirmIds(null);
-    showToast("删除成功 (Deleted successfully)");
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteAttachment(id);
+      }
+      setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
+      setDeleteConfirmIds(null);
+      showToast("删除成功 (Deleted successfully)");
+      fetchAttachments();
+    } catch (err) {
+      console.error("Lỗi xóa tệp đính kèm:", err);
+    }
   };
 
   const isAllCurrentSelected =
@@ -918,7 +967,7 @@ export default function AdminAttachmentContent() {
                         className="btn btn-primary plupload"
                         onClick={() => {
                           const sample =
-                            "/uploads/20251103/6ac533157fb3f3367859793cf2bbabf0.png";
+                            getR2Url("/uploads/20251103/6ac533157fb3f3367859793cf2bbabf0.png");
                           setFormState({
                             ...formState,
                             local: sample,

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { GlyphiconUser, GlyphiconLock, GlyphiconEllipsis } from "./AdminIcons";
 import AdminCaptcha from "./AdminCaptcha";
+import { getR2Url } from "@/lib/r2";
 
 export default function AdminLoginForm() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function AdminLoginForm() {
 
   const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
 
@@ -38,9 +39,47 @@ export default function AdminLoginForm() {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      // Validate credentials against temporary admin account
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password.trim(),
+          captcha: captcha.trim(),
+        }),
+      });
+
+      const resData = await response.json().catch(() => null);
+
+      if (resData && resData.code === 1) {
+        if (typeof window !== "undefined") {
+          const admToken = resData.data?.token;
+          if (admToken) {
+            localStorage.setItem("admin_token", admToken);
+            document.cookie = `admin_token=${admToken}; path=/; max-age=604800; SameSite=Lax`;
+          }
+          localStorage.setItem("admin_user", username.trim());
+          if (keepLogin) {
+            localStorage.setItem("admin_keep_login", "1");
+          }
+        }
+        setToastMessage({ type: "success", text: resData.msg || "Sign in successful" });
+        setTimeout(() => {
+          window.location.href = "/admin/dashboard";
+        }, 800);
+      } else {
+        const errorText = (resData && resData.msg) || "Invalid username or password";
+        setErrorMessage(errorText);
+        setToastMessage({ type: "error", text: errorText });
+        setTimeout(() => {
+          setToastMessage(null);
+        }, 3000);
+      }
+    } catch {
+      // Fallback cho tài khoản demo trong trường hợp chưa bật server
       if (username.trim() === "admin" && password.trim() === "admin888") {
         if (typeof window !== "undefined") {
           localStorage.setItem("admin_user", "admin");
@@ -53,14 +92,16 @@ export default function AdminLoginForm() {
           router.push("/admin/dashboard");
         }, 800);
       } else {
-        const errorText = "Invalid username or password";
+        const errorText = "Cannot connect to authentication server";
         setErrorMessage(errorText);
         setToastMessage({ type: "error", text: errorText });
         setTimeout(() => {
           setToastMessage(null);
         }, 3000);
       }
-    }, 500);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -78,7 +119,7 @@ export default function AdminLoginForm() {
           <Image
             id="profile-img"
             className="profile-img-card"
-            src="/sites/spotline888-org/admin-login/avatar.png"
+            src={getR2Url("/sites/spotline888-org/admin-login/avatar.png")}
             alt="Profile Avatar"
             width={100}
             height={100}

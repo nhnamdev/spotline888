@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { INITIAL_YUEBAO_ORDERS, YuebaoOrderItem } from "./yuebaoOrderData";
+import React, { useState, useEffect } from "react";
+import { adminApi } from "@/lib/api";
+import { YuebaoOrderItem } from "./yuebaoOrderData";
 
 export default function AdminYuebaoOrderContent() {
-  const [orders, setOrders] = useState<YuebaoOrderItem[]>(INITIAL_YUEBAO_ORDERS);
+  const [orders, setOrders] = useState<YuebaoOrderItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -41,6 +43,33 @@ export default function AdminYuebaoOrderContent() {
       setToastMessage(null);
     }, 3000);
   };
+
+  const fetchYuebaoOrders = async () => {
+    try {
+      setLoading(true);
+      setIsRefreshing(true);
+      const res = await adminApi.getYuebaoOrders(currentPage, pageSize);
+      if (res && res.code === 1 && res.data?.rows) {
+        const mapped: YuebaoOrderItem[] = res.data.rows.map((r: any) => ({
+          share_id: r.id,
+          user_id: r.user_id,
+          username: r.username || `User_${r.user_id}`,
+          amount: parseFloat(r.amount || 0).toFixed(2),
+          create_time: r.created_at ? String(r.created_at).replace('T', ' ').substring(0, 19) : '',
+        }));
+        setOrders(mapped);
+      }
+    } catch {
+      //
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchYuebaoOrders();
+  }, [currentPage, pageSize]);
 
   // Filter
   const filteredOrders = orders.filter((item) => {
@@ -107,11 +136,8 @@ export default function AdminYuebaoOrderContent() {
 
   // Refresh
   const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      showToast("刷新成功 (Refresh successful)");
-    }, 400);
+    fetchYuebaoOrders();
+    showToast("刷新成功 (Refresh successful)");
   };
 
   // Add order
@@ -354,10 +380,16 @@ export default function AdminYuebaoOrderContent() {
                         </tr>
                       </thead>
                       <tbody>
-                        {currentOrders.length === 0 ? (
+                        {loading ? (
+                          <tr>
+                            <td colSpan={7} className="text-center py-8 text-gray-500">
+                              <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载余利宝订单 (Đang tải dữ liệu từ CSDL)...
+                            </td>
+                          </tr>
+                        ) : currentOrders.length === 0 ? (
                           <tr>
                             <td colSpan={7} className="text-center no-records">
-                              没有找到匹配的记录 (No records found)
+                              没有找到匹配的记录 (Không có đơn hàng nào)
                             </td>
                           </tr>
                         ) : (

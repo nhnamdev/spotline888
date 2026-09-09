@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ClientAuthGuard from "@/components/auth/ClientAuthGuard";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,7 +31,9 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="/assets/libs/font-awesome/css/font-awesome.min.css" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClientAuthGuard>{children}</ClientAuthGuard>
+      </body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getR2Url } from "@/lib/r2";
 
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
@@ -36,9 +37,11 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("admin_token");
     localStorage.removeItem("admin_user");
     localStorage.removeItem("admin_keep_login");
-    router.push("/admin/login");
+    document.cookie = "admin_token=; path=/; max-age=0";
+    window.location.href = "/admin/login";
   };
 
   const toggleFullscreen = () => {
@@ -87,7 +90,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "order" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/order")}
+              onClick={() => router.push("/admin/order")}
             >
               <i className="fa fa-list-ol fa-fw"></i>
               <span>订单管理</span>
@@ -106,7 +109,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "user" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/user")}
+              onClick={() => router.push("/admin/user")}
             >
               <i className="fa fa-users fa-fw"></i>
               <span>会员管理</span>
@@ -125,7 +128,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "upmark" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/upmark")}
+              onClick={() => router.push("/admin/upmark")}
             >
               <i className="fa fa-hand-o-up fa-fw"></i>
               <span>充值管理</span>
@@ -144,7 +147,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "downmark" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/downmark")}
+              onClick={() => router.push("/admin/downmark")}
             >
               <i className="fa fa-hand-o-down fa-fw"></i>
               <span>提现管理</span>
@@ -163,7 +166,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "product" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/product/product")}
+              onClick={() => router.push("/admin/product")}
             >
               <i className="fa fa-shopping-bag fa-fw"></i>
               <span>产品列表</span>
@@ -572,7 +575,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                 }}
               >
                 <Image
-                  src="/sites/spotline888-org/admin-dashboard/admin_avatar.jpg"
+                  src={getR2Url("/sites/spotline888-org/admin-dashboard/admin_avatar.jpg")}
                   className="user-image"
                   alt="Spot"
                   width={24}
@@ -585,7 +588,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                 <ul className="dropdown-menu user-dropdown">
                   <li className="user-header">
                     <Image
-                      src="/sites/spotline888-org/admin-dashboard/admin_avatar.jpg"
+                      src={getR2Url("/sites/spotline888-org/admin-dashboard/admin_avatar.jpg")}
                       className="img-circle"
                       alt="Spot"
                       width={80}

@@ -1,15 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminDashboardCharts from "./AdminDashboardCharts";
+import { adminApi } from "@/lib/api";
 
 export default function AdminDashboardContent() {
   const [timeRange, setTimeRange] = useState("2026-09-07 00:00:00 - 2026-09-07 23:59:59");
-  const [onlineCount] = useState(0);
+  const [onlineCount] = useState(1);
+  const [stats, setStats] = useState<any>({
+    user: { total_users: 195, today_users: 0, total_money: 0, total_usdt: 0 },
+    recharge: { total_recharge: 0, today_recharge: 0, pending_recharge_count: 0 },
+    withdraw: { total_withdraw: 0, today_withdraw: 0, pending_withdraw_count: 0 },
+    order: { total_orders: 0, today_orders: 0, holding_orders_count: 0 },
+    pending_kyc: 0,
+  });
+
+  const fetchStats = async () => {
+    try {
+      const res = await adminApi.getStats();
+      if (res.code === 1 && res.data) {
+        setStats(res.data);
+      }
+    } catch (err) {
+      console.error("Lỗi lấy thống kê dashboard:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
   const handleQuery = (e: React.FormEvent) => {
     e.preventDefault();
+    fetchStats();
   };
 
   return (
@@ -38,13 +62,13 @@ export default function AdminDashboardContent() {
             <div className="sum-item">
               <i className="fa fa-users"></i>
               <span>
-                总注册用户 <strong>195</strong>
+                总注册用户 <strong>{stats.user?.total_users || 0}</strong>
               </span>
             </div>
             <div className="sum-item">
               <i className="fa fa-database"></i>
               <span>
-                用户总余额 <strong>9808432.41</strong>
+                用户总余额 <strong>{Number(stats.user?.total_money || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</strong>
               </span>
             </div>
           </div>
@@ -67,7 +91,7 @@ export default function AdminDashboardContent() {
                 />
               </div>
               <button type="submit" className="btn-query">
-                <i className="fa fa-search"></i> 查询
+                <i className="fa fa-search"></i> 查询 (Làm mới)
               </button>
             </div>
           </form>
@@ -80,24 +104,26 @@ export default function AdminDashboardContent() {
               <div className="card-icon ci-blue">
                 <i className="fa fa-users"></i>
               </div>
-              <div className="card-val">195</div>
-              <div className="card-label">总注册人数</div>
-              <Link href="/admin/dashboard" className="card-link">
+              <div className="card-val">{stats.user?.total_users || 0}</div>
+              <div className="card-label">总注册人数 (Tổng hội viên)</div>
+              <Link href="/admin/user" className="card-link">
                 查看用户列表 <i className="fa fa-arrow-right"></i>
               </Link>
             </div>
 
-            {/* 实时在线 */}
+            {/* 待审核认证 */}
             <div className="dash-card">
               <div className="card-deco cd-green"></div>
               <div className="card-icon ci-green">
-                <i className="fa fa-signal"></i>
+                <i className="fa fa-id-card-o"></i>
               </div>
               <div className="card-val">
-                <span className="pulse-dot"></span> <span>{onlineCount}</span>
+                <span className="pulse-dot"></span> <span>{stats.pending_kyc || 0}</span>
               </div>
-              <div className="card-label">实时在线</div>
-              <div className="card-sub">30秒内活跃用户 · 自动刷新</div>
+              <div className="card-label">KYC 待审核 (Hồ sơ chờ duyệt)</div>
+              <Link href="/admin/verify" className="card-link">
+                前往审核 <i className="fa fa-arrow-right"></i>
+              </Link>
             </div>
 
             {/* 今日注册 */}
@@ -106,18 +132,21 @@ export default function AdminDashboardContent() {
               <div className="card-icon ci-amber">
                 <i className="fa fa-user-plus"></i>
               </div>
-              <div className="card-val">0</div>
-              <div className="card-label">今日注册</div>
+              <div className="card-val">{stats.user?.today_users || 0}</div>
+              <div className="card-label">今日注册 (Hội viên mới hôm nay)</div>
             </div>
 
-            {/* 今日盈亏 */}
+            {/* 待处理充值 */}
             <div className="dash-card">
               <div className="card-deco cd-purple"></div>
               <div className="card-icon ci-purple">
-                <i className="fa fa-line-chart"></i>
+                <i className="fa fa-clock-o"></i>
               </div>
-              <div className="card-val">0</div>
-              <div className="card-label">今日盈亏</div>
+              <div className="card-val">{stats.recharge?.pending_recharge_count || 0}</div>
+              <div className="card-label">充值待审核 (Đơn nạp chờ duyệt)</div>
+              <Link href="/admin/upmark" className="card-link">
+                前往审核 <i className="fa fa-arrow-right"></i>
+              </Link>
             </div>
 
             {/* 今日充值 */}
@@ -127,11 +156,11 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-up"></i>
               </div>
               <div className="card-val-sm">
-                CNY: <span>15933.03</span>
+                Tổng: <span>{Number(stats.recharge?.total_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 <br />
-                USDT: <span>0</span>
+                Hôm nay: <span>{Number(stats.recharge?.today_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="card-label">今日充值</div>
+              <div className="card-label">充值统计 (Thống kê nạp tiền)</div>
             </div>
 
             {/* 今日提现 */}
@@ -141,11 +170,11 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-down"></i>
               </div>
               <div className="card-val-sm">
-                CNY: <span>388200.05</span>
+                Tổng: <span>{Number(stats.withdraw?.total_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 <br />
-                USDT: <span>0</span>
+                Hôm nay: <span>{Number(stats.withdraw?.today_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="card-label">今日提现</div>
+              <div className="card-label">提现统计 (Thống kê rút tiền)</div>
             </div>
           </div>
 

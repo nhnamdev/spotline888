@@ -2,20 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import SpotlineIndexPage from "@/components/sites/spotline888-org/pages-index-index/SpotlineIndexPage";
-import SpotlineLoginPage from "@/components/sites/spotline888-org/pages-login-login/SpotlineLoginPage";
 import SpotlineProductPage from "@/components/sites/spotline888-org/pages-product-product/SpotlineProductPage";
 import SpotlineMoneyPage from "@/components/sites/spotline888-org/pages-money-money/SpotlineMoneyPage";
 import SpotlineUserPage from "@/components/sites/spotline888-org/pages-user-user/SpotlineUserPage";
 
 export default function Home() {
-  const [currentRoute, setCurrentRoute] = useState<"index" | "login" | "product" | "money" | "user">("index");
+  const [currentRoute, setCurrentRoute] = useState<"index" | "product" | "money" | "user">("index");
 
   useEffect(() => {
     const checkHash = () => {
       const hash = window.location.hash;
-      if (hash.includes("login")) {
-        setCurrentRoute("login");
-      } else if (hash.includes("product")) {
+      if (hash.includes("product")) {
         setCurrentRoute("product");
       } else if (hash.includes("money")) {
         setCurrentRoute("money");
@@ -30,10 +27,6 @@ export default function Home() {
     window.addEventListener("hashchange", checkHash);
     return () => window.removeEventListener("hashchange", checkHash);
   }, []);
-
-  if (currentRoute === "login") {
-    return <SpotlineLoginPage />;
-  }
 
   if (currentRoute === "product") {
     return <SpotlineProductPage />;

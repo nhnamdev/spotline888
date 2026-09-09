@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useI18n } from "./registerI18n";
+import { getR2Url } from "@/lib/r2";
 
 export const RegisterLogo: React.FC = () => {
   const { t } = useI18n();
@@ -12,7 +13,7 @@ export const RegisterLogo: React.FC = () => {
       {/* SPOT Logo */}
       <div className="px-5 pt-2">
         <Image
-          src="/sites/spotline888-org/pages-login-login/logo.png"
+          src={getR2Url("/sites/spotline888-org/pages-login-login/logo.png")}
           alt="SPOT"
           width={80}
           height={28}

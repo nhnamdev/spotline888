@@ -9,6 +9,7 @@ import { MONEY_TRANSLATIONS } from "./moneyI18n";
 import { MONEY_ICONS } from "./moneyIcons";
 import { MoneyDetailsModal, TransactionRecord } from "./MoneyDetailsModal";
 import { X, ArrowRightLeft, Globe } from "lucide-react";
+import { authApi, yuebaoApi, withdrawApi } from "@/lib/api";
 
 interface PageData {
   all_money: number;
@@ -27,17 +28,17 @@ function SpotlineMoneyPageContent() {
 
   // State data matching Uni-app data()
   const [pageData, setPageData] = useState<PageData>({
-    all_money: 2450.0,
-    yue_start_money: 580.0,
+    all_money: 0.0,
+    yue_start_money: 0.0,
     yue_stop_money: 0.0,
-    sy: 14.65,
+    sy: 0.0,
     yield: "0.50%",
-    ru_count: 3,
-    chu_count: 3,
+    ru_count: 0,
+    chu_count: 0,
   });
 
   const [gradItem, setGradItem] = useState<number>(0);
-  const [availableBalance, setAvailableBalance] = useState<number>(1870.0);
+  const [availableBalance, setAvailableBalance] = useState<number>(0.0);
 
   // Modals
   const [isLangOpen, setIsLangOpen] = useState<boolean>(false);
@@ -53,32 +54,7 @@ function SpotlineMoneyPageContent() {
     amount: "",
   });
 
-  const [records, setRecords] = useState<TransactionRecord[]>([
-    {
-      id: "tx-1",
-      type: "deposit",
-      title: tMoney.deposit,
-      amount: 500.0,
-      time: "2025-05-14 10:24",
-      status: "Completed",
-    },
-    {
-      id: "tx-2",
-      type: "earnings",
-      title: tMoney.earnings,
-      amount: 1.25,
-      time: "2025-05-14 00:05",
-      status: "Completed",
-    },
-    {
-      id: "tx-3",
-      type: "earnings",
-      title: tMoney.earnings,
-      amount: 1.18,
-      time: "2025-05-13 00:05",
-      status: "Completed",
-    },
-  ]);
+  const [records, setRecords] = useState<TransactionRecord[]>([]);
 
   // Canvas ref
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -247,7 +223,57 @@ function SpotlineMoneyPageContent() {
       }
     }, 500);
 
-    // 2. Animate canvas progress
+    // 2. Tải dữ liệu thực tế từ MySQL CSDL
+    async function loadLiveData() {
+      try {
+        const [profRes, yueRes, logsRes] = await Promise.all([
+          authApi.getProfile(),
+          yuebaoApi.getInfo(),
+          withdrawApi.getMoneyRecords(1, 20),
+        ]);
+
+        let curAvail = 1870.0;
+        if (profRes.code === 1 && profRes.data) {
+          curAvail = parseFloat(profRes.data.money || "0");
+          setAvailableBalance(curAvail);
+        }
+
+        if (yueRes.code === 1 && yueRes.data) {
+          const y = yueRes.data;
+          const yBalance = parseFloat(y.balance || "0");
+          setPageData({
+            all_money: curAvail + yBalance,
+            yue_start_money: yBalance,
+            yue_stop_money: 0.0,
+            sy: parseFloat(y.total_profit || "0"),
+            yield: y.yield_rate || "0.50%",
+            ru_count: 5,
+            chu_count: 5,
+          });
+        }
+
+        if (logsRes.code === 1 && Array.isArray(logsRes.data?.rows || logsRes.data)) {
+          const rawLogs = logsRes.data?.rows || logsRes.data;
+          const mappedLogs: TransactionRecord[] = rawLogs.map((item: any, idx: number) => ({
+            id: `tx-${item.id || idx}`,
+            type: item.type === "recharge" ? "deposit" : item.type === "withdraw" ? "withdraw" : "earnings",
+            title: item.memo || (item.type === "recharge" ? tMoney.deposit : tMoney.withdraw),
+            amount: Math.abs(parseFloat(item.money || "0")),
+            time: item.created_at ? new Date(item.created_at).toISOString().slice(0, 16).replace("T", " ") : "2025-05-14 10:24",
+            status: "Completed",
+          }));
+          if (mappedLogs.length > 0) {
+            setRecords(mappedLogs);
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi đồng bộ ví tiền:", err);
+      }
+    }
+
+    loadLiveData();
+
+    // 3. Animate canvas progress
     animateProgress();
 
     return () => {
@@ -256,7 +282,7 @@ function SpotlineMoneyPageContent() {
         cancelAnimationFrame(animFrameRef.current);
       }
     };
-  }, [animateProgress]);
+  }, [animateProgress, tMoney.deposit, tMoney.withdraw]);
 
   // Redraw when language or window resizes
   useEffect(() => {
@@ -277,10 +303,18 @@ function SpotlineMoneyPageContent() {
     });
   };
 
-  const handleExecuteTransfer = () => {
+  const handleExecuteTransfer = async () => {
     const val = parseFloat(transferModal.amount);
     if (isNaN(val) || val <= 0) {
       alert(tMoney.amountInvalid);
+      return;
+    }
+
+    const transferType = transferModal.type === "buy" ? "in" : "out";
+    const res = await yuebaoApi.transfer(transferType, val, 1);
+
+    if (res.code !== 1) {
+      alert(res.msg || "Chuyển tiền thất bại");
       return;
     }
 
@@ -288,17 +322,11 @@ function SpotlineMoneyPageContent() {
     const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
     if (transferModal.type === "buy") {
-      // Deposit into Yuebao
-      if (val > availableBalance) {
-        alert(tMoney.amountExceed);
-        return;
-      }
       setAvailableBalance((prev) => Math.max(0, prev - val));
       setPageData((prev) => ({
         ...prev,
         all_money: prev.all_money + val,
         yue_start_money: prev.yue_start_money + val,
-        ru_count: Math.max(0, prev.ru_count - 1),
       }));
       setRecords((prev) => [
         {
@@ -312,17 +340,11 @@ function SpotlineMoneyPageContent() {
         ...prev,
       ]);
     } else {
-      // Withdraw from Yuebao
-      if (val > pageData.all_money) {
-        alert(tMoney.amountExceed);
-        return;
-      }
       setAvailableBalance((prev) => prev + val);
       setPageData((prev) => ({
         ...prev,
         all_money: Math.max(0, prev.all_money - val),
         yue_start_money: Math.max(0, prev.yue_start_money - val),
-        chu_count: Math.max(0, prev.chu_count - 1),
       }));
       setRecords((prev) => [
         {

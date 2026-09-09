@@ -1,13 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
-import { INITIAL_YUEBAO_CONFIGS, YuebaoConfigItem } from "./yuebaoConfigData";
+import React, { useState, useEffect, useCallback } from "react";
+import { YuebaoConfigItem } from "./yuebaoConfigData";
+import { adminApi } from "@/lib/api";
 
 export default function AdminYuebaoConfigContent() {
-  const [configs, setConfigs] = useState<YuebaoConfigItem[]>(INITIAL_YUEBAO_CONFIGS);
+  const [configs, setConfigs] = useState<YuebaoConfigItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const fetchConfigs = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const res = await adminApi.getYuebaoConfigs();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        const mapped: YuebaoConfigItem[] = res.data.map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          radio: c.radio,
+          day: c.day,
+          min_money: c.min_money,
+          status: Number(c.status),
+          creat_time: c.created_at ? new Date(c.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          status_text: Number(c.status) === 1 ? "启用" : "禁用",
+        }));
+        setConfigs(mapped);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp cấu hình Yu'e Bao:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchConfigs();
+  }, [fetchConfigs]);
 
   // Quick search
   const [quickSearch, setQuickSearch] = useState("");
@@ -143,73 +172,82 @@ export default function AdminYuebaoConfigContent() {
   };
 
   // Toggle status directly on badge click
-  const handleToggleStatus = (id: number) => {
-    setConfigs((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, status: c.status === 1 ? 0 : 1 } : c
-      )
-    );
-    showToast("状态已更新 (Status updated)");
+  const handleToggleStatus = async (id: number) => {
+    const target = configs.find((c) => c.id === id);
+    if (!target) return;
+    try {
+      const newStatus = target.status === 1 ? 0 : 1;
+      await adminApi.saveYuebaoConfig({
+        id: target.id,
+        title: target.title,
+        day: target.day,
+        radio: target.radio,
+        min_money: target.min_money,
+        status: newStatus,
+      });
+      showToast("状态已更新 (Status updated)");
+      fetchConfigs();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái Yu'e Bao:", err);
+    }
   };
 
   // Save Add / Edit
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.title.trim() || !formState.radio.trim()) {
       alert("请填写完整配置信息");
       return;
     }
 
-    const nowStr = new Date().toISOString().replace("T", " ").substring(0, 19);
     const radioFormatted = formState.radio.includes("%")
       ? formState.radio
       : `${formState.radio}%`;
 
-    if (modalMode === "add") {
-      const newId = Math.max(...configs.map((c) => c.id), 0) + 1;
-      const newItem: YuebaoConfigItem = {
-        id: newId,
-        title: formState.title,
-        radio: radioFormatted,
-        day: Number(formState.day) || 1,
-        min_money: formState.min_money,
-        status: Number(formState.status),
-        creat_time: nowStr,
-        status_text: Number(formState.status) === 1 ? "启用" : "禁用",
-      };
-      setConfigs([newItem, ...configs]);
-      showToast("添加成功 (Config added successfully)");
-    } else if (modalMode === "edit" && editingItem) {
-      setConfigs((prev) =>
-        prev.map((c) =>
-          c.id === editingItem.id
-            ? {
-                ...c,
-                title: formState.title,
-                radio: radioFormatted,
-                day: Number(formState.day) || 1,
-                min_money: formState.min_money,
-                status: Number(formState.status),
-                status_text: Number(formState.status) === 1 ? "启用" : "禁用",
-              }
-            : c
-        )
-      );
-      showToast("修改成功 (Config updated successfully)");
+    try {
+      if (modalMode === "add") {
+        await adminApi.saveYuebaoConfig({
+          title: formState.title,
+          radio: radioFormatted,
+          day: Number(formState.day) || 1,
+          min_money: formState.min_money,
+          status: Number(formState.status),
+        });
+        showToast("添加成功 (Config added successfully)");
+      } else if (modalMode === "edit" && editingItem) {
+        await adminApi.saveYuebaoConfig({
+          id: editingItem.id,
+          title: formState.title,
+          radio: radioFormatted,
+          day: Number(formState.day) || 1,
+          min_money: formState.min_money,
+          status: Number(formState.status),
+        });
+        showToast("修改成功 (Config updated successfully)");
+      }
+      setModalMode(null);
+      fetchConfigs();
+    } catch (err) {
+      console.error("Lỗi lưu cấu hình Yu'e Bao:", err);
     }
-
-    setModalMode(null);
   };
 
   // Delete
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
-    setConfigs((prev) => prev.filter((c) => !deleteConfirmIds.includes(c.id)));
-    setSelectedIds((prev) =>
-      prev.filter((id) => !deleteConfirmIds.includes(id))
-    );
-    setDeleteConfirmIds(null);
-    showToast("删除成功 (Deleted successfully)");
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteYuebaoConfig(id);
+      }
+      setSelectedIds((prev) =>
+        prev.filter((id) => !deleteConfirmIds.includes(id))
+      );
+      setDeleteConfirmIds(null);
+      showToast("删除成功 (Deleted successfully)");
+      fetchConfigs();
+    } catch (err) {
+      console.error("Lỗi xóa cấu hình Yu'e Bao:", err);
+    }
   };
 
   return (

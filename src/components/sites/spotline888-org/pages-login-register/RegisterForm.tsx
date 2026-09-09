@@ -73,7 +73,7 @@ export const RegisterForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://spotline888.org/api/login/register", {
+      const response = await fetch("/api/login/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,6 @@ export const RegisterForm: React.FC = () => {
           passwd: password.trim(),
           mpasswd: tradePassword.trim(),
           invitecode: inviteCode.trim(),
-          checkFree: true,
         }),
       });
 
@@ -95,12 +94,10 @@ export const RegisterForm: React.FC = () => {
       } else if (resData && resData.msg) {
         showToast(resData.msg);
       } else {
-        // Successful fallback for client demonstration
-        setShowSuccessModal(true);
+        showToast(t.networkError || "Đăng ký thất bại");
       }
     } catch {
-      // Fallback in case of network issue
-      setShowSuccessModal(true);
+      showToast(t.networkError || "Không thể kết nối đến máy chủ");
     } finally {
       setLoading(false);
     }

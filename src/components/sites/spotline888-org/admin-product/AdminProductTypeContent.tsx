@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { adminApi } from "@/lib/api";
 
 export interface ProductTypeItem {
   id: number;
@@ -10,33 +11,35 @@ export interface ProductTypeItem {
   ctime: string;
 }
 
-const initialProductTypes: ProductTypeItem[] = [
-  {
-    id: 3,
-    name: "商品",
-    rank: 1000,
-    status: true,
-    ctime: "2020-09-02 13:22:32",
-  },
-  {
-    id: 2,
-    name: "外汇",
-    rank: 1000,
-    status: true,
-    ctime: "2020-09-02 13:22:32",
-  },
-  {
-    id: 1,
-    name: "虚拟币",
-    rank: 1000,
-    status: true,
-    ctime: "2020-09-02 13:22:32",
-  },
-];
-
 export default function AdminProductTypeContent() {
-  const [types, setTypes] = useState<ProductTypeItem[]>(initialProductTypes);
+  const [types, setTypes] = useState<ProductTypeItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const fetchProductTypes = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await adminApi.getProductTypes();
+      if (res.code === 1 && Array.isArray(res.data)) {
+        const mapped: ProductTypeItem[] = res.data.map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          rank: t.rank || 1000,
+          status: Boolean(t.status),
+          ctime: t.created_at ? new Date(t.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+        }));
+        setTypes(mapped);
+      }
+    } catch (err) {
+      console.error("Lỗi nạp phân loại sản phẩm:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProductTypes();
+  }, [fetchProductTypes]);
   const [showSearchForm, setShowSearchForm] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -107,37 +110,72 @@ export default function AdminProductTypeContent() {
       name: "",
       status: "Choose",
     });
-    setTypes([...initialProductTypes]);
+    fetchProductTypes();
   };
 
   // Status toggle
-  const handleToggleStatus = (id: number) => {
-    setTypes((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: !t.status } : t))
-    );
+  const handleToggleStatus = async (id: number) => {
+    const t = types.find((item) => item.id === id);
+    if (!t) return;
+    try {
+      await adminApi.saveProductType({
+        id: t.id,
+        name: t.name,
+        rank: t.rank,
+        status: !t.status ? 1 : 0,
+      });
+      fetchProductTypes();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái phân loại:", err);
+    }
   };
 
   // Delete type
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm("确定要删除这条记录吗？")) {
-      setTypes((prev) => prev.filter((t) => t.id !== id));
-      setSelectedIds((prev) => prev.filter((i) => i !== id));
+      try {
+        await adminApi.deleteProductType(id);
+        setSelectedIds((prev) => prev.filter((i) => i !== id));
+        fetchProductTypes();
+      } catch (err) {
+        console.error("Lỗi xóa phân loại sản phẩm:", err);
+      }
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (window.confirm(`确定要删除选中的 ${selectedIds.length} 条记录吗？`)) {
-      setTypes((prev) => prev.filter((t) => !selectedIds.includes(t.id)));
-      setSelectedIds([]);
+      try {
+        for (const id of selectedIds) {
+          await adminApi.deleteProductType(id);
+        }
+        setSelectedIds([]);
+        fetchProductTypes();
+      } catch (err) {
+        console.error("Lỗi xóa nhiều phân loại sản phẩm:", err);
+      }
     }
   };
 
-  const handleSetStatusMulti = (val: boolean) => {
+  const handleSetStatusMulti = async (val: boolean) => {
     if (selectedIds.length === 0) return;
-    setTypes((prev) =>
-      prev.map((t) => (selectedIds.includes(t.id) ? { ...t, status: val } : t))
-    );
+    try {
+      for (const id of selectedIds) {
+        const t = types.find((item) => item.id === id);
+        if (t) {
+          await adminApi.saveProductType({
+            id: t.id,
+            name: t.name,
+            rank: t.rank,
+            status: val ? 1 : 0,
+          });
+        }
+      }
+      fetchProductTypes();
+    } catch (err) {
+      console.error("Lỗi cập nhật trạng thái hàng loạt:", err);
+    }
   };
 
   // Open Edit Modal
@@ -151,33 +189,20 @@ export default function AdminProductTypeContent() {
   };
 
   // Save Add/Edit
-  const handleSaveType = (e: React.FormEvent) => {
+  const handleSaveType = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingType) {
-      setTypes((prev) =>
-        prev.map((t) =>
-          t.id === editingType.id
-            ? {
-                ...t,
-                name: modalForm.name,
-                rank: Number(modalForm.rank),
-                status: modalForm.status,
-              }
-            : t
-        )
-      );
-      setEditingType(null);
-    } else {
-      const newId = Math.max(...types.map((t) => t.id), 0) + 1;
-      const newType: ProductTypeItem = {
-        id: newId,
-        name: modalForm.name,
+    try {
+      await adminApi.saveProductType({
+        id: editingType ? editingType.id : undefined,
+        name: modalForm.name.trim(),
         rank: Number(modalForm.rank),
-        status: modalForm.status,
-        ctime: "2026-09-07 17:25:00",
-      };
-      setTypes([newType, ...types]);
+        status: modalForm.status ? 1 : 0,
+      });
+      setEditingType(null);
       setIsAddModalOpen(false);
+      fetchProductTypes();
+    } catch (err) {
+      console.error("Lỗi lưu phân loại:", err);
     }
   };
 
@@ -277,9 +302,10 @@ export default function AdminProductTypeContent() {
                   className="btn btn-primary btn-refresh"
                   title="Refresh"
                   onClick={() => {
-                    setTypes([...initialProductTypes]);
+                    fetchProductTypes();
                     setSelectedIds([]);
                   }}
+
                 >
                   <i className="fa fa-refresh"></i>
                 </button>

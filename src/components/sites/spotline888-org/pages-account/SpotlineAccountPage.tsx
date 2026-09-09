@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, CreditCard } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { ACCOUNT_TRANSLATIONS } from "./accountI18n";
+import { getR2Url } from "@/lib/r2";
 
 function SpotlineAccountContent() {
   const router = useRouter();
@@ -38,7 +39,7 @@ function SpotlineAccountContent() {
         <div className="flex justify-center my-4">
           <div className="w-[240px] h-[220px] relative">
             <Image
-              src="/sites/spotline888-org/pages-account/account_illustration.png"
+              src={getR2Url("/sites/spotline888-org/pages-account/account_illustration.png")}
               alt="Account Illustration"
               fill
               className="object-contain"

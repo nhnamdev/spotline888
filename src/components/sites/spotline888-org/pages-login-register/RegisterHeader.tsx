@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { getR2Url } from "@/lib/r2";
 
 interface RegisterHeaderProps {
   onOpenLang: () => void;
@@ -13,15 +14,11 @@ export const RegisterHeader: React.FC<RegisterHeaderProps> = ({ onOpenLang }) =>
   const router = useRouter();
 
   const handleBack = () => {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/login");
-    }
+    router.back();
   };
 
   return (
-    <header className="flex items-center justify-between px-4 pt-3 pb-2.5">
+    <header className="flex items-center justify-between px-4 pt-2.5 pb-2.5">
       {/* Back Button */}
       <button
         type="button"
@@ -29,7 +26,7 @@ export const RegisterHeader: React.FC<RegisterHeaderProps> = ({ onOpenLang }) =>
         aria-label="Back"
         className="w-9 h-9 rounded-full bg-white/80 backdrop-blur-[10px] flex items-center justify-center shadow-[0_1px_6px_rgba(0,0,0,0.06)] hover:bg-white active:scale-95 transition-all cursor-pointer border-0"
       >
-        <ChevronLeft className="w-[18px] h-[18px] text-[#333333]" />
+        <ChevronLeft className="w-5 h-5 text-[#333333]" />
       </button>
 
       {/* Language Switcher Button */}
@@ -40,7 +37,7 @@ export const RegisterHeader: React.FC<RegisterHeaderProps> = ({ onOpenLang }) =>
         className="w-9 h-9 rounded-full bg-white/80 backdrop-blur-[10px] flex items-center justify-center shadow-[0_1px_6px_rgba(0,0,0,0.06)] hover:bg-white active:scale-95 transition-all cursor-pointer border-0"
       >
         <Image
-          src="/sites/spotline888-org/pages-login-login/lang_icon.png"
+          src={getR2Url("/sites/spotline888-org/pages-login-login/lang_icon.png")}
           alt="Language"
           width={18}
           height={18}
