@@ -32,11 +32,13 @@ function formatDateTime(timestamp: number): string {
 }
 
 export default function AdminAuthAdminContent() {
+  // Danh sách quản trị viên từ MySQL Database
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCommonSearchOpen, setIsCommonSearchOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
 
   const fetchAdmins = useCallback(async () => {
     try {
