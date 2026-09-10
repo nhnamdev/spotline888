@@ -49,7 +49,7 @@ export default function AdminProductListContent() {
         setProducts(mapped);
       }
     } catch (err) {
-      console.error("Lỗi nạp danh sách sản phẩm:", err);
+      console.error("加载产品列表失败:", err);
     } finally {
       setLoading(false);
     }
@@ -163,7 +163,7 @@ export default function AdminProductListContent() {
       });
       fetchProducts();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái mở sản phẩm:", err);
+      console.error("更新产品开启状态失败:", err);
     }
   };
 
@@ -182,7 +182,7 @@ export default function AdminProductListContent() {
       });
       fetchProducts();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái sản phẩm:", err);
+      console.error("更新产品状态失败:", err);
     }
   };
 
@@ -194,7 +194,7 @@ export default function AdminProductListContent() {
         setSelectedIds((prev) => prev.filter((i) => i !== id));
         fetchProducts();
       } catch (err) {
-        console.error("Lỗi xóa sản phẩm:", err);
+        console.error("删除产品失败:", err);
       }
     }
   };
@@ -209,7 +209,7 @@ export default function AdminProductListContent() {
         setSelectedIds([]);
         fetchProducts();
       } catch (err) {
-        console.error("Lỗi xóa nhiều sản phẩm:", err);
+        console.error("批量删除产品失败:", err);
       }
     }
   };
@@ -233,7 +233,7 @@ export default function AdminProductListContent() {
       }
       fetchProducts();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái hàng loạt:", err);
+      console.error("批量更新状态失败:", err);
     }
   };
 
@@ -270,7 +270,7 @@ export default function AdminProductListContent() {
       setIsAddModalOpen(false);
       fetchProducts();
     } catch (err) {
-      console.error("Lỗi lưu sản phẩm:", err);
+      console.error("保存产品失败:", err);
     }
   };
 
@@ -353,7 +353,7 @@ export default function AdminProductListContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>产品管理</span>
@@ -375,14 +375,14 @@ export default function AdminProductListContent() {
                   {/* Code */}
                   <div className="form-group">
                     <label className="control-label" htmlFor="search-code">
-                      Code
+                      产品代码
                     </label>
                     <div className="control-input">
                       <input
                         id="search-code"
                         type="text"
                         className="form-control"
-                        placeholder="Code"
+                        placeholder="产品代码"
                         value={searchForm.code}
                         onChange={(e) =>
                           setSearchForm({
@@ -397,14 +397,14 @@ export default function AdminProductListContent() {
                   {/* Title */}
                   <div className="form-group">
                     <label className="control-label" htmlFor="search-title">
-                      Title
+                      产品名称
                     </label>
                     <div className="control-input">
                       <input
                         id="search-title"
                         type="text"
                         className="form-control"
-                        placeholder="Title"
+                        placeholder="产品名称"
                         value={searchForm.title}
                         onChange={(e) =>
                           setSearchForm({
@@ -419,7 +419,7 @@ export default function AdminProductListContent() {
                   {/* Status */}
                   <div className="form-group">
                     <label className="control-label" htmlFor="search-status">
-                      Status
+                      状态
                     </label>
                     <div className="control-input">
                       <select
@@ -433,7 +433,7 @@ export default function AdminProductListContent() {
                           })
                         }
                       >
-                        <option value="Choose">Choose</option>
+                        <option value="Choose">选择</option>
                         <option value="0">禁用</option>
                         <option value="1">启用</option>
                       </select>
@@ -443,7 +443,7 @@ export default function AdminProductListContent() {
                   {/* Action Buttons */}
                   <div className="form-group form-actions">
                     <button type="submit" className="btn btn-success">
-                      Submit
+                      提交
                     </button>
                     <button
                       type="button"
@@ -464,7 +464,7 @@ export default function AdminProductListContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => {
                     fetchProducts();
                     setSelectedIds([]);
@@ -478,7 +478,7 @@ export default function AdminProductListContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={() => {
                     setEditingProduct(null);
                     setModalForm({
@@ -493,7 +493,7 @@ export default function AdminProductListContent() {
                     setIsAddModalOpen(true);
                   }}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
 
                 {/* Edit */}
@@ -502,14 +502,14 @@ export default function AdminProductListContent() {
                   className={`btn btn-success btn-edit ${
                     selectedIds.length !== 1 ? "disabled" : ""
                   }`}
-                  title="Edit"
+                  title="编辑"
                   disabled={selectedIds.length !== 1}
                   onClick={() => {
                     const item = products.find((p) => p.id === selectedIds[0]);
                     if (item) handleOpenEdit(item);
                   }}
                 >
-                  <i className="fa fa-pencil"></i> Edit
+                  <i className="fa fa-pencil"></i> 编辑
                 </button>
 
                 {/* Delete */}
@@ -518,11 +518,11 @@ export default function AdminProductListContent() {
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
 
                 {/* More Dropdown */}
@@ -534,7 +534,7 @@ export default function AdminProductListContent() {
                     }`}
                     disabled={selectedIds.length === 0}
                   >
-                    <i className="fa fa-cog"></i> More
+                    <i className="fa fa-cog"></i> 更多
                   </button>
                 </div>
 
@@ -547,7 +547,7 @@ export default function AdminProductListContent() {
                   disabled={selectedIds.length === 0}
                   onClick={() => handleSetStatusMulti(true)}
                 >
-                  <i className="fa fa-eye"></i> Set to normal
+                  <i className="fa fa-eye"></i> 设为正常
                 </button>
 
                 {/* Set to hidden */}
@@ -559,7 +559,7 @@ export default function AdminProductListContent() {
                   disabled={selectedIds.length === 0}
                   onClick={() => handleSetStatusMulti(false)}
                 >
-                  <i className="fa fa-eye-slash"></i> Set to hidden
+                  <i className="fa fa-eye-slash"></i> 设为隐藏
                 </button>
               </div>
 
@@ -652,7 +652,7 @@ export default function AdminProductListContent() {
                 <button
                   type="button"
                   className="btn btn-default"
-                  title="Common search"
+                  title="通用搜索"
                   onClick={() => setShowSearchForm(!showSearchForm)}
                 >
                   <i className="fa fa-search"></i>
@@ -675,18 +675,18 @@ export default function AdminProductListContent() {
                         onChange={handleSelectAll}
                       />
                     </th>
-                    {columns.id && <th>Id</th>}
+                    {columns.id && <th>ID</th>}
                     {columns.weigh && <th>排序</th>}
-                    {columns.code && <th>Code</th>}
-                    {columns.title && <th>Title</th>}
-                    {columns.image && <th>Image</th>}
-                    {columns.typeName && <th>Producttype.name</th>}
+                    {columns.code && <th>产品代码</th>}
+                    {columns.title && <th>产品名称</th>}
+                    {columns.image && <th>产品图标</th>}
+                    {columns.typeName && <th>产品类型</th>}
                     {columns.price && <th>当前价格</th>}
                     {columns.updateTime && <th>更新时间</th>}
-                    {columns.isOpen && <th>Is_open</th>}
-                    {columns.status && <th>Status</th>}
-                    {columns.ctime && <th>Ctime</th>}
-                    {columns.operate && <th className="col-operate">Operate</th>}
+                    {columns.isOpen && <th>开启状态</th>}
+                    {columns.status && <th>状态</th>}
+                    {columns.ctime && <th>创建时间</th>}
+                    {columns.operate && <th className="col-operate">操作</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -775,7 +775,7 @@ export default function AdminProductListContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-success btn-editone"
-                                title="Edit"
+                                title="编辑"
                                 onClick={() => handleOpenEdit(item)}
                               >
                                 <i className="fa fa-pencil"></i>
@@ -783,7 +783,7 @@ export default function AdminProductListContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-danger btn-delone"
-                                title="Delete"
+                                title="删除"
                                 onClick={() => handleDelete(item.id)}
                               >
                                 <i className="fa fa-trash"></i>
@@ -821,7 +821,7 @@ export default function AdminProductListContent() {
               </div>
               <ul className="pagination">
                 <li className="disabled">
-                  <span>Previous</span>
+                  <span>上一页</span>
                 </li>
                 <li className={currentPage === 1 ? "active" : ""}>
                   <a
@@ -875,7 +875,7 @@ export default function AdminProductListContent() {
                       setCurrentPage(2);
                     }}
                   >
-                    Next
+                    下一页
                   </a>
                 </li>
               </ul>
@@ -907,7 +907,7 @@ export default function AdminProductListContent() {
               <form onSubmit={handleSaveProduct}>
                 <div className="modal-body">
                   <div className="modal-form-group">
-                    <label>Code</label>
+                    <label>产品代码</label>
                     <input
                       type="text"
                       className="form-control"
@@ -919,7 +919,7 @@ export default function AdminProductListContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>Title</label>
+                    <label>产品名称</label>
                     <input
                       type="text"
                       className="form-control"
@@ -931,7 +931,7 @@ export default function AdminProductListContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>类型 (Producttype)</label>
+                    <label>产品类型</label>
                     <select
                       className="form-control"
                       value={modalForm.typeName}
@@ -956,7 +956,7 @@ export default function AdminProductListContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>排序 (Weigh)</label>
+                    <label>排序权重</label>
                     <input
                       type="number"
                       className="form-control"
@@ -970,7 +970,7 @@ export default function AdminProductListContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>Is_open</label>
+                    <label>开启状态</label>
                     <select
                       className="form-control"
                       value={modalForm.isOpen ? "1" : "0"}
@@ -986,7 +986,7 @@ export default function AdminProductListContent() {
                     </select>
                   </div>
                   <div className="modal-form-group">
-                    <label>Status</label>
+                    <label>状态</label>
                     <select
                       className="form-control"
                       value={modalForm.status ? "1" : "0"}

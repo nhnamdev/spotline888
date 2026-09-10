@@ -18,21 +18,21 @@ interface AuthGroup {
 const PERMISSION_NODES = [
   {
     id: "all",
-    label: "全部权限 (All)",
+    label: "全部",
     children: [
       {
         id: "dashboard",
-        label: "控制台 (Dashboard)",
+        label: "控制台",
         children: [{ id: "dashboard_view", label: "查看控制台" }],
       },
       {
         id: "general",
-        label: "系统设置 (General)",
+        label: "系统设置",
         children: [
           { id: "general_config", label: "网站配置" },
           {
             id: "auth",
-            label: "权限管理 (Auth)",
+            label: "权限管理",
             children: [
               { id: "auth_admin", label: "管理员管理 (Admin)" },
               { id: "auth_adminlog", label: "管理员日志 (Admin log)" },
@@ -44,27 +44,27 @@ const PERMISSION_NODES = [
       },
       {
         id: "order",
-        label: "订单管理 (Order)",
+        label: "订单管理",
         children: [{ id: "order_view", label: "查看/处理订单" }],
       },
       {
         id: "user",
-        label: "会员管理 (User)",
+        label: "会员管理",
         children: [{ id: "user_view", label: "会员列表/资金管理" }],
       },
       {
         id: "upmark",
-        label: "充值管理 (Recharge)",
+        label: "充值管理",
         children: [{ id: "upmark_view", label: "充值订单与审核" }],
       },
       {
         id: "downmark",
-        label: "提现管理 (Withdrawal)",
+        label: "提现管理",
         children: [{ id: "downmark_view", label: "提现审核与记录" }],
       },
       {
         id: "product",
-        label: "产品管理 (Product)",
+        label: "产品管理",
         children: [
           { id: "product_list", label: "产品列表" },
           { id: "product_type", label: "产品分类" },
@@ -72,7 +72,7 @@ const PERMISSION_NODES = [
       },
       {
         id: "loan",
-        label: "贷款管理 (Loan)",
+        label: "贷款管理",
         children: [
           { id: "loan_config", label: "贷款配置管理" },
           { id: "loan_record", label: "贷款记录管理" },
@@ -172,7 +172,7 @@ export default function AdminAuthGroupContent() {
   const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim()) {
-      alert("Please enter name");
+      alert("请输入角色组名称");
       return;
     }
 
@@ -191,11 +191,11 @@ export default function AdminAuthGroupContent() {
         showToast(modalMode === "add" ? "添加角色组成功！" : "更新角色组成功！");
         await loadGroups();
       } else {
-        alert(res.msg || "Lưu thất bại");
+        alert(res.msg || "保存失败");
       }
     } catch (err) {
       console.error(err);
-      alert("Lỗi kết nối");
+      alert("网络连接失败");
     }
 
     setModalMode(null);
@@ -225,7 +225,7 @@ export default function AdminAuthGroupContent() {
       setSelectedIds(selectedIds.filter((id) => !deleteConfirmIds.includes(id)));
     } catch (err) {
       console.error("Delete failed:", err);
-      alert("Lỗi khi xóa");
+      alert("删除失败");
     }
     setDeleteConfirmIds(null);
   };
@@ -236,14 +236,14 @@ export default function AdminAuthGroupContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>系统设置</span>
           <span className="breadcrumb-sep">/</span>
           <span>权限管理</span>
           <span className="breadcrumb-sep">/</span>
-          <span>Group</span>
+          <span>角色组</span>
         </div>
       </div>
 
@@ -265,7 +265,7 @@ export default function AdminAuthGroupContent() {
         <div className="panel panel-default panel-intro">
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>Group</em>Group tips
+              <em>角色组</em>角色组可以有多个,角色有上下级层级关系,如果子角色有角色组和管理员的权限则可以派生属于自己组别的下级角色组或管理员
             </div>
           </div>
 
@@ -277,7 +277,7 @@ export default function AdminAuthGroupContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => showToast("刷新成功")}
                 >
                   <i className="fa fa-refresh"></i>
@@ -285,21 +285,21 @@ export default function AdminAuthGroupContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={handleOpenAdd}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
                 <button
                   type="button"
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "btn-disabled disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function AdminAuthGroupContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-success btn-editone"
-                              title="Edit"
+                              title="编辑"
                               onClick={() => handleOpenEdit(group)}
                             >
                               <i className="fa fa-pencil"></i>
@@ -383,7 +383,7 @@ export default function AdminAuthGroupContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-danger btn-delone"
-                              title="Delete"
+                              title="删除"
                               onClick={() => handleDeleteOne(group.id)}
                             >
                               <i className="fa fa-trash"></i>
@@ -429,7 +429,7 @@ export default function AdminAuthGroupContent() {
                 <div className="modal-body modal-scroll">
                   {/* Parent */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Parent:</label>
+                    <label className="control-label col-sm-3">父级:</label>
                     <div className="col-sm-8">
                       <select
                         className="form-control"
@@ -441,7 +441,7 @@ export default function AdminAuthGroupContent() {
                           })
                         }
                       >
-                        <option value={1}>Admin group</option>
+                        <option value={1}>超级管理组</option>
                         <option value={10}>&nbsp;├ 代理</option>
                         <option value={11}>&nbsp;│&nbsp;└ 超级会员</option>
                         <option value={12}>&nbsp;└ 分组</option>
@@ -451,7 +451,7 @@ export default function AdminAuthGroupContent() {
 
                   {/* Name */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Name:</label>
+                    <label className="control-label col-sm-3">角色组名称:</label>
                     <div className="col-sm-8">
                       <input
                         type="text"
@@ -468,7 +468,7 @@ export default function AdminAuthGroupContent() {
 
                   {/* Permission Tree */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Permission:</label>
+                    <label className="control-label col-sm-3">权限分配:</label>
                     <div className="col-sm-8">
                       <div className="treeview-toolbar">
                         <label className="checkbox-inline">
@@ -482,7 +482,7 @@ export default function AdminAuthGroupContent() {
                               })
                             }
                           />{" "}
-                          <small>Check all</small>
+                          <small>全选</small>
                         </label>
                         <label className="checkbox-inline">
                           <input
@@ -495,7 +495,7 @@ export default function AdminAuthGroupContent() {
                               })
                             }
                           />{" "}
-                          <small>Expand all</small>
+                          <small>展开全部</small>
                         </label>
                       </div>
 
@@ -559,7 +559,7 @@ export default function AdminAuthGroupContent() {
 
                   {/* Status */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Status:</label>
+                    <label className="control-label col-sm-3">状态:</label>
                     <div className="col-sm-8 radio-group">
                       <label className="radio-inline">
                         <input
@@ -571,7 +571,7 @@ export default function AdminAuthGroupContent() {
                             setFormState({ ...formState, status: "normal" })
                           }
                         />{" "}
-                        Normal
+                        正常
                       </label>
                       <label className="radio-inline">
                         <input
@@ -583,23 +583,19 @@ export default function AdminAuthGroupContent() {
                             setFormState({ ...formState, status: "hidden" })
                           }
                         />{" "}
-                        Hidden
+                        隐藏
                       </label>
                     </div>
                   </div>
                 </div>
 
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-success btn-embossed">
-                    OK
-                  </button>
+                  <button type="submit" className="btn btn-success btn-embossed">确定</button>
                   <button
                     type="button"
                     className="btn btn-default btn-embossed"
                     onClick={() => setModalMode(null)}
-                  >
-                    Reset
-                  </button>
+                  >重置</button>
                 </div>
               </form>
             </div>

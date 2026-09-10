@@ -77,7 +77,7 @@ export default function AdminOrderContent() {
         setTotal(res.data.total || mapped.length);
       }
     } catch (err) {
-      console.error('Lỗi khi tải danh sách đơn cược từ CSDL:', err);
+      console.error('加载订单列表失败:', err);
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ export default function AdminOrderContent() {
     try {
       await adminApi.controlOrder(id, kong as any);
     } catch (err) {
-      console.error('Lỗi cập nhật chế độ can thiệp:', err);
+      console.error('更新干预模式失败:', err);
     }
   };
 
@@ -151,7 +151,7 @@ export default function AdminOrderContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">订单管理</div>
       </div>
@@ -167,7 +167,7 @@ export default function AdminOrderContent() {
               <div className="search-grid">
                 {/* User_id */}
                 <div className="form-group">
-                  <label className="control-label">User_id</label>
+                  <label className="control-label">用户ID</label>
                   <div className="control-input">
                     <input
                       type="text"
@@ -183,7 +183,7 @@ export default function AdminOrderContent() {
 
                 {/* O_style */}
                 <div className="form-group">
-                  <label className="control-label">O_style</label>
+                  <label className="control-label">方向</label>
                   <div className="control-input">
                     <select
                       className="form-control"
@@ -192,7 +192,7 @@ export default function AdminOrderContent() {
                         setSearchForm({ ...searchForm, oStyle: e.target.value })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="0">买跌</option>
                       <option value="1">买涨</option>
                     </select>
@@ -201,12 +201,12 @@ export default function AdminOrderContent() {
 
                 {/* Buy_time */}
                 <div className="form-group">
-                  <label className="control-label">Buy_time</label>
+                  <label className="control-label">买入时间</label>
                   <div className="control-input">
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Buy_time"
+                      placeholder="买入时间"
                       value={searchForm.buyTime}
                       onChange={(e) =>
                         setSearchForm({ ...searchForm, buyTime: e.target.value })
@@ -217,12 +217,12 @@ export default function AdminOrderContent() {
 
                 {/* Sell_time */}
                 <div className="form-group">
-                  <label className="control-label">Sell_time</label>
+                  <label className="control-label">卖出时间</label>
                   <div className="control-input">
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Sell_time"
+                      placeholder="卖出时间"
                       value={searchForm.sellTime}
                       onChange={(e) =>
                         setSearchForm({ ...searchForm, sellTime: e.target.value })
@@ -233,7 +233,7 @@ export default function AdminOrderContent() {
 
                 {/* Kong_type */}
                 <div className="form-group">
-                  <label className="control-label">Kong_type</label>
+                  <label className="control-label">控制类型</label>
                   <div className="control-input">
                     <select
                       className="form-control"
@@ -242,7 +242,7 @@ export default function AdminOrderContent() {
                         setSearchForm({ ...searchForm, kongType: e.target.value })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="0">默认</option>
                       <option value="1">赢</option>
                       <option value="2">亏</option>
@@ -252,7 +252,7 @@ export default function AdminOrderContent() {
 
                 {/* Status */}
                 <div className="form-group">
-                  <label className="control-label">Status</label>
+                  <label className="control-label">状态</label>
                   <div className="control-input">
                     <select
                       className="form-control"
@@ -261,7 +261,7 @@ export default function AdminOrderContent() {
                         setSearchForm({ ...searchForm, status: e.target.value })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="1">未结算</option>
                       <option value="3">已结算</option>
                     </select>
@@ -290,7 +290,7 @@ export default function AdminOrderContent() {
                 {/* Submit & Reset Buttons */}
                 <div className="form-group form-actions">
                   <button type="submit" className="btn btn-success">
-                    Submit
+                    提交
                   </button>
                   <button
                     type="button"
@@ -308,7 +308,7 @@ export default function AdminOrderContent() {
               <button
                 type="button"
                 className="btn btn-primary btn-refresh"
-                title="Refresh"
+                title="刷新"
                 onClick={() => fetchOrders()}
               >
                 <i className={`fa fa-refresh ${loading ? "fa-spin" : ""}`}></i>
@@ -336,37 +336,37 @@ export default function AdminOrderContent() {
                         onChange={handleSelectAll}
                       />
                     </th>
-                    <th>Id</th>
-                    <th>User_id</th>
-                    <th>User.account</th>
+                    <th>ID</th>
+                    <th>用户ID</th>
+                    <th>用户名</th>
                     <th>真实姓名</th>
                     <th>备注</th>
-                    <th>Product.title</th>
-                    <th>O_style</th>
-                    <th>Buy_money</th>
-                    <th>Balance_buy_after</th>
-                    <th>Buy_price</th>
-                    <th>Sell_price</th>
-                    <th>Buy_time</th>
-                    <th>Sell_time</th>
+                    <th>产品名称</th>
+                    <th>买涨/买跌</th>
+                    <th>买入金额</th>
+                    <th>购买后余额</th>
+                    <th>买入价格</th>
+                    <th>卖出价格</th>
+                    <th>买入时间</th>
+                    <th>卖出时间</th>
                     <th>类型</th>
-                    <th>Ploss</th>
-                    <th>Kong_type</th>
+                    <th>盈亏金额</th>
+                    <th>控制类型</th>
                     <th>下单提醒</th>
-                    <th>Operate</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
                       <td colSpan={19} className="text-center py-8 text-gray-500">
-                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载订单数据 (Đang tải dữ liệu đơn cược từ CSDL)...
+                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载订单数据...
                       </td>
                     </tr>
                   ) : orders.length === 0 ? (
                     <tr>
                       <td colSpan={19} className="text-center py-8 text-gray-400">
-                        暂无数据 (Không có đơn cược nào)
+                        暂无数据
                       </td>
                     </tr>
                   ) : (
@@ -465,14 +465,14 @@ export default function AdminOrderContent() {
                           <button
                             type="button"
                             className="btn btn-xs btn-success"
-                            title="Edit"
+                            title="编辑"
                           >
                             <i className="fa fa-pencil"></i>
                           </button>
                           <button
                             type="button"
                             className="btn btn-xs btn-danger"
-                            title="Delete"
+                            title="删除"
                           >
                             <i className="fa fa-trash"></i>
                           </button>
@@ -489,7 +489,7 @@ export default function AdminOrderContent() {
             <div className="pagination-container">
               <div className="pagination-info">
                 <span>
-                  Hiển thị {total > 0 ? (currentPage - 1) * pageSize + 1 : 0} đến {Math.min(currentPage * pageSize, total)} trong tổng {total} bản ghi (总共 {total} 条记录)
+                  显示第 {total > 0 ? (currentPage - 1) * pageSize + 1 : 0} 到第 {Math.min(currentPage * pageSize, total)} 条记录，总共 {total} 条记录
                 </span>
                 <span className="page-size-select">
                   每页显示{" "}
@@ -509,7 +509,7 @@ export default function AdminOrderContent() {
               <ul className="pagination">
                 <li className={currentPage <= 1 ? "disabled" : ""}>
                   <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}>
-                    Previous
+                    上一页
                   </a>
                 </li>
                 {Array.from({ length: Math.min(10, Math.max(1, Math.ceil(total / pageSize))) }, (_, i) => i + 1).map((p) => (
@@ -521,7 +521,7 @@ export default function AdminOrderContent() {
                 ))}
                 <li className={currentPage >= Math.ceil(total / pageSize) ? "disabled" : ""}>
                   <a href="#" onClick={(e) => { e.preventDefault(); if (currentPage < Math.ceil(total / pageSize)) setCurrentPage(currentPage + 1); }}>
-                    Next
+                    下一页
                   </a>
                 </li>
               </ul>

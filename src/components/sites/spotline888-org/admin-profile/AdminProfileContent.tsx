@@ -50,11 +50,11 @@ export default function AdminProfileContent() {
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile.nickname.trim()) {
-      alert("Nickname cannot be empty");
+      alert("昵称不能为空");
       return;
     }
     if (!profile.email.trim()) {
-      alert("Email cannot be empty");
+      alert("电子邮箱不能为空");
       return;
     }
 
@@ -76,7 +76,7 @@ export default function AdminProfileContent() {
 
     setLogs([newLog, ...logs]);
     setProfile({ ...profile, password: "" });
-    showToast("个人资料更新成功 (Profile updated successfully)");
+    showToast("个人资料更新成功");
   };
 
   // Reset Profile Form
@@ -88,7 +88,7 @@ export default function AdminProfileContent() {
       avatar: getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
       password: "",
     });
-    showToast("表单已重置 (Form reset)");
+    showToast("表单已重置");
   };
 
   // Refresh Logs
@@ -96,7 +96,7 @@ export default function AdminProfileContent() {
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      showToast("日志刷新成功 (Logs refreshed)");
+      showToast("日志刷新成功");
     }, 400);
   };
 
@@ -132,7 +132,7 @@ export default function AdminProfileContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -144,7 +144,7 @@ export default function AdminProfileContent() {
           </li>
           <li>
             <a href="javascript:;" onClick={(e) => e.preventDefault()}>
-              Profile
+              个人资料
             </a>
           </li>
         </ol>
@@ -156,7 +156,7 @@ export default function AdminProfileContent() {
           {/* Left Column: Profile Card */}
           <div className="col-xs-12 col-md-4">
             <div className="box box-success profile-card-box">
-              <div className="panel-heading">Profile</div>
+              <div className="panel-heading">个人资料</div>
               <div className="panel-body">
                 <form id="update-form" role="form" onSubmit={handleProfileSubmit}>
                   <div className="box-body box-profile">
@@ -164,7 +164,7 @@ export default function AdminProfileContent() {
                     <div
                       className="profile-avatar-container"
                       onClick={() => setIsAvatarModalOpen(true)}
-                      title="Click to edit avatar"
+                      title="点击修改头像"
                     >
                       <img
                         className="profile-user-img img-responsive img-circle"
@@ -172,7 +172,7 @@ export default function AdminProfileContent() {
                         alt={profile.nickname}
                       />
                       <div className="profile-avatar-text img-circle">
-                        Click to edit
+                        点击修改
                       </div>
                     </div>
 
@@ -183,7 +183,7 @@ export default function AdminProfileContent() {
 
                     <div className="form-group">
                       <label htmlFor="username" className="control-label">
-                        Username:
+                        用户名:
                       </label>
                       <input
                         type="text"
@@ -196,7 +196,7 @@ export default function AdminProfileContent() {
 
                     <div className="form-group">
                       <label htmlFor="email" className="control-label">
-                        Email:
+                        电子邮箱:
                       </label>
                       <input
                         type="email"
@@ -212,7 +212,7 @@ export default function AdminProfileContent() {
 
                     <div className="form-group">
                       <label htmlFor="nickname" className="control-label">
-                        Nickname:
+                        昵称:
                       </label>
                       <input
                         type="text"
@@ -228,13 +228,13 @@ export default function AdminProfileContent() {
 
                     <div className="form-group">
                       <label htmlFor="password" className="control-label">
-                        Password:
+                        密码:
                       </label>
                       <input
                         type="password"
                         className="form-control"
                         id="password"
-                        placeholder="Leave password blank if dont want to change"
+                        placeholder="不修改密码请留空"
                         autoComplete="new-password"
                         value={profile.password}
                         onChange={(e) =>
@@ -244,16 +244,12 @@ export default function AdminProfileContent() {
                     </div>
 
                     <div className="form-group profile-button-group">
-                      <button type="submit" className="btn btn-success">
-                        Submit
-                      </button>
+                      <button type="submit" className="btn btn-success">提交</button>
                       <button
                         type="button"
                         className="btn btn-default"
                         onClick={handleProfileReset}
-                      >
-                        Reset
-                      </button>
+                      >重置</button>
                     </div>
                   </div>
                 </form>
@@ -268,7 +264,7 @@ export default function AdminProfileContent() {
                 <ul className="nav nav-tabs">
                   <li className="active">
                     <a href="#one" onClick={(e) => e.preventDefault()}>
-                      <i className="fa fa-list"></i> Admin log
+                      <i className="fa fa-list"></i> 管理员日志
                     </a>
                   </li>
                 </ul>
@@ -284,7 +280,7 @@ export default function AdminProfileContent() {
                           <a
                             href="javascript:;"
                             className="btn btn-primary btn-refresh"
-                            title="Refresh"
+                            title="刷新"
                             onClick={handleRefresh}
                           >
                             <i
@@ -300,7 +296,7 @@ export default function AdminProfileContent() {
                             <input
                               type="text"
                               className="form-control input-sm search-input"
-                              placeholder="Search"
+                              placeholder="搜索"
                               value={searchQuery}
                               onChange={(e) => {
                                 setSearchQuery(e.target.value);
@@ -320,16 +316,16 @@ export default function AdminProfileContent() {
                                 <div className="th-inner">ID</div>
                               </th>
                               <th style={{ width: 180 }} className="text-left">
-                                <div className="th-inner">Title</div>
+                                <div className="th-inner">标题</div>
                               </th>
                               <th className="text-left">
-                                <div className="th-inner">Url</div>
+                                <div className="th-inner">操作URL</div>
                               </th>
                               <th style={{ width: 140 }} className="text-center">
-                                <div className="th-inner">IP</div>
+                                <div className="th-inner">IP地址</div>
                               </th>
                               <th style={{ width: 160 }} className="text-center">
-                                <div className="th-inner">Createtime</div>
+                                <div className="th-inner">操作时间</div>
                               </th>
                             </tr>
                           </thead>
@@ -340,7 +336,7 @@ export default function AdminProfileContent() {
                                   colSpan={5}
                                   className="text-center no-records"
                                 >
-                                  没有找到匹配的记录 (No matching records found)
+                                  没有找到匹配的记录
                                 </td>
                               </tr>
                             ) : (
@@ -380,10 +376,7 @@ export default function AdminProfileContent() {
                       <div className="fixed-table-pagination">
                         <div className="pull-left pagination-detail">
                           <span className="pagination-info">
-                            总共 <b>{totalItems}</b> 条记录 (Showing{" "}
-                            {totalItems > 0 ? startIndex + 1 : 0} to{" "}
-                            {Math.min(startIndex + pageSize, totalItems)} of{" "}
-                            {totalItems} rows)
+                            显示第 {totalItems > 0 ? startIndex + 1 : 0} 到第 {Math.min(startIndex + pageSize, totalItems)} 条记录，总共 {totalItems} 条记录
                           </span>
                           <span className="page-list">
                             每页显示{" "}
@@ -478,7 +471,7 @@ export default function AdminProfileContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">更换头像 (Change Avatar)</h4>
+                <h4 className="modal-title">修改头像</h4>
               </div>
               <div className="modal-body text-center">
                 <p>选择一个预置头像或输入图片链接：</p>
@@ -496,7 +489,7 @@ export default function AdminProfileContent() {
                       onClick={() => {
                         setProfile({ ...profile, avatar: imgUrl });
                         setIsAvatarModalOpen(false);
-                        showToast("头像已更新 (Avatar updated)");
+                        showToast("头像已更新");
                       }}
                     >
                       <img src={imgUrl} alt={`Avatar ${idx}`} />
@@ -510,7 +503,7 @@ export default function AdminProfileContent() {
                   className="btn btn-default"
                   onClick={() => setIsAvatarModalOpen(false)}
                 >
-                  关闭 (Close)
+                  关闭
                 </button>
               </div>
             </div>

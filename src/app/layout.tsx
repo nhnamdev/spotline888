@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import ClientAuthGuard from "@/components/auth/ClientAuthGuard";
+import { I18nProvider } from "@/components/sites/spotline888-org/pages-login-login/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,7 +33,9 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/libs/font-awesome/css/font-awesome.min.css" />
       </head>
       <body className="min-h-full flex flex-col">
-        <ClientAuthGuard>{children}</ClientAuthGuard>
+        <I18nProvider>
+          <ClientAuthGuard>{children}</ClientAuthGuard>
+        </I18nProvider>
       </body>
     </html>
   );

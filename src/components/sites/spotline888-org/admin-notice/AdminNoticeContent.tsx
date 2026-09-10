@@ -18,7 +18,7 @@ export default function AdminNoticeContent() {
         setNotices(res.data);
       }
     } catch (err) {
-      console.error("Lỗi nạp thông báo:", err);
+      console.error("加载公告失败:", err);
     } finally {
       setIsRefreshing(false);
     }
@@ -94,7 +94,7 @@ export default function AdminNoticeContent() {
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      showToast("数据刷新成功 (Refresh successful)");
+      showToast("数据刷新成功");
     }, 400);
   };
 
@@ -133,7 +133,7 @@ export default function AdminNoticeContent() {
   const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.title.trim()) {
-      alert("Title cannot be empty");
+      alert("标题不能为空");
       return;
     }
 
@@ -147,11 +147,11 @@ export default function AdminNoticeContent() {
         rank: Number(formState.rank) || 1000,
         status: Number(formState.status),
       });
-      showToast(modalMode === "add" ? "添加成功 (Notice added successfully)" : "修改成功 (Notice updated successfully)");
+      showToast(modalMode === "add" ? "添加成功" : "修改成功");
       setModalMode(null);
       fetchNotices();
     } catch (err) {
-      console.error("Lỗi lưu thông báo:", err);
+      console.error("保存公告失败:", err);
     }
   };
 
@@ -166,10 +166,10 @@ export default function AdminNoticeContent() {
         prev.filter((id) => !deleteConfirmIds.includes(id))
       );
       setDeleteConfirmIds(null);
-      showToast("删除成功 (Notice deleted successfully)");
+      showToast("删除成功");
       fetchNotices();
     } catch (err) {
-      console.error("Lỗi xóa thông báo:", err);
+      console.error("删除公告失败:", err);
     }
   };
 
@@ -187,10 +187,10 @@ export default function AdminNoticeContent() {
         rank: target.rank,
         status: target.status === 1 ? 0 : 1,
       });
-      showToast("状态已更新 (Status updated)");
+      showToast("状态已更新");
       fetchNotices();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái thông báo:", err);
+      console.error("更新公告状态失败:", err);
     }
   };
 
@@ -227,7 +227,7 @@ export default function AdminNoticeContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -258,13 +258,13 @@ export default function AdminNoticeContent() {
                         <div className="col-xs-12 col-sm-6 col-md-3">
                           <div className="form-group">
                             <label className="control-label col-xs-4">
-                              Title
+                              标题
                             </label>
                             <div className="col-xs-8">
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="LIKE %...%"
+                                placeholder="模糊搜索"
                                 value={searchForm.title}
                                 onChange={(e) =>
                                   setSearchForm({
@@ -308,7 +308,7 @@ export default function AdminNoticeContent() {
                         <div className="col-xs-12 col-sm-6 col-md-3">
                           <div className="form-group">
                             <label className="control-label col-xs-4">
-                              Status
+                              状态
                             </label>
                             <div className="col-xs-8">
                               <select
@@ -322,8 +322,8 @@ export default function AdminNoticeContent() {
                                 }
                               >
                                 <option value="">全部</option>
-                                <option value="1">启用</option>
-                                <option value="0">禁用</option>
+                                <option value="1">正常</option>
+                                <option value="0">隐藏</option>
                               </select>
                             </div>
                           </div>
@@ -336,11 +336,9 @@ export default function AdminNoticeContent() {
                               type="button"
                               className="btn btn-success btn-sm"
                               onClick={() => {
-                                showToast("筛选成功 (Filtered)");
+                                showToast("筛选完成");
                               }}
-                            >
-                              Submit
-                            </button>
+                            >提交</button>
                             <button
                               type="button"
                               className="btn btn-default btn-sm"
@@ -350,11 +348,9 @@ export default function AdminNoticeContent() {
                                   type: "",
                                   status: "",
                                 });
-                                showToast("已重置筛选 (Filters reset)");
+                                showToast("已重置筛选");
                               }}
-                            >
-                              Reset
-                            </button>
+                            >重置</button>
                           </div>
                         </div>
                       </div>
@@ -366,7 +362,7 @@ export default function AdminNoticeContent() {
                     <a
                       href="javascript:;"
                       className="btn btn-primary btn-refresh"
-                      title="Refresh"
+                      title="刷新"
                       onClick={handleRefresh}
                     >
                       <i
@@ -379,10 +375,10 @@ export default function AdminNoticeContent() {
                     <a
                       href="javascript:;"
                       className="btn btn-success btn-add"
-                      title="Add"
+                      title="添加"
                       onClick={handleOpenAdd}
                     >
-                      <i className="fa fa-plus"></i> Add
+                      <i className="fa fa-plus"></i> 添加
                     </a>
 
                     <a
@@ -390,12 +386,12 @@ export default function AdminNoticeContent() {
                       className={`btn btn-success btn-edit ${
                         selectedIds.length !== 1 ? "btn-disabled disabled" : ""
                       }`}
-                      title="Edit"
+                      title="编辑"
                       onClick={() =>
                         selectedIds.length === 1 && handleOpenEdit()
                       }
                     >
-                      <i className="fa fa-pencil"></i> Edit
+                      <i className="fa fa-pencil"></i> 编辑
                     </a>
 
                     <a
@@ -403,13 +399,13 @@ export default function AdminNoticeContent() {
                       className={`btn btn-danger btn-del ${
                         selectedIds.length === 0 ? "btn-disabled disabled" : ""
                       }`}
-                      title="Delete"
+                      title="删除"
                       onClick={() =>
                         selectedIds.length > 0 &&
                         setDeleteConfirmIds([...selectedIds])
                       }
                     >
-                      <i className="fa fa-trash"></i> Delete
+                      <i className="fa fa-trash"></i> 删除
                     </a>
                   </div>
 
@@ -429,25 +425,25 @@ export default function AdminNoticeContent() {
                             />
                           </th>
                           <th style={{ width: 60 }} className="text-center">
-                            <div className="th-inner">Id</div>
+                            <div className="th-inner">ID</div>
                           </th>
                           <th className="text-left">
-                            <div className="th-inner">Title</div>
+                            <div className="th-inner">标题</div>
                           </th>
                           <th style={{ width: 120 }} className="text-center">
                             <div className="th-inner">类型</div>
                           </th>
                           <th style={{ width: 80 }} className="text-center">
-                            <div className="th-inner">Rank</div>
+                            <div className="th-inner">排序权重</div>
                           </th>
                           <th style={{ width: 90 }} className="text-center">
-                            <div className="th-inner">Status</div>
+                            <div className="th-inner">状态</div>
                           </th>
                           <th style={{ width: 160 }} className="text-center">
-                            <div className="th-inner">Ctime</div>
+                            <div className="th-inner">创建时间</div>
                           </th>
                           <th style={{ width: 100 }} className="text-center">
-                            <div className="th-inner">Operate</div>
+                            <div className="th-inner">操作</div>
                           </th>
                         </tr>
                       </thead>
@@ -455,7 +451,7 @@ export default function AdminNoticeContent() {
                         {filteredNotices.length === 0 ? (
                           <tr>
                             <td colSpan={8} className="text-center no-records">
-                              没有找到匹配的记录 (No matching records found)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -485,15 +481,15 @@ export default function AdminNoticeContent() {
                                 <span
                                   onClick={() => handleToggleStatus(row.id)}
                                   style={{ cursor: "pointer" }}
-                                  title="Click to toggle status"
+                                  title="点击切换状态"
                                 >
                                   {row.status === 1 ? (
                                     <small className="label bg-green">
-                                      启用
+                                      正常
                                     </small>
                                   ) : (
                                     <small className="label bg-red">
-                                      禁用
+                                      隐藏
                                     </small>
                                   )}
                                 </span>
@@ -506,7 +502,7 @@ export default function AdminNoticeContent() {
                                   <button
                                     type="button"
                                     className="btn btn-xs btn-success btn-editone"
-                                    title="Edit"
+                                    title="编辑"
                                     onClick={() => handleOpenEdit(row)}
                                   >
                                     <i className="fa fa-pencil"></i>
@@ -514,7 +510,7 @@ export default function AdminNoticeContent() {
                                   <button
                                     type="button"
                                     className="btn btn-xs btn-danger btn-delone"
-                                    title="Delete"
+                                    title="删除"
                                     onClick={() => setDeleteConfirmIds([row.id])}
                                   >
                                     <i className="fa fa-trash"></i>
@@ -553,7 +549,7 @@ export default function AdminNoticeContent() {
                   &times;
                 </button>
                 <h4 className="modal-title">
-                  {modalMode === "add" ? "Add" : "Edit"}
+                  {modalMode === "add" ? "添加公告" : "编辑公告"}
                 </h4>
               </div>
               <form
@@ -565,7 +561,7 @@ export default function AdminNoticeContent() {
                   {/* Title */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Title:
+                      标题:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -608,7 +604,7 @@ export default function AdminNoticeContent() {
                   {/* Short Content */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Short_content:
+                      简要描述:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -629,7 +625,7 @@ export default function AdminNoticeContent() {
                   {/* Content */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Content:
+                      正文内容:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <textarea
@@ -650,7 +646,7 @@ export default function AdminNoticeContent() {
                   {/* Rank */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Rank:
+                      排序权重:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -673,7 +669,7 @@ export default function AdminNoticeContent() {
                   {/* Status */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Status:
+                      状态:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <select
@@ -686,8 +682,8 @@ export default function AdminNoticeContent() {
                           })
                         }
                       >
-                        <option value="1">启用</option>
-                        <option value="0">禁用</option>
+                        <option value="1">正常</option>
+                        <option value="0">隐藏</option>
                       </select>
                     </div>
                   </div>
@@ -699,16 +695,12 @@ export default function AdminNoticeContent() {
                       <button
                         type="submit"
                         className="btn btn-success btn-embossed"
-                      >
-                        OK
-                      </button>
+                      >确定</button>
                       <button
                         type="button"
                         className="btn btn-default btn-embossed"
                         onClick={() => setModalMode(null)}
-                      >
-                        Reset
-                      </button>
+                      >重置</button>
                     </div>
                   </div>
                 </div>
@@ -731,12 +723,11 @@ export default function AdminNoticeContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">提示 (Notice)</h4>
+                <h4 className="modal-title">温馨提示</h4>
               </div>
               <div className="modal-body">
                 <p>
-                  确定要删除这 {deleteConfirmIds.length} 项吗？ (Are you sure you
-                  want to delete the selected item(s)?)
+                  确定要删除所选的 {deleteConfirmIds.length} 项吗？此操作无法撤销。
                 </p>
               </div>
               <div className="modal-footer">
@@ -745,14 +736,14 @@ export default function AdminNoticeContent() {
                   className="btn btn-danger"
                   onClick={handleConfirmDelete}
                 >
-                  确定 (Confirm)
+                  确定
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={() => setDeleteConfirmIds(null)}
                 >
-                  取消 (Cancel)
+                  取消
                 </button>
               </div>
             </div>

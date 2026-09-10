@@ -138,7 +138,7 @@ export default function AdminUserContent() {
         setTotal(res.data.total || mapped.length);
       }
     } catch (err) {
-      console.error('Lỗi tải danh sách người dùng:', err);
+      console.error('加载用户列表失败:', err);
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ export default function AdminUserContent() {
     if (!balanceModal.user) return;
     const numAmount = parseFloat(balanceModal.amount);
     if (isNaN(numAmount) || numAmount <= 0) {
-      alert('Vui lòng nhập số tiền hợp lệ (> 0)');
+      alert('请输入有效的金额 (> 0)');
       return;
     }
 
@@ -162,7 +162,7 @@ export default function AdminUserContent() {
         userId: balanceModal.user.uid,
         amount: numAmount,
         type: balanceModal.type,
-        memo: balanceModal.memo || (balanceModal.type === 'add' ? `Admin cộng tiền: +${numAmount}` : `Admin trừ tiền: -${numAmount}`),
+        memo: balanceModal.memo || (balanceModal.type === 'add' ? `管理员加款: +${numAmount}` : `管理员扣款: -${numAmount}`),
       });
 
       if (res && res.code === 1) {
@@ -176,13 +176,13 @@ export default function AdminUserContent() {
 
         setUsers(prev => prev.map(u => u.uid === balanceModal.user!.uid ? { ...u, money: newBalance } : u));
         setBalanceModal({ isOpen: false, user: null, type: 'add', amount: '', memo: '', loading: false });
-        showToast('success', `Điều chỉnh số dư thành công! Số dư mới: ${newBalance} MYR`);
+        showToast('success', `调整余额成功！当前余额: ${newBalance} MYR`);
       } else {
-        alert(res?.msg || 'Điều chỉnh số dư thất bại');
+        alert(res?.msg || '调整余额失败');
         setBalanceModal(prev => ({ ...prev, loading: false }));
       }
     } catch (err: any) {
-      alert('Lỗi kết nối: ' + err.message);
+      alert('网络连接错误: ' + err.message);
       setBalanceModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -191,7 +191,7 @@ export default function AdminUserContent() {
     if (!creditModal.user) return;
     const numScore = parseFloat(creditModal.score);
     if (isNaN(numScore)) {
-      alert('Vui lòng nhập số điểm hợp lệ');
+      alert('请输入有效的分值');
       return;
     }
 
@@ -201,7 +201,7 @@ export default function AdminUserContent() {
         userId: creditModal.user.uid,
         score: numScore,
         type: creditModal.type,
-        memo: creditModal.memo || `Điều chỉnh điểm tín nhiệm (${creditModal.type}): ${numScore}`,
+        memo: creditModal.memo || `调整信誉分 (${creditModal.type}): ${numScore}`,
       });
 
       if (res && res.code === 1) {
@@ -214,13 +214,13 @@ export default function AdminUserContent() {
 
         setUsers(prev => prev.map(u => u.uid === creditModal.user!.uid ? { ...u, creditScore: newScore } : u));
         setCreditModal({ isOpen: false, user: null, type: 'add', score: '', memo: '', loading: false });
-        showToast('success', `Cập nhật điểm tín nhiệm thành công! Điểm mới: ${newScore}/100`);
+        showToast('success', `信誉分更新成功！当前分值: ${newScore}/100`);
       } else {
-        alert(res?.msg || 'Điều chỉnh điểm tín nhiệm thất bại');
+        alert(res?.msg || '调整信誉分失败');
         setCreditModal(prev => ({ ...prev, loading: false }));
       }
     } catch (err: any) {
-      alert('Lỗi kết nối: ' + err.message);
+      alert('网络连接错误: ' + err.message);
       setCreditModal(prev => ({ ...prev, loading: false }));
     }
   };
@@ -231,7 +231,7 @@ export default function AdminUserContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">会员管理</div>
       </div>
@@ -279,7 +279,7 @@ export default function AdminUserContent() {
               <div className="search-grid">
                 {/* Account */}
                 <div className="form-group">
-                  <label className="control-label">Account</label>
+                  <label className="control-label">账号/ID</label>
                   <div className="control-input">
                     <input
                       type="text"
@@ -307,7 +307,7 @@ export default function AdminUserContent() {
                         })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="1">客户</option>
                       <option value="2">代理</option>
                     </select>
@@ -316,12 +316,12 @@ export default function AdminUserContent() {
 
                 {/* Phone */}
                 <div className="form-group">
-                  <label className="control-label">Phone</label>
+                  <label className="control-label">手机号</label>
                   <div className="control-input">
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Phone"
+                      placeholder="手机号"
                       value={searchForm.phone}
                       onChange={(e) =>
                         setSearchForm({ ...searchForm, phone: e.target.value })
@@ -398,7 +398,7 @@ export default function AdminUserContent() {
                         })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="0">正常</option>
                       <option value="1">风控</option>
                     </select>
@@ -407,7 +407,7 @@ export default function AdminUserContent() {
 
                 {/* Status */}
                 <div className="form-group">
-                  <label className="control-label">Status</label>
+                  <label className="control-label">状态</label>
                   <div className="control-input">
                     <select
                       className="form-control"
@@ -416,7 +416,7 @@ export default function AdminUserContent() {
                         setSearchForm({ ...searchForm, status: e.target.value })
                       }
                     >
-                      <option value="Choose">Choose</option>
+                      <option value="Choose">选择</option>
                       <option value="1">正常</option>
                       <option value="0">禁用</option>
                     </select>
@@ -427,7 +427,7 @@ export default function AdminUserContent() {
               {/* Submit & Reset Buttons */}
               <div className="form-actions">
                 <button type="submit" className="btn btn-success">
-                  Submit
+                  提交
                 </button>
                 <button
                   type="button"
@@ -444,13 +444,13 @@ export default function AdminUserContent() {
               <button
                 type="button"
                 className="btn btn-primary btn-refresh"
-                title="Refresh"
+                title="刷新"
                 onClick={() => fetchUsers()}
               >
                 <i className="fa fa-refresh"></i>
               </button>
               <button type="button" className="btn btn-success btn-add">
-                <i className="fa fa-plus"></i> Add
+                <i className="fa fa-plus"></i> 添加
               </button>
             </div>
 
@@ -469,33 +469,33 @@ export default function AdminUserContent() {
                         onChange={handleSelectAll}
                       />
                     </th>
-                    <th>Uid</th>
+                    <th>ID</th>
                     <th>会员头像</th>
-                    <th>Account</th>
-                    <th>Real_name</th>
+                    <th>账号</th>
+                    <th>真实姓名</th>
                     <th>账号类型</th>
-                    <th>Phone</th>
-                    <th>Profession</th>
-                    <th>Auth_status</th>
+                    <th>手机号</th>
+                    <th>职业</th>
+                    <th>实名状态</th>
                     <th>
-                      Money <i className="fa fa-sort text-muted"></i>
+                      余额 <i className="fa fa-sort text-muted"></i>
                     </th>
                     <th>USDT余额</th>
                     <th>信誉分</th>
-                    <th className="col-operate-header">Operate</th>
+                    <th className="col-operate-header">操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
                       <td colSpan={13} className="text-center py-8 text-gray-500">
-                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载会员数据 (Đang tải dữ liệu hội viên từ CSDL)...
+                        <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载会员数据...
                       </td>
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
                       <td colSpan={13} className="text-center py-8 text-gray-400">
-                        暂无数据 (Không có hội viên nào)
+                        暂无数据
                       </td>
                     </tr>
                   ) : (
@@ -546,7 +546,7 @@ export default function AdminUserContent() {
                               type="button"
                               className="btn btn-xs btn-success"
                             >
-                              <i className="fa fa-list"></i> Detail
+                              <i className="fa fa-list"></i> 详情
                             </button>
                             <button
                               type="button"
@@ -557,7 +557,7 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-warning"
-                              title="Can thiệp sửa số dư / Nạp - Trừ điểm (修改余额 / 上下分)"
+                              title="修改余额 / 上下分"
                               onClick={() => setBalanceModal({
                                 isOpen: true,
                                 user,
@@ -567,7 +567,7 @@ export default function AdminUserContent() {
                                 loading: false,
                               })}
                             >
-                              <i className="fa fa-shopping-cart"></i> 分数 (修改余额)
+                              <i className="fa fa-shopping-cart"></i> 上下分
                             </button>
                             <button
                               type="button"
@@ -578,7 +578,7 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-warning"
-                              title="Cộng / Trừ điểm tín nhiệm (增加/扣除信誉分)"
+                              title="调整信誉分"
                               onClick={() => setCreditModal({
                                 isOpen: true,
                                 user,
@@ -617,14 +617,14 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-success btn-icon-only"
-                              title="Edit"
+                              title="编辑"
                             >
                               <i className="fa fa-pencil"></i>
                             </button>
                             <button
                               type="button"
                               className="btn btn-xs btn-danger btn-icon-only"
-                              title="Delete"
+                              title="删除"
                             >
                               <i className="fa fa-trash"></i>
                             </button>
@@ -669,7 +669,7 @@ export default function AdminUserContent() {
                       if (currentPage > 1) setCurrentPage(currentPage - 1);
                     }}
                   >
-                    Previous
+                    上一页
                   </a>
                 </li>
                 {Array.from(
@@ -696,7 +696,7 @@ export default function AdminUserContent() {
                       if (currentPage < Math.ceil(total / pageSize)) setCurrentPage(currentPage + 1);
                     }}
                   >
-                    Next
+                    下一页
                   </a>
                 </li>
               </ul>
@@ -728,14 +728,14 @@ export default function AdminUserContent() {
         </div>
       )}
 
-      {/* Modal Điều chỉnh số dư hội viên (上下分) */}
+      {/* Modal 会员余额调整 (上下分) */}
       {balanceModal.isOpen && balanceModal.user && (
         <div className="modal-backdrop">
           <div className="modal-box">
             <div className="modal-header">
               <h3 className="modal-title">
                 <i className="fa fa-shopping-cart" style={{ color: '#f39c12' }}></i>
-                Điều chỉnh số dư hội viên (上下分)
+                会员余额调整 (上下分)
               </h3>
               <button 
                 type="button" 
@@ -748,7 +748,7 @@ export default function AdminUserContent() {
             <div className="modal-body">
               <div className="info-badge-row">
                 <div className="info-item">
-                  <span className="info-label">Tài khoản:</span>
+                  <span className="info-label">账号:</span>
                   <strong className="info-value">{balanceModal.user.account}</strong>
                 </div>
                 <div className="info-item">
@@ -756,13 +756,13 @@ export default function AdminUserContent() {
                   <strong className="info-value">{balanceModal.user.uid}</strong>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Số dư hiện tại:</span>
+                  <span className="info-label">当前余额:</span>
                   <strong className="info-value" style={{ color: '#18bc9c' }}>{balanceModal.user.money} MYR</strong>
                 </div>
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">Loại thao tác <span style={{ color: '#e74c3c' }}>*</span></label>
+                <label className="field-label">操作类型 <span style={{ color: '#e74c3c' }}>*</span></label>
                 <div className="radio-button-group">
                   <label className={`radio-pill ${balanceModal.type === 'add' ? 'active add' : ''}`}>
                     <input 
@@ -772,7 +772,7 @@ export default function AdminUserContent() {
                       checked={balanceModal.type === 'add'} 
                       onChange={() => setBalanceModal(prev => ({ ...prev, type: 'add' }))}
                     />
-                    <i className="fa fa-plus-circle"></i> Cộng tiền (+)
+                    <i className="fa fa-plus-circle"></i> 加款 (+)
                   </label>
                   <label className={`radio-pill ${balanceModal.type === 'sub' ? 'active sub' : ''}`}>
                     <input 
@@ -782,17 +782,17 @@ export default function AdminUserContent() {
                       checked={balanceModal.type === 'sub'} 
                       onChange={() => setBalanceModal(prev => ({ ...prev, type: 'sub' }))}
                     />
-                    <i className="fa fa-minus-circle"></i> Trừ tiền (-)
+                    <i className="fa fa-minus-circle"></i> 扣款 (-)
                   </label>
                 </div>
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">Số tiền điều chỉnh (MYR) <span style={{ color: '#e74c3c' }}>*</span></label>
+                <label className="field-label">调整金额 (MYR) <span style={{ color: '#e74c3c' }}>*</span></label>
                 <input 
                   type="number" 
                   className="modal-input" 
-                  placeholder="Nhập số tiền (VD: 1000)"
+                  placeholder="输入金额 (例如: 1000)"
                   min="0.01"
                   step="any"
                   value={balanceModal.amount}
@@ -801,11 +801,11 @@ export default function AdminUserContent() {
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">Lý do / Ghi chú</label>
+                <label className="field-label">备注说明</label>
                 <input 
                   type="text" 
                   className="modal-input" 
-                  placeholder="Lý do điều chỉnh (tùy chọn)"
+                  placeholder="输入调整备注 (选填)"
                   value={balanceModal.memo}
                   onChange={(e) => setBalanceModal(prev => ({ ...prev, memo: e.target.value }))}
                 />
@@ -818,7 +818,7 @@ export default function AdminUserContent() {
                 disabled={balanceModal.loading}
                 onClick={() => setBalanceModal(prev => ({ ...prev, isOpen: false, user: null }))}
               >
-                Hủy bỏ
+                取消
               </button>
               <button 
                 type="button" 
@@ -826,21 +826,21 @@ export default function AdminUserContent() {
                 disabled={balanceModal.loading}
                 onClick={handleConfirmBalance}
               >
-                {balanceModal.loading ? 'Đang xử lý...' : 'Xác nhận điều chỉnh'}
+                {balanceModal.loading ? '处理中...' : '确定调整'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Điều chỉnh điểm tín nhiệm (信誉分) */}
+      {/* Modal 信誉分调整 */}
       {creditModal.isOpen && creditModal.user && (
         <div className="modal-backdrop">
           <div className="modal-box">
             <div className="modal-header">
               <h3 className="modal-title">
                 <i className="fa fa-star" style={{ color: '#f39c12' }}></i>
-                Điều chỉnh điểm tín nhiệm (信誉分)
+                信誉分调整
               </h3>
               <button 
                 type="button" 
@@ -853,7 +853,7 @@ export default function AdminUserContent() {
             <div className="modal-body">
               <div className="info-badge-row">
                 <div className="info-item">
-                  <span className="info-label">Tài khoản:</span>
+                  <span className="info-label">账号:</span>
                   <strong className="info-value">{creditModal.user.account}</strong>
                 </div>
                 <div className="info-item">
@@ -861,13 +861,13 @@ export default function AdminUserContent() {
                   <strong className="info-value">{creditModal.user.uid}</strong>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Điểm hiện tại:</span>
+                  <span className="info-label">当前分值:</span>
                   <strong className="info-value" style={{ color: '#f39c12' }}>{creditModal.user.creditScore ?? 100} / 100</strong>
                 </div>
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">Thao tác <span style={{ color: '#e74c3c' }}>*</span></label>
+                <label className="field-label">操作类型 <span style={{ color: '#e74c3c' }}>*</span></label>
                 <div className="radio-button-group">
                   <label className={`radio-pill ${creditModal.type === 'add' ? 'active add' : ''}`}>
                     <input 
@@ -877,7 +877,7 @@ export default function AdminUserContent() {
                       checked={creditModal.type === 'add'} 
                       onChange={() => setCreditModal(prev => ({ ...prev, type: 'add' }))}
                     />
-                    <i className="fa fa-plus-circle"></i> Tăng điểm (+)
+                    <i className="fa fa-plus-circle"></i> 增加分值 (+)
                   </label>
                   <label className={`radio-pill ${creditModal.type === 'sub' ? 'active sub' : ''}`}>
                     <input 
@@ -887,7 +887,7 @@ export default function AdminUserContent() {
                       checked={creditModal.type === 'sub'} 
                       onChange={() => setCreditModal(prev => ({ ...prev, type: 'sub' }))}
                     />
-                    <i className="fa fa-minus-circle"></i> Trừ điểm (-)
+                    <i className="fa fa-minus-circle"></i> 扣除分值 (-)
                   </label>
                   <label className={`radio-pill ${creditModal.type === 'set' ? 'active' : ''}`} style={creditModal.type === 'set' ? { borderColor: '#3498db', backgroundColor: '#ebf5fb', color: '#2980b9' } : {}}>
                     <input 
@@ -897,20 +897,20 @@ export default function AdminUserContent() {
                       checked={creditModal.type === 'set'} 
                       onChange={() => setCreditModal(prev => ({ ...prev, type: 'set' }))}
                     />
-                    <i className="fa fa-pencil"></i> Đặt điểm (=)
+                    <i className="fa fa-pencil"></i> 设定分值 (=)
                   </label>
                 </div>
               </div>
 
               <div className="form-field-group">
                 <label className="field-label">
-                  {creditModal.type === 'set' ? 'Điểm số thiết lập (0 - 100)' : 'Số điểm cần điều chỉnh'}{' '}
+                  {creditModal.type === 'set' ? '设定目标分值 (0 - 100)' : '调整分值'}{' '}
                   <span style={{ color: '#e74c3c' }}>*</span>
                 </label>
                 <input 
                   type="number" 
                   className="modal-input" 
-                  placeholder="Nhập số điểm (VD: 10)"
+                  placeholder="输入分值 (例如: 10)"
                   min="0"
                   max="100"
                   value={creditModal.score}
@@ -919,11 +919,11 @@ export default function AdminUserContent() {
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">Lý do / Ghi chú</label>
+                <label className="field-label">备注说明</label>
                 <input 
                   type="text" 
                   className="modal-input" 
-                  placeholder="Lý do điều chỉnh điểm (tùy chọn)"
+                  placeholder="输入调整备注 (选填)"
                   value={creditModal.memo}
                   onChange={(e) => setCreditModal(prev => ({ ...prev, memo: e.target.value }))}
                 />
@@ -936,7 +936,7 @@ export default function AdminUserContent() {
                 disabled={creditModal.loading}
                 onClick={() => setCreditModal(prev => ({ ...prev, isOpen: false, user: null }))}
               >
-                Hủy bỏ
+                取消
               </button>
               <button 
                 type="button" 
@@ -945,7 +945,7 @@ export default function AdminUserContent() {
                 disabled={creditModal.loading}
                 onClick={handleConfirmCredit}
               >
-                {creditModal.loading ? 'Đang xử lý...' : 'Xác nhận cập nhật điểm'}
+                {creditModal.loading ? '处理中...' : '确定修改'}
               </button>
             </div>
           </div>

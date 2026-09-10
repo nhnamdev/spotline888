@@ -1,3 +1,5 @@
+import { LanguageCode } from "../pages-login-login/i18n";
+
 export interface AccountTranslation {
   title: string;
   selectAccountType: string;
@@ -16,7 +18,7 @@ export interface AccountTranslation {
   contactServiceToChange: string;
 }
 
-export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
+export const ACCOUNT_TRANSLATIONS: Record<LanguageCode, AccountTranslation> = {
   "zh-CN": {
     title: "出金账户",
     selectAccountType: "选择账户类型",
@@ -34,7 +36,7 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "保存成功！",
     contactServiceToChange: "如需更改，请联系客服",
   },
-  "zh-TW": {
+  "hk-TW": {
     title: "出金賬戶",
     selectAccountType: "選擇賬戶類型",
     bankCard: "銀行卡",
@@ -51,7 +53,7 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "保存成功！",
     contactServiceToChange: "如需更改，請聯繫客服",
   },
-  en: {
+  "en-US": {
     title: "Withdrawal Account",
     selectAccountType: "Select Account Type",
     bankCard: "Bank Card",
@@ -68,7 +70,7 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "Saved successfully!",
     contactServiceToChange: "To modify, please contact customer support",
   },
-  vi: {
+  "vi-VN": {
     title: "Tài khoản rút tiền",
     selectAccountType: "Chọn loại tài khoản",
     bankCard: "Thẻ ngân hàng",
@@ -85,41 +87,7 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "Lưu thành công!",
     contactServiceToChange: "Nếu cần sửa đổi, vui lòng liên hệ CSKH",
   },
-  ja: {
-    title: "出金口座",
-    selectAccountType: "口座タイプを選択",
-    bankCard: "銀行カード",
-    usdtTrc20: "USDT-TRC20",
-    usdtErc20: "USDT-ERC20",
-    name: "氏名",
-    nationality: "国籍",
-    bankAddress: "支店住所",
-    bankName: "銀行名",
-    cardNumber: "口座番号",
-    walletAddress: "ウォレットアドレス",
-    placeholderWallet: "アドレスを入力してください",
-    btnSave: "保存",
-    saveSuccess: "保存しました！",
-    contactServiceToChange: "変更が必要な場合は、サポートにお問い合わせください",
-  },
-  ko: {
-    title: "출금 계좌",
-    selectAccountType: "계좌 유형 선택",
-    bankCard: "은행 카드",
-    usdtTrc20: "USDT-TRC20",
-    usdtErc20: "USDT-ERC20",
-    name: "성명",
-    nationality: "국적",
-    bankAddress: "개설 지점 주소",
-    bankName: "은행명",
-    cardNumber: "카드/계좌번호",
-    walletAddress: "지갑 주소",
-    placeholderWallet: "지갑 주소를 입력하세요",
-    btnSave: "저장",
-    saveSuccess: "저장되었습니다!",
-    contactServiceToChange: "수정이 필요하시면 고객센터에 문의하세요",
-  },
-  id: {
+  "id-ID": {
     title: "Akun Penarikan",
     selectAccountType: "Pilih Jenis Akun",
     bankCard: "Kartu Bank",
@@ -136,24 +104,75 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "Berhasil disimpan!",
     contactServiceToChange: "Untuk perubahan, silakan hubungi CS",
   },
-  es: {
-    title: "Cuenta de Retiro",
-    selectAccountType: "Seleccionar tipo de cuenta",
-    bankCard: "Tarjeta Bancaria",
+  "ms-MY": {
+    title: "Akaun Pengeluaran",
+    selectAccountType: "Pilih Jenis Akaun",
+    bankCard: "Kad Bank",
     usdtTrc20: "USDT-TRC20",
     usdtErc20: "USDT-ERC20",
-    name: "Nombre",
-    nationality: "Nacionalidad",
-    bankAddress: "Dirección sucursal",
-    bankName: "Nombre del banco",
-    cardNumber: "Número de tarjeta",
-    walletAddress: "Dirección de billetera",
-    placeholderWallet: "Ingrese dirección de billetera",
-    btnSave: "Guardar",
-    saveSuccess: "¡Guardado exitosamente!",
-    contactServiceToChange: "Para modificar, contacte al soporte",
+    name: "Nama Penuh",
+    nationality: "Warganegara",
+    bankAddress: "Alamat Cawangan Bank",
+    bankName: "Nama Bank",
+    cardNumber: "Nombor Kad / Akaun",
+    walletAddress: "Alamat Dompet Kripto",
+    placeholderWallet: "Sila masukkan alamat dompet",
+    btnSave: "Simpan",
+    saveSuccess: "Berjaya disimpan!",
+    contactServiceToChange: "Untuk menukar maklumat, sila hubungi khidmat pelanggan",
   },
-  fr: {
+  "ja-JP": {
+    title: "出金口座",
+    selectAccountType: "口座タイプを選択",
+    bankCard: "銀行カード",
+    usdtTrc20: "USDT-TRC20",
+    usdtErc20: "USDT-ERC20",
+    name: "氏名",
+    nationality: "国籍",
+    bankAddress: "支店住所",
+    bankName: "銀行名",
+    cardNumber: "口座番号",
+    walletAddress: "ウォレットアドレス",
+    placeholderWallet: "アドレスを入力してください",
+    btnSave: "保存",
+    saveSuccess: "保存しました！",
+    contactServiceToChange: "変更が必要な場合は、サポートにお問い合わせください",
+  },
+  "th-TH": {
+    title: "บัญชีถอนเงิน",
+    selectAccountType: "เลือกประเภทบัญชี",
+    bankCard: "บัตรธนาคาร",
+    usdtTrc20: "USDT-TRC20",
+    usdtErc20: "USDT-ERC20",
+    name: "ชื่อ-นามสกุล",
+    nationality: "สัญชาติ",
+    bankAddress: "ที่อยู่สาขาธนาคาร",
+    bankName: "ชื่อธนาคาร",
+    cardNumber: "หมายเลขบัญชี / บัตร",
+    walletAddress: "ที่อยู่กระเป๋าเงินดิจิทัล",
+    placeholderWallet: "กรุณากรอกที่อยู่กระเป๋าเงิน",
+    btnSave: "บันทึก",
+    saveSuccess: "บันทึกสำเร็จแล้ว!",
+    contactServiceToChange: "หากต้องการแก้ไข โปรดติดต่อฝ่ายบริการลูกค้า",
+  },
+  "ko-KR": {
+    title: "출금 계좌",
+    selectAccountType: "계좌 유형 선택",
+    bankCard: "은행 카드",
+    usdtTrc20: "USDT-TRC20",
+    usdtErc20: "USDT-ERC20",
+    name: "성명",
+    nationality: "국적",
+    bankAddress: "개설 지점 주소",
+    bankName: "은행명",
+    cardNumber: "카드/계좌번호",
+    walletAddress: "지갑 주소",
+    placeholderWallet: "지갑 주소를 입력하세요",
+    btnSave: "저장",
+    saveSuccess: "저장되었습니다!",
+    contactServiceToChange: "수정이 필요하시면 고객센터에 문의하세요",
+  },
+  "fr-FR": {
     title: "Compte de Retrait",
     selectAccountType: "Sélectionnez le type de compte",
     bankCard: "Carte Bancaire",
@@ -170,7 +189,7 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     saveSuccess: "Enregistré avec succès !",
     contactServiceToChange: "Pour modifier, veuillez contacter le support",
   },
-  de: {
+  "de-DE": {
     title: "Auszahlungskonto",
     selectAccountType: "Kontotyp auswählen",
     bankCard: "Bankkarte",
@@ -186,22 +205,5 @@ export const ACCOUNT_TRANSLATIONS: Record<string, AccountTranslation> = {
     btnSave: "Speichern",
     saveSuccess: "Erfolgreich gespeichert!",
     contactServiceToChange: "Für Änderungen wenden Sie sich an den Support",
-  },
-  ru: {
-    title: "Счет вывода",
-    selectAccountType: "Выберите тип счета",
-    bankCard: "Банковская карта",
-    usdtTrc20: "USDT-TRC20",
-    usdtErc20: "USDT-ERC20",
-    name: "ФИО",
-    nationality: "Гражданство",
-    bankAddress: "Адрес отделения",
-    bankName: "Название банка",
-    cardNumber: "Номер карты",
-    walletAddress: "Адрес кошелька",
-    placeholderWallet: "Введите адрес кошелька",
-    btnSave: "Сохранить",
-    saveSuccess: "Успешно сохранено!",
-    contactServiceToChange: "Для изменения свяжитесь с поддержкой",
   },
 };

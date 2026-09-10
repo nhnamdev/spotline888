@@ -1,3 +1,5 @@
+import { LanguageCode } from "../pages-login-login/i18n";
+
 export interface TransferTranslation {
   title: string;
   myrBalanceTitle: string;
@@ -16,7 +18,7 @@ export interface TransferTranslation {
   pleaseEnterAmount: string;
 }
 
-export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
+export const TRANSFER_TRANSLATIONS: Record<LanguageCode, TransferTranslation> = {
   "zh-CN": {
     title: "划转",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
@@ -34,7 +36,7 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "可用余额不足",
     pleaseEnterAmount: "请输入划转金额",
   },
-  "zh-TW": {
+  "hk-TW": {
     title: "劃轉",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "USDT餘額",
@@ -51,7 +53,7 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "可用餘額不足",
     pleaseEnterAmount: "請輸入劃轉金額",
   },
-  en: {
+  "en-US": {
     title: "Transfer",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "USDT Balance",
@@ -68,7 +70,7 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "Insufficient available balance",
     pleaseEnterAmount: "Please enter transfer amount",
   },
-  vi: {
+  "vi-VN": {
     title: "Chuyển đổi",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "Số dư USDT",
@@ -85,41 +87,7 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "Số dư không đủ",
     pleaseEnterAmount: "Vui lòng nhập số tiền",
   },
-  ja: {
-    title: "振替",
-    myrBalanceTitle: "Malaysian Ringgit(MYR)",
-    usdtBalanceTitle: "USDT残高",
-    transferDirection: "振替方向",
-    dirMyrToUsdt: "Malaysian Ringgit → USDT",
-    dirUsdtToMyr: "USDT → Malaysian Ringgit",
-    transferAmount: "振替金額",
-    placeholderAmount: "振替金額を入力してください",
-    availableAmount: "利用可能金額",
-    all: "全て",
-    currentRate: "現在のレート",
-    btnConfirm: "振替を確認",
-    transferSuccess: "振替が成功しました！",
-    insufficientBalance: "残高不足です",
-    pleaseEnterAmount: "振替金額を入力してください",
-  },
-  ko: {
-    title: "이체",
-    myrBalanceTitle: "Malaysian Ringgit(MYR)",
-    usdtBalanceTitle: "USDT 잔액",
-    transferDirection: "이체 방향",
-    dirMyrToUsdt: "Malaysian Ringgit → USDT",
-    dirUsdtToMyr: "USDT → Malaysian Ringgit",
-    transferAmount: "이체 금액",
-    placeholderAmount: "이체 금액을 입력하세요",
-    availableAmount: "사용 가능 금액",
-    all: "전액",
-    currentRate: "현재 환율",
-    btnConfirm: "이체 확인",
-    transferSuccess: "이체가 완료되었습니다!",
-    insufficientBalance: "잔액이 부족합니다",
-    pleaseEnterAmount: "이체 금액을 입력하세요",
-  },
-  id: {
+  "id-ID": {
     title: "Transfer",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "Saldo USDT",
@@ -136,24 +104,75 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "Saldo tidak mencukupi",
     pleaseEnterAmount: "Masukkan jumlah transfer",
   },
-  es: {
-    title: "Transferir",
+  "ms-MY": {
+    title: "Pindahan",
+    myrBalanceTitle: "Ringgit Malaysia(MYR)",
+    usdtBalanceTitle: "Baki USDT",
+    transferDirection: "Arah Pindahan",
+    dirMyrToUsdt: "Ringgit Malaysia → USDT",
+    dirUsdtToMyr: "USDT → Ringgit Malaysia",
+    transferAmount: "Jumlah Pindahan",
+    placeholderAmount: "Sila masukkan jumlah pindahan",
+    availableAmount: "Jumlah Tersedia",
+    all: "Semua",
+    currentRate: "Kadar Semasa",
+    btnConfirm: "Sahkan Pindahan",
+    transferSuccess: "Pindahan berjaya!",
+    insufficientBalance: "Baki tidak mencukupi",
+    pleaseEnterAmount: "Sila masukkan jumlah pindahan",
+  },
+  "ja-JP": {
+    title: "振替",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
-    usdtBalanceTitle: "Saldo USDT",
-    transferDirection: "Dirección de transferencia",
+    usdtBalanceTitle: "USDT残高",
+    transferDirection: "振替方向",
     dirMyrToUsdt: "Malaysian Ringgit → USDT",
     dirUsdtToMyr: "USDT → Malaysian Ringgit",
-    transferAmount: "Monto a transferir",
-    placeholderAmount: "Ingrese monto a transferir",
-    availableAmount: "Monto disponible",
-    all: "Todo",
-    currentRate: "Tasa actual",
-    btnConfirm: "Confirmar transferencia",
-    transferSuccess: "¡Transferencia exitosa!",
-    insufficientBalance: "Saldo insuficiente",
-    pleaseEnterAmount: "Ingrese monto a transferir",
+    transferAmount: "振替金額",
+    placeholderAmount: "振替金額を入力してください",
+    availableAmount: "利用可能金額",
+    all: "全て",
+    currentRate: "現在のレート",
+    btnConfirm: "振替を確認",
+    transferSuccess: "振替が成功しました！",
+    insufficientBalance: "残高不足です",
+    pleaseEnterAmount: "振替金額を入力してください",
   },
-  fr: {
+  "th-TH": {
+    title: "โอนย้าย",
+    myrBalanceTitle: "ริงกิตมาเลเซีย (MYR)",
+    usdtBalanceTitle: "ยอดคงเหลือ USDT",
+    transferDirection: "ทิศทางการโอน",
+    dirMyrToUsdt: "ริงกิตมาเลเซีย → USDT",
+    dirUsdtToMyr: "USDT → ริงกิตมาเลเซีย",
+    transferAmount: "จำนวนเงินที่ต้องการโอน",
+    placeholderAmount: "กรุณากรอกจำนวนเงิน",
+    availableAmount: "จำนวนเงินที่ใช้ได้",
+    all: "ทั้งหมด",
+    currentRate: "อัตราแลกเปลี่ยนปัจจุบัน",
+    btnConfirm: "ยืนยันการโอน",
+    transferSuccess: "โอนสำเร็จแล้ว!",
+    insufficientBalance: "ยอดคงเหลือไม่เพียงพอ",
+    pleaseEnterAmount: "กรุณากรอกจำนวนเงิน",
+  },
+  "ko-KR": {
+    title: "이체",
+    myrBalanceTitle: "Malaysian Ringgit(MYR)",
+    usdtBalanceTitle: "USDT 잔액",
+    transferDirection: "이체 방향",
+    dirMyrToUsdt: "Malaysian Ringgit → USDT",
+    dirUsdtToMyr: "USDT → Malaysian Ringgit",
+    transferAmount: "이체 금액",
+    placeholderAmount: "이체 금액을 입력하세요",
+    availableAmount: "사용 가능 금액",
+    all: "전액",
+    currentRate: "현재 환율",
+    btnConfirm: "이체 확인",
+    transferSuccess: "이체가 완료되었습니다!",
+    insufficientBalance: "잔액이 부족합니다",
+    pleaseEnterAmount: "이체 금액을 입력하세요",
+  },
+  "fr-FR": {
     title: "Transfert",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "Solde USDT",
@@ -170,7 +189,7 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     insufficientBalance: "Solde insuffisant",
     pleaseEnterAmount: "Veuillez entrer le montant",
   },
-  de: {
+  "de-DE": {
     title: "Übertrag",
     myrBalanceTitle: "Malaysian Ringgit(MYR)",
     usdtBalanceTitle: "USDT-Guthaben",
@@ -186,22 +205,5 @@ export const TRANSFER_TRANSLATIONS: Record<string, TransferTranslation> = {
     transferSuccess: "Übertrag erfolgreich!",
     insufficientBalance: "Unzureichendes Guthaben",
     pleaseEnterAmount: "Bitte Betrag eingeben",
-  },
-  ru: {
-    title: "Перевод",
-    myrBalanceTitle: "Malaysian Ringgit(MYR)",
-    usdtBalanceTitle: "Баланс USDT",
-    transferDirection: "Направление перевода",
-    dirMyrToUsdt: "Malaysian Ringgit → USDT",
-    dirUsdtToMyr: "USDT → Malaysian Ringgit",
-    transferAmount: "Сумма перевода",
-    placeholderAmount: "Введите сумму",
-    availableAmount: "Доступно",
-    all: "Все",
-    currentRate: "Текущий курс",
-    btnConfirm: "Подтвердить перевод",
-    transferSuccess: "Перевод выполнен успешно!",
-    insufficientBalance: "Недостаточно средств",
-    pleaseEnterAmount: "Введите сумму перевода",
   },
 };

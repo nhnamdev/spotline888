@@ -61,7 +61,7 @@ export default function AdminAttachmentContent() {
         }
       }
     } catch (err) {
-      console.error("Lỗi nạp tệp đính kèm:", err);
+      console.error("加载附件失败:", err);
     } finally {
       setIsRefreshing(false);
     }
@@ -204,7 +204,7 @@ export default function AdminAttachmentContent() {
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      showToast("数据刷新成功 (Refresh successful)");
+      showToast("数据刷新成功");
     }, 400);
   };
 
@@ -279,7 +279,7 @@ export default function AdminAttachmentContent() {
         fullurl: uploadedUrl,
       };
       setAttachments([newItem, ...attachments]);
-      showToast("上传成功 (Uploaded successfully)");
+      showToast("上传成功");
     } else if (modalMode === "edit" && editingItem) {
       setAttachments((prev) =>
         prev.map((c) =>
@@ -301,7 +301,7 @@ export default function AdminAttachmentContent() {
             : c
         )
       );
-      showToast("修改成功 (Updated successfully)");
+      showToast("修改成功");
     }
 
     setModalMode(null);
@@ -316,10 +316,10 @@ export default function AdminAttachmentContent() {
       }
       setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
       setDeleteConfirmIds(null);
-      showToast("删除成功 (Deleted successfully)");
+      showToast("删除成功");
       fetchAttachments();
     } catch (err) {
-      console.error("Lỗi xóa tệp đính kèm:", err);
+      console.error("删除附件失败:", err);
     }
   };
 
@@ -341,7 +341,7 @@ export default function AdminAttachmentContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -351,11 +351,7 @@ export default function AdminAttachmentContent() {
               系统设置
             </a>
           </li>
-          <li>
-            <a href="javascript:;" onClick={(e) => e.preventDefault()}>
-              Attachment
-            </a>
-          </li>
+          <li><a href="javascript:;" onClick={(e) => e.preventDefault()}>附件管理</a></li>
         </ol>
       </div>
 
@@ -365,7 +361,7 @@ export default function AdminAttachmentContent() {
           {/* Panel Heading with Lead */}
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>Attachment</em>Attachment tips
+              <em>附件管理</em>主要用于管理上传到系统的文件和图片
             </div>
           </div>
 
@@ -380,7 +376,7 @@ export default function AdminAttachmentContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-primary btn-refresh"
-                        title="Refresh"
+                        title="刷新"
                         onClick={handleRefresh}
                       >
                         <i
@@ -393,10 +389,10 @@ export default function AdminAttachmentContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-success btn-add"
-                        title="Add"
+                        title="添加"
                         onClick={handleOpenAdd}
                       >
-                        <i className="fa fa-plus"></i> Add
+                        <i className="fa fa-plus"></i> 添加
                       </a>
 
                       <a
@@ -406,12 +402,12 @@ export default function AdminAttachmentContent() {
                             ? "btn-disabled disabled"
                             : ""
                         }`}
-                        title="Edit"
+                        title="编辑"
                         onClick={() =>
                           selectedIds.length === 1 && handleOpenEdit()
                         }
                       >
-                        <i className="fa fa-pencil"></i> Edit
+                        <i className="fa fa-pencil"></i> 编辑
                       </a>
 
                       <a
@@ -421,24 +417,24 @@ export default function AdminAttachmentContent() {
                             ? "btn-disabled disabled"
                             : ""
                         }`}
-                        title="Delete"
+                        title="删除"
                         onClick={() =>
                           selectedIds.length > 0 &&
                           setDeleteConfirmIds([...selectedIds])
                         }
                       >
-                        <i className="fa fa-trash"></i> Delete
+                        <i className="fa fa-trash"></i> 删除
                       </a>
 
                       <a
                         href="javascript:;"
                         className="btn btn-info btn-import"
-                        title="Import"
+                        title="导入"
                         onClick={() => {
-                          showToast("Import 功能已就绪 (Import ready)");
+                          showToast("导入功能已就绪");
                         }}
                       >
-                        <i className="fa fa-upload"></i> Import
+                        <i className="fa fa-upload"></i> 导入
                       </a>
                     </div>
 
@@ -448,7 +444,7 @@ export default function AdminAttachmentContent() {
                         <input
                           type="text"
                           className="form-control input-sm search-input"
-                          placeholder="Search"
+                          placeholder="搜索"
                           value={searchQuery}
                           onChange={(e) => {
                             setSearchQuery(e.target.value);
@@ -462,7 +458,7 @@ export default function AdminAttachmentContent() {
                         className={`btn btn-default btn-sm ${
                           isCommonSearchOpen ? "active" : ""
                         }`}
-                        title="Common search"
+                        title="通用搜索"
                         onClick={() => setIsCommonSearchOpen(!isCommonSearchOpen)}
                       >
                         <i className="fa fa-search"></i>
@@ -473,7 +469,7 @@ export default function AdminAttachmentContent() {
                         <button
                           type="button"
                           className="btn btn-default btn-sm dropdown-toggle"
-                          title="Columns"
+                          title="列"
                           onClick={() => setShowColumnsMenu(!showColumnsMenu)}
                         >
                           <i className="fa fa-th"></i>{" "}
@@ -520,13 +516,13 @@ export default function AdminAttachmentContent() {
                           <div className="col-xs-12 col-sm-6 col-md-3">
                             <div className="form-group">
                               <label className="control-label col-xs-4">
-                                Id
+                                ID
                               </label>
                               <div className="col-xs-8">
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Id"
+                                  placeholder="ID"
                                   value={commonSearch.id}
                                   onChange={(e) => {
                                     setCommonSearch({
@@ -543,13 +539,13 @@ export default function AdminAttachmentContent() {
                           <div className="col-xs-12 col-sm-6 col-md-3">
                             <div className="form-group">
                               <label className="control-label col-xs-4">
-                                Url
+                                物理路径
                               </label>
                               <div className="col-xs-8">
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="Url"
+                                  placeholder="物理路径"
                                   value={commonSearch.url}
                                   onChange={(e) => {
                                     setCommonSearch({
@@ -566,13 +562,13 @@ export default function AdminAttachmentContent() {
                           <div className="col-xs-12 col-sm-6 col-md-3">
                             <div className="form-group">
                               <label className="control-label col-xs-4">
-                                Type
+                                类型
                               </label>
                               <div className="col-xs-8">
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="png, jpg..."
+                                  placeholder="png, jpg等"
                                   value={commonSearch.imagetype}
                                   onChange={(e) => {
                                     setCommonSearch({
@@ -589,13 +585,13 @@ export default function AdminAttachmentContent() {
                           <div className="col-xs-12 col-sm-6 col-md-3">
                             <div className="form-group">
                               <label className="control-label col-xs-4">
-                                Storage
+                                存储位置
                               </label>
                               <div className="col-xs-8">
                                 <input
                                   type="text"
                                   className="form-control"
-                                  placeholder="local..."
+                                  placeholder="存储位置"
                                   value={commonSearch.storage}
                                   onChange={(e) => {
                                     setCommonSearch({
@@ -626,7 +622,7 @@ export default function AdminAttachmentContent() {
                               setCurrentPage(1);
                             }}
                           >
-                            Reset
+                            重置
                           </button>
                         </div>
                       </form>
@@ -650,57 +646,57 @@ export default function AdminAttachmentContent() {
                           </th>
                           {visibleColumns.id && (
                             <th style={{ width: 60 }} className="text-center">
-                              <div className="th-inner">Id</div>
+                              <div className="th-inner">ID</div>
                             </th>
                           )}
                           {visibleColumns.preview && (
                             <th style={{ width: 110 }} className="text-center">
-                              <div className="th-inner">Preview</div>
+                              <div className="th-inner">预览</div>
                             </th>
                           )}
                           {visibleColumns.url && (
                             <th className="text-left">
-                              <div className="th-inner">Url</div>
+                              <div className="th-inner">物理路径</div>
                             </th>
                           )}
                           {visibleColumns.imagewidth && (
                             <th style={{ width: 85 }} className="text-center">
-                              <div className="th-inner">Imagewidth</div>
+                              <div className="th-inner">宽度</div>
                             </th>
                           )}
                           {visibleColumns.imageheight && (
                             <th style={{ width: 85 }} className="text-center">
-                              <div className="th-inner">Imageheight</div>
+                              <div className="th-inner">高度</div>
                             </th>
                           )}
                           {visibleColumns.imagetype && (
                             <th style={{ width: 80 }} className="text-center">
-                              <div className="th-inner">Imagetype</div>
+                              <div className="th-inner">图片类型</div>
                             </th>
                           )}
                           {visibleColumns.storage && (
                             <th style={{ width: 75 }} className="text-center">
-                              <div className="th-inner">Storage</div>
+                              <div className="th-inner">存储位置</div>
                             </th>
                           )}
                           {visibleColumns.filesize && (
                             <th style={{ width: 95 }} className="text-center">
-                              <div className="th-inner">Filesize</div>
+                              <div className="th-inner">文件大小</div>
                             </th>
                           )}
                           {visibleColumns.mimetype && (
                             <th style={{ width: 110 }} className="text-center">
-                              <div className="th-inner">Mimetype</div>
+                              <div className="th-inner">MIME类型</div>
                             </th>
                           )}
                           {visibleColumns.createtime && (
                             <th style={{ width: 150 }} className="text-center">
-                              <div className="th-inner">Createtime</div>
+                              <div className="th-inner">创建日期</div>
                             </th>
                           )}
                           {visibleColumns.operate && (
                             <th style={{ width: 90 }} className="text-center">
-                              <div className="th-inner">Operate</div>
+                              <div className="th-inner">操作</div>
                             </th>
                           )}
                         </tr>
@@ -709,7 +705,7 @@ export default function AdminAttachmentContent() {
                         {currentRows.length === 0 ? (
                           <tr>
                             <td colSpan={12} className="text-center no-records">
-                              没有找到匹配的记录 (No matching records found)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -738,7 +734,7 @@ export default function AdminAttachmentContent() {
                                       onClick={() =>
                                         setPreviewImage(row.fullurl || row.url)
                                       }
-                                      title="Click to preview"
+                                      title="点击预览"
                                     >
                                       <img
                                         src={row.fullurl || row.url}
@@ -811,7 +807,7 @@ export default function AdminAttachmentContent() {
                                     <button
                                       type="button"
                                       className="btn btn-xs btn-success btn-editone"
-                                      title="Edit"
+                                      title="编辑"
                                       onClick={() => handleOpenEdit(row)}
                                     >
                                       <i className="fa fa-pencil"></i>
@@ -819,7 +815,7 @@ export default function AdminAttachmentContent() {
                                     <button
                                       type="button"
                                       className="btn btn-xs btn-danger btn-delone"
-                                      title="Delete"
+                                      title="删除"
                                       onClick={() =>
                                         setDeleteConfirmIds([row.id])
                                       }
@@ -840,10 +836,7 @@ export default function AdminAttachmentContent() {
                   <div className="fixed-table-pagination">
                     <div className="pull-left pagination-detail">
                       <span className="pagination-info">
-                        总共 <b>{totalItems}</b> 条记录 (Showing{" "}
-                        {totalItems > 0 ? startIndex + 1 : 0} to{" "}
-                        {Math.min(startIndex + pageSize, totalItems)} of{" "}
-                        {totalItems} rows)
+                        显示第 {totalItems > 0 ? startIndex + 1 : 0} 到第 {Math.min(startIndex + pageSize, totalItems)} 条记录，总共 {totalItems} 条记录
                       </span>
                       <span className="page-list">
                         每页显示{" "}
@@ -934,7 +927,7 @@ export default function AdminAttachmentContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">Add</h4>
+                <h4 className="modal-title">添加</h4>
               </div>
               <form
                 className="form-horizontal"
@@ -944,13 +937,13 @@ export default function AdminAttachmentContent() {
                 <div className="modal-body">
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Upload:
+                      本地上传:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="Path or file name"
+                        placeholder="请输入路径或文件名"
                         value={formState.local}
                         onChange={(e) =>
                           setFormState({ ...formState, local: e.target.value })
@@ -973,17 +966,17 @@ export default function AdminAttachmentContent() {
                             local: sample,
                             url: sample,
                           });
-                          showToast("已选择本地文件 (File selected)");
+                          showToast("已选择本地文件");
                         }}
                       >
-                        <i className="fa fa-upload"></i> Upload to local
+                        <i className="fa fa-upload"></i> 上传到本地
                       </button>
                     </div>
                   </div>
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Upload from editor:
+                      编辑器上传:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <textarea
@@ -994,7 +987,7 @@ export default function AdminAttachmentContent() {
                         onChange={(e) =>
                           setFormState({ ...formState, editor: e.target.value })
                         }
-                        placeholder="Paste image or HTML here"
+                        placeholder="在此粘贴图片或HTML代码"
                       ></textarea>
                     </div>
                   </div>
@@ -1007,14 +1000,14 @@ export default function AdminAttachmentContent() {
                         type="submit"
                         className="btn btn-success btn-embossed"
                       >
-                        OK
+                        确定
                       </button>
                       <button
                         type="button"
                         className="btn btn-default btn-embossed"
                         onClick={() => setModalMode(null)}
                       >
-                        Reset
+                        重置
                       </button>
                     </div>
                   </div>
@@ -1038,7 +1031,7 @@ export default function AdminAttachmentContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">Edit</h4>
+                <h4 className="modal-title">编辑</h4>
               </div>
               <form
                 className="form-horizontal"
@@ -1048,7 +1041,7 @@ export default function AdminAttachmentContent() {
                 <div className="modal-body">
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Url:
+                      物理路径:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1065,7 +1058,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Imagewidth:
+                      宽度:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1085,7 +1078,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Imageheight:
+                      高度:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1105,7 +1098,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Imagetype:
+                      图片类型:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1125,7 +1118,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Imageframes:
+                      图片帧数:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1144,7 +1137,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Filesize:
+                      文件大小:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1163,7 +1156,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Mimetype:
+                      MIME类型:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1182,7 +1175,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Extparam:
+                      透传数据:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1201,7 +1194,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Uploadtime:
+                      上传时间:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1220,7 +1213,7 @@ export default function AdminAttachmentContent() {
 
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Storage:
+                      存储位置:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -1245,14 +1238,14 @@ export default function AdminAttachmentContent() {
                         type="submit"
                         className="btn btn-success btn-embossed"
                       >
-                        OK
+                        确定
                       </button>
                       <button
                         type="button"
                         className="btn btn-default btn-embossed"
                         onClick={() => setModalMode(null)}
                       >
-                        Reset
+                        重置
                       </button>
                     </div>
                   </div>
@@ -1276,12 +1269,11 @@ export default function AdminAttachmentContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">提示 (Notice)</h4>
+                <h4 className="modal-title">温馨提示</h4>
               </div>
               <div className="modal-body">
                 <p>
-                  确定要删除这 {deleteConfirmIds.length} 项吗？ (Are you sure you
-                  want to delete the selected item(s)?)
+                  确定要删除选中的 {deleteConfirmIds.length} 项吗？
                 </p>
               </div>
               <div className="modal-footer">
@@ -1290,14 +1282,14 @@ export default function AdminAttachmentContent() {
                   className="btn btn-danger"
                   onClick={handleConfirmDelete}
                 >
-                  确定 (Confirm)
+                  确定
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={() => setDeleteConfirmIds(null)}
                 >
-                  取消 (Cancel)
+                  取消
                 </button>
               </div>
             </div>
@@ -1324,7 +1316,7 @@ export default function AdminAttachmentContent() {
             </button>
             <img
               src={previewImage}
-              alt="Attachment Preview"
+              alt="预览图片"
               className="lightbox-img"
             />
           </div>

@@ -1,3 +1,5 @@
+import { LanguageCode } from "../pages-login-login/i18n";
+
 export interface SetTranslation {
   title: string;
   languageSetting: string;
@@ -10,7 +12,7 @@ export interface SetTranslation {
   currentLangLabel: string;
 }
 
-export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
+export const SET_TRANSLATIONS: Record<LanguageCode, SetTranslation> = {
   "zh-CN": {
     title: "设置",
     languageSetting: "语言设置",
@@ -22,7 +24,7 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
     contactServiceToChangePwd: "如需更改密码，请联系客服",
     currentLangLabel: "简体中文",
   },
-  "zh-TW": {
+  "hk-TW": {
     title: "設置",
     languageSetting: "語言設置",
     loginPassword: "登錄密碼",
@@ -33,7 +35,7 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
     contactServiceToChangePwd: "如需更改密碼，請聯繫客服",
     currentLangLabel: "繁體中文",
   },
-  en: {
+  "en-US": {
     title: "Settings",
     languageSetting: "Language",
     loginPassword: "Login Password",
@@ -45,7 +47,7 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
       "To change your password, please contact customer support",
     currentLangLabel: "English",
   },
-  vi: {
+  "vi-VN": {
     title: "Cài đặt",
     languageSetting: "Cài đặt ngôn ngữ",
     loginPassword: "Mật khẩu đăng nhập",
@@ -57,31 +59,7 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
       "Nếu cần thay đổi mật khẩu, vui lòng liên hệ CSKH",
     currentLangLabel: "Tiếng Việt",
   },
-  ja: {
-    title: "設定",
-    languageSetting: "言語設定",
-    loginPassword: "ログインパスワード",
-    tradePassword: "取引パスワード",
-    clearCache: "キャッシュ削除",
-    modify: "変更",
-    cacheCleared: "キャッシュをクリアしました！",
-    contactServiceToChangePwd:
-      "パスワードを変更する場合は、カスタマーサポートまでご連絡ください",
-    currentLangLabel: "日本語",
-  },
-  ko: {
-    title: "설정",
-    languageSetting: "언어 설정",
-    loginPassword: "로그인 비밀번호",
-    tradePassword: "거래 비밀번호",
-    clearCache: "캐시 삭제",
-    modify: "수정",
-    cacheCleared: "캐시가 성공적으로 삭제되었습니다!",
-    contactServiceToChangePwd:
-      "비밀번호를 변경하시려면 고객센터에 문의해 주세요",
-    currentLangLabel: "한국어",
-  },
-  id: {
+  "id-ID": {
     title: "Pengaturan",
     languageSetting: "Pengaturan Bahasa",
     loginPassword: "Kata Sandi Masuk",
@@ -93,19 +71,55 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
       "Untuk mengubah kata sandi, silakan hubungi CS",
     currentLangLabel: "Bahasa Indonesia",
   },
-  es: {
-    title: "Configuración",
-    languageSetting: "Idioma",
-    loginPassword: "Contraseña de inicio",
-    tradePassword: "Contraseña de transacción",
-    clearCache: "Limpiar caché",
-    modify: "Modificar",
-    cacheCleared: "¡Caché borrada con éxito!",
+  "ms-MY": {
+    title: "Tetapan",
+    languageSetting: "Tetapan Bahasa",
+    loginPassword: "Kata Laluan Log Masuk",
+    tradePassword: "Kata Laluan Transaksi",
+    clearCache: "Kosongkan Cache",
+    modify: "Ubah",
+    cacheCleared: "Cache berjaya dikosongkan!",
     contactServiceToChangePwd:
-      "Para cambiar contraseña, por favor contacte a soporte",
-    currentLangLabel: "Español",
+      "Untuk menukar kata laluan, sila hubungi khidmat pelanggan",
+    currentLangLabel: "Bahasa Melayu",
   },
-  fr: {
+  "ja-JP": {
+    title: "設定",
+    languageSetting: "言語設定",
+    loginPassword: "ログインパスワード",
+    tradePassword: "取引パスワード",
+    clearCache: "キャッシュ削除",
+    modify: "変更",
+    cacheCleared: "キャッシュをクリアしました！",
+    contactServiceToChangePwd:
+      "パスワードを変更する場合は、カスタマーサポートまでご連絡ください",
+    currentLangLabel: "日本語",
+  },
+  "th-TH": {
+    title: "การตั้งค่า",
+    languageSetting: "การตั้งค่าภาษา",
+    loginPassword: "รหัสผ่านเข้าสู่ระบบ",
+    tradePassword: "รหัสผ่านการทำธุรกรรม",
+    clearCache: "ล้างแคช",
+    modify: "แก้ไข",
+    cacheCleared: "ล้างแคชสำเร็จแล้ว!",
+    contactServiceToChangePwd:
+      "หากต้องการเปลี่ยนรหัสผ่าน โปรดติดต่อฝ่ายบริการลูกค้า",
+    currentLangLabel: "ภาษาไทย",
+  },
+  "ko-KR": {
+    title: "설정",
+    languageSetting: "언어 설정",
+    loginPassword: "로그인 비밀번호",
+    tradePassword: "거래 비밀번호",
+    clearCache: "캐시 삭제",
+    modify: "수정",
+    cacheCleared: "캐시가 성공적으로 삭제되었습니다!",
+    contactServiceToChangePwd:
+      "비밀번호를 변경하시려면 고객센터에 문의해 주세요",
+    currentLangLabel: "한국어",
+  },
+  "fr-FR": {
     title: "Paramètres",
     languageSetting: "Langue",
     loginPassword: "Mot de passe de connexion",
@@ -117,7 +131,7 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
       "Pour changer votre mot de passe, veuillez contacter le support",
     currentLangLabel: "Français",
   },
-  de: {
+  "de-DE": {
     title: "Einstellungen",
     languageSetting: "Sprache",
     loginPassword: "Anmeldepasswort",
@@ -128,17 +142,5 @@ export const SET_TRANSLATIONS: Record<string, SetTranslation> = {
     contactServiceToChangePwd:
       "Wenden Sie sich an den Kundensupport, um Ihr Passwort zu ändern",
     currentLangLabel: "Deutsch",
-  },
-  ru: {
-    title: "Настройки",
-    languageSetting: "Язык",
-    loginPassword: "Пароль для входа",
-    tradePassword: "Платежный пароль",
-    clearCache: "Очистить кэш",
-    modify: "Изменить",
-    cacheCleared: "Кэш успешно очищен!",
-    contactServiceToChangePwd:
-      "Для изменения пароля свяжитесь со службой поддержки",
-    currentLangLabel: "Русский",
   },
 };

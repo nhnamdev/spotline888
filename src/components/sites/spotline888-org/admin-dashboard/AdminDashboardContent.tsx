@@ -23,7 +23,7 @@ export default function AdminDashboardContent() {
         setStats(res.data);
       }
     } catch (err) {
-      console.error("Lỗi lấy thống kê dashboard:", err);
+      console.error("加载控制台统计数据失败:", err);
     }
   };
 
@@ -43,7 +43,7 @@ export default function AdminDashboardContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <Link href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </Link>
           </li>
         </ol>
@@ -91,7 +91,7 @@ export default function AdminDashboardContent() {
                 />
               </div>
               <button type="submit" className="btn-query">
-                <i className="fa fa-search"></i> 查询 (Làm mới)
+                <i className="fa fa-search"></i> 查询
               </button>
             </div>
           </form>
@@ -105,7 +105,7 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-users"></i>
               </div>
               <div className="card-val">{stats.user?.total_users || 0}</div>
-              <div className="card-label">总注册人数 (Tổng hội viên)</div>
+              <div className="card-label">总注册人数</div>
               <Link href="/admin/user" className="card-link">
                 查看用户列表 <i className="fa fa-arrow-right"></i>
               </Link>
@@ -120,7 +120,7 @@ export default function AdminDashboardContent() {
               <div className="card-val">
                 <span className="pulse-dot"></span> <span>{stats.pending_kyc || 0}</span>
               </div>
-              <div className="card-label">KYC 待审核 (Hồ sơ chờ duyệt)</div>
+              <div className="card-label">KYC 待审核</div>
               <Link href="/admin/verify" className="card-link">
                 前往审核 <i className="fa fa-arrow-right"></i>
               </Link>
@@ -133,7 +133,7 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-user-plus"></i>
               </div>
               <div className="card-val">{stats.user?.today_users || 0}</div>
-              <div className="card-label">今日注册 (Hội viên mới hôm nay)</div>
+              <div className="card-label">今日注册</div>
             </div>
 
             {/* 待处理充值 */}
@@ -143,7 +143,7 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-clock-o"></i>
               </div>
               <div className="card-val">{stats.recharge?.pending_recharge_count || 0}</div>
-              <div className="card-label">充值待审核 (Đơn nạp chờ duyệt)</div>
+              <div className="card-label">充值待审核</div>
               <Link href="/admin/upmark" className="card-link">
                 前往审核 <i className="fa fa-arrow-right"></i>
               </Link>
@@ -156,11 +156,11 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-up"></i>
               </div>
               <div className="card-val-sm">
-                Tổng: <span>{Number(stats.recharge?.total_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                总计: <span>{Number(stats.recharge?.total_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 <br />
-                Hôm nay: <span>{Number(stats.recharge?.today_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                今日: <span>{Number(stats.recharge?.today_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="card-label">充值统计 (Thống kê nạp tiền)</div>
+              <div className="card-label">充值统计</div>
             </div>
 
             {/* 今日提现 */}
@@ -170,11 +170,11 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-down"></i>
               </div>
               <div className="card-val-sm">
-                Tổng: <span>{Number(stats.withdraw?.total_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                总计: <span>{Number(stats.withdraw?.total_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 <br />
-                Hôm nay: <span>{Number(stats.withdraw?.today_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                今日: <span>{Number(stats.withdraw?.today_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
-              <div className="card-label">提现统计 (Thống kê rút tiền)</div>
+              <div className="card-label">提现统计</div>
             </div>
           </div>
 

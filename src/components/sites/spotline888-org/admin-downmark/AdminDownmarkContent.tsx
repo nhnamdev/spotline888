@@ -52,10 +52,10 @@ export default function AdminDownmarkContent() {
         setRecords(res.data.rows || []);
         setTotal(res.data.total || 0);
       } else {
-        showToast(res.msg || "Không thể tải danh sách rút tiền", "error");
+        showToast(res.msg || "获取提现列表失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi tải dữ liệu rút tiền", "error");
+      showToast(err.message || "获取提现列表异常", "error");
     } finally {
       setLoading(false);
     }
@@ -72,18 +72,18 @@ export default function AdminDownmarkContent() {
       if (res.code === 1) {
         showToast(
           status === "approved"
-            ? "Đã duyệt chi tiền thành công"
-            : "Đã từ chối rút tiền và hoàn tiền về số dư",
+            ? "审核通过成功"
+            : "已驳回提现申请并退还余额",
           "success"
         );
         setRejectModalId(null);
         setRejectRemark("");
         fetchRecords();
       } else {
-        showToast(res.msg || "Xử lý thất bại", "error");
+        showToast(res.msg || "操作失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi xử lý", "error");
+      showToast(err.message || "操作异常", "error");
     } finally {
       setActionLoadingId(null);
     }
@@ -125,27 +125,27 @@ export default function AdminDownmarkContent() {
       <div className="panel panel-default panel-intro">
         <div className="panel-heading">
           <div className="panel-lead">
-            <em>提现管理 (Quản lý rút tiền)</em>
+            <em>提现管理</em>
           </div>
           <ul className="nav nav-tabs">
             <li className={statusFilter === "all" ? "active" : ""}>
               <a href="#all" onClick={(e) => { e.preventDefault(); setStatusFilter("all"); setCurrentPage(1); }}>
-                全部 (Tất cả)
+                全部
               </a>
             </li>
             <li className={statusFilter === "pending" ? "active" : ""}>
               <a href="#pending" onClick={(e) => { e.preventDefault(); setStatusFilter("pending"); setCurrentPage(1); }}>
-                未审核 (Chờ duyệt)
+                未审核
               </a>
             </li>
             <li className={statusFilter === "approved" ? "active" : ""}>
               <a href="#approved" onClick={(e) => { e.preventDefault(); setStatusFilter("approved"); setCurrentPage(1); }}>
-                审核通过 (Đã duyệt chi)
+                审核通过
               </a>
             </li>
             <li className={statusFilter === "rejected" ? "active" : ""}>
               <a href="#rejected" onClick={(e) => { e.preventDefault(); setStatusFilter("rejected"); setCurrentPage(1); }}>
-                审核未通过 (Đã từ chối)
+                审核未通过
               </a>
             </li>
           </ul>
@@ -161,10 +161,10 @@ export default function AdminDownmarkContent() {
                   className="btn btn-default btn-refresh"
                   onClick={fetchRecords}
                   disabled={loading}
-                  title="Làm mới"
+                  title="刷新"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 inline mr-1 ${loading ? "animate-spin" : ""}`} />
-                  刷新 (Làm mới)
+                  刷新
                 </button>
               </div>
 
@@ -175,10 +175,10 @@ export default function AdminDownmarkContent() {
                   value={statusFilter}
                   onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                 >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="pending">Chờ duyệt</option>
-                  <option value="approved">Đã duyệt chi</option>
-                  <option value="rejected">Từ chối</option>
+                  <option value="all">全部状态</option>
+                  <option value="pending">未审核</option>
+                  <option value="approved">审核通过</option>
+                  <option value="rejected">审核未通过</option>
                 </select>
               </div>
             </div>
@@ -196,19 +196,19 @@ export default function AdminDownmarkContent() {
                       />
                     </th>
                     <th>ID</th>
-                    <th>Mã đơn</th>
-                    <th>Hội viên</th>
-                    <th>Tên người nhận</th>
-                    <th>Số tiền rút</th>
-                    <th>Phí rút</th>
-                    <th>Thực nhận</th>
-                    <th>Hình thức</th>
-                    <th>Ngân hàng / Kênh</th>
-                    <th>Số tài khoản / Địa chỉ ví</th>
-                    <th>Thời gian yêu cầu</th>
-                    <th>Ghi chú / Lý do</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>订单号</th>
+                    <th>会员</th>
+                    <th>收款人</th>
+                    <th>提现金额</th>
+                    <th>手续费</th>
+                    <th>实际到账</th>
+                    <th>提现方式</th>
+                    <th>开户银行/渠道</th>
+                    <th>银行卡号/钱包地址</th>
+                    <th>申请时间</th>
+                    <th>备注/原因</th>
+                    <th>状态</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -216,13 +216,13 @@ export default function AdminDownmarkContent() {
                     <tr>
                       <td colSpan={15} className="text-center py-8 text-gray-500">
                         <Loader2 className="w-6 h-6 animate-spin inline mr-2 text-primary" />
-                        Đang tải dữ liệu từ máy chủ...
+                        正在加载提现数据...
                       </td>
                     </tr>
                   ) : records.length === 0 ? (
                     <tr>
                       <td colSpan={15} className="text-center py-8 text-gray-400">
-                        Không có đơn rút tiền nào phù hợp
+                        暂无提现记录
                       </td>
                     </tr>
                   ) : (
@@ -252,7 +252,7 @@ export default function AdminDownmarkContent() {
                           </td>
                           <td>
                             <span className={`label ${item.withdraw_type === "usdt" ? "label-success" : "label-info"}`}>
-                              {item.withdraw_type === "usdt" ? "Ví USDT" : "Ngân hàng"}
+                              {item.withdraw_type === "usdt" ? "USDT钱包" : "银行转账"}
                             </span>
                           </td>
                           <td>{item.bank_name || "-"}</td>
@@ -261,11 +261,11 @@ export default function AdminDownmarkContent() {
                           <td className="text-xs">{item.remark || "-"}</td>
                           <td>
                             {item.status === "approved" ? (
-                              <span className="badge badge-success">审核通过 (Đã duyệt chi)</span>
+                              <span className="badge badge-success">审核通过</span>
                             ) : item.status === "rejected" ? (
-                              <span className="badge badge-danger">审核未通过 (Từ chối)</span>
+                              <span className="badge badge-danger">审核未通过</span>
                             ) : (
-                              <span className="badge badge-warning">未审核 (Chờ duyệt)</span>
+                              <span className="badge badge-warning">未审核</span>
                             )}
                           </td>
                           <td>
@@ -278,7 +278,7 @@ export default function AdminDownmarkContent() {
                                   className="btn btn-xs btn-success flex items-center gap-1"
                                 >
                                   {actionLoadingId === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                                  Duyệt chi
+                                  通过
                                 </button>
                                 <button
                                   type="button"
@@ -286,11 +286,11 @@ export default function AdminDownmarkContent() {
                                   onClick={() => setRejectModalId(item.id)}
                                   className="btn btn-xs btn-danger flex items-center gap-1"
                                 >
-                                  <X className="w-3 h-3" /> Từ chối
+                                  <X className="w-3 h-3" /> 驳回
                                 </button>
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-xs">Hoàn tất</span>
+                              <span className="text-gray-400 text-xs">已处理</span>
                             )}
                           </td>
                         </tr>
@@ -304,7 +304,7 @@ export default function AdminDownmarkContent() {
             {/* Pagination Controls */}
             <div className="pagination-container flex justify-between items-center mt-3">
               <div className="pagination-info text-sm text-gray-500">
-                Hiển thị trang {currentPage} / {totalPages} (Tổng số {total} đơn rút)
+                显示第 {currentPage} / {totalPages} 页 (共 {total} 条记录)
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -313,7 +313,7 @@ export default function AdminDownmarkContent() {
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
-                  Trang trước
+                  上一页
                 </button>
                 <span className="px-2 text-sm font-semibold">{currentPage}</span>
                 <button
@@ -322,7 +322,7 @@ export default function AdminDownmarkContent() {
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Trang sau
+                  下一页
                 </button>
               </div>
             </div>
@@ -330,20 +330,20 @@ export default function AdminDownmarkContent() {
         </div>
       </div>
 
-      {/* Modal Từ Chối Rút Tiền Kèm Lý Do */}
+      {/* Modal 驳回提现申请 */}
       {rejectModalId !== null && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-5 max-w-md w-full shadow-2xl">
-            <h4 className="font-bold text-gray-800 text-base mb-2">Từ chối đơn rút #{rejectModalId}</h4>
+            <h4 className="font-bold text-gray-800 text-base mb-2">驳回提现申请 #{rejectModalId}</h4>
             <p className="text-xs text-gray-500 mb-3">
-              Số tiền rút sẽ được hoàn trả tự động vào tài khoản hội viên. Vui lòng nhập lý do từ chối:
+              提现金额将自动退回到会员账户。请输入驳回原因：
             </p>
             <textarea
               className="form-control w-full border border-gray-300 rounded-lg p-2.5 text-sm mb-4"
               rows={3}
               value={rejectRemark}
               onChange={(e) => setRejectRemark(e.target.value)}
-              placeholder="Ví dụ: Sai thông tin ngân hàng, chưa hoàn thành doanh số giao dịch..."
+              placeholder="例如：银行卡信息有误、未完成打码量..."
             />
             <div className="flex justify-end gap-2">
               <button
@@ -351,7 +351,7 @@ export default function AdminDownmarkContent() {
                 className="btn btn-default"
                 onClick={() => { setRejectModalId(null); setRejectRemark(""); }}
               >
-                Hủy bỏ
+                取消
               </button>
               <button
                 type="button"
@@ -359,7 +359,7 @@ export default function AdminDownmarkContent() {
                 onClick={() => handleAudit(rejectModalId, "rejected", rejectRemark)}
                 className="btn btn-danger"
               >
-                Xác nhận từ chối & Hoàn tiền
+                确认驳回并退款
               </button>
             </div>
           </div>

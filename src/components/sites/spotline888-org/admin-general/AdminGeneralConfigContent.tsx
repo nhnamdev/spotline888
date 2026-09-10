@@ -131,7 +131,7 @@ export default function AdminGeneralConfigContent() {
           setOtherForm((prev) => ({ ...prev, ...map }));
         }
       } catch (err) {
-        console.error("Lỗi lấy cấu hình:", err);
+        console.error("加载系统配置失败:", err);
       } finally {
         setLoading(false);
       }
@@ -157,7 +157,7 @@ export default function AdminGeneralConfigContent() {
         setTimeout(() => setSavedAlert(false), 3000);
       }
     } catch (err) {
-      console.error("Lỗi cập nhật cấu hình:", err);
+      console.error("保存系统配置失败:", err);
     } finally {
       setSaving(false);
     }
@@ -168,7 +168,7 @@ export default function AdminGeneralConfigContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>系统设置</span>
@@ -195,7 +195,7 @@ export default function AdminGeneralConfigContent() {
         <div className="panel panel-default panel-intro">
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>网站配置</em>Config tips
+              <em>网站配置</em>在这里配置网站的系统参数
             </div>
             <ul className="nav nav-tabs">
               <li className={activeTab === "basic" ? "active" : ""}>
@@ -206,7 +206,7 @@ export default function AdminGeneralConfigContent() {
                     setActiveTab("basic");
                   }}
                 >
-                  Basic
+                  基础配置
                 </a>
               </li>
               <li className={activeTab === "recharge" ? "active" : ""}>
@@ -279,7 +279,7 @@ export default function AdminGeneralConfigContent() {
                 className={`addcfg-tab ${
                   activeTab === "addcfg" ? "active" : ""
                 }`}
-                title="Add new config"
+                title="添加新变量"
               >
                 <a
                   href="#addcfg"
@@ -304,9 +304,9 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -327,10 +327,10 @@ export default function AdminGeneralConfigContent() {
                               }
                             >
                               <option value="zh-CN">简体中文</option>
-                              <option value="en">English</option>
-                              <option value="vi">Tiếng Việt</option>
-                              <option value="th">ไทย</option>
-                              <option value="id">Bahasa Indonesia</option>
+                              <option value="en">英语</option>
+                              <option value="vi">越南语</option>
+                              <option value="th">泰语</option>
+                              <option value="id">印尼语</option>
                             </select>
                           </div>
                         </div>
@@ -417,7 +417,7 @@ export default function AdminGeneralConfigContent() {
 
                     {/* Site name */}
                     <tr>
-                      <td>Site name</td>
+                      <td>网站名称</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -507,7 +507,7 @@ export default function AdminGeneralConfigContent() {
                                   type="button"
                                   className="btn btn-danger"
                                 >
-                                  <i className="fa fa-upload"></i> Upload
+                                  <i className="fa fa-upload"></i> 上传
                                 </button>
                               </span>
                             </div>
@@ -611,7 +611,7 @@ export default function AdminGeneralConfigContent() {
                                   type="button"
                                   className="btn btn-danger"
                                 >
-                                  <i className="fa fa-upload"></i> Upload
+                                  <i className="fa fa-upload"></i> 上传
                                 </button>
                               </span>
                             </div>
@@ -700,7 +700,7 @@ export default function AdminGeneralConfigContent() {
 
                     {/* version */}
                     <tr>
-                      <td>Version</td>
+                      <td>版本号</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -880,15 +880,11 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
-                        >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                           onClick={() => {}}
                         >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -907,9 +903,9 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1213,14 +1209,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -1239,9 +1231,9 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1471,14 +1463,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -1497,9 +1485,9 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1599,14 +1587,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -1625,14 +1609,14 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Enable register message</td>
+                      <td>开启注册欢迎消息</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -1655,7 +1639,7 @@ export default function AdminGeneralConfigContent() {
                       </td>
                     </tr>
                     <tr>
-                      <td>Register message content</td>
+                      <td>注册欢迎消息内容</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -1685,14 +1669,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -1711,14 +1691,14 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Azure connection string</td>
+                      <td>Azure连接字符串</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -1741,7 +1721,7 @@ export default function AdminGeneralConfigContent() {
                       </td>
                     </tr>
                     <tr>
-                      <td>Azure container name</td>
+                      <td>Azure容器名称</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -1764,7 +1744,7 @@ export default function AdminGeneralConfigContent() {
                       </td>
                     </tr>
                     <tr>
-                      <td>Azure backend domain</td>
+                      <td>Azure后端域名</td>
                       <td>
                         <div className="row">
                           <div className="col-sm-8 col-xs-12">
@@ -1794,14 +1774,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -1820,9 +1796,9 @@ export default function AdminGeneralConfigContent() {
                 <table className="table table-striped">
                   <thead>
                     <tr>
-                      <th style={{ width: "15%" }}>Title</th>
-                      <th style={{ width: "68%" }}>Value</th>
-                      <th style={{ width: "17%" }}>Variable</th>
+                      <th style={{ width: "15%" }}>变量标题</th>
+                      <th style={{ width: "68%" }}>变量值</th>
+                      <th style={{ width: "17%" }}>变量名</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2044,14 +2020,10 @@ export default function AdminGeneralConfigContent() {
                         <button
                           type="submit"
                           className="btn btn-success btn-embossed"
+                        >确定</button>
+                        <button type="reset" className="btn btn-default btn-embossed"
                         >
-                          OK
-                        </button>
-                        <button
-                          type="reset"
-                          className="btn btn-default btn-embossed"
-                        >
-                          Reset
+                          重置
                         </button>
                       </td>
                       <td></td>
@@ -2072,7 +2044,7 @@ export default function AdminGeneralConfigContent() {
                 }}
               >
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Type</label>
+                  <label className="control-label col-xs-12 col-sm-2">类型</label>
                   <div className="col-xs-12 col-sm-6">
                     <select
                       className="form-control"
@@ -2081,21 +2053,21 @@ export default function AdminGeneralConfigContent() {
                         setNewConfigForm({ ...newConfigForm, type: e.target.value })
                       }
                     >
-                      <option value="string">String</option>
-                      <option value="text">Text</option>
-                      <option value="number">Number</option>
-                      <option value="datetime">Datetime</option>
-                      <option value="select">Select</option>
-                      <option value="checkbox">Checkbox</option>
-                      <option value="radio">Radio</option>
-                      <option value="image">Image</option>
-                      <option value="images">Images</option>
+                      <option value="string">字符</option>
+                      <option value="text">文本</option>
+                      <option value="number">数字</option>
+                      <option value="datetime">日期时间</option>
+                      <option value="select">下拉列表</option>
+                      <option value="checkbox">复选框</option>
+                      <option value="radio">单选框</option>
+                      <option value="image">单图</option>
+                      <option value="images">多图</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Group</label>
+                  <label className="control-label col-xs-12 col-sm-2">分组</label>
                   <div className="col-xs-12 col-sm-6">
                     <select
                       className="form-control"
@@ -2104,7 +2076,7 @@ export default function AdminGeneralConfigContent() {
                         setNewConfigForm({ ...newConfigForm, group: e.target.value })
                       }
                     >
-                      <option value="basic">Basic</option>
+                      <option value="basic">基础配置</option>
                       <option value="recharge">充值设置</option>
                       <option value="cashout">提现设置</option>
                       <option value="stock">行情配置</option>
@@ -2116,7 +2088,7 @@ export default function AdminGeneralConfigContent() {
                 </div>
 
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Name</label>
+                  <label className="control-label col-xs-12 col-sm-2">变量名</label>
                   <div className="col-xs-12 col-sm-6">
                     <input
                       type="text"
@@ -2132,7 +2104,7 @@ export default function AdminGeneralConfigContent() {
                 </div>
 
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Title</label>
+                  <label className="control-label col-xs-12 col-sm-2">变量标题</label>
                   <div className="col-xs-12 col-sm-6">
                     <input
                       type="text"
@@ -2148,7 +2120,7 @@ export default function AdminGeneralConfigContent() {
                 </div>
 
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Value</label>
+                  <label className="control-label col-xs-12 col-sm-2">变量值</label>
                   <div className="col-xs-12 col-sm-6">
                     <textarea
                       className="form-control"
@@ -2163,7 +2135,7 @@ export default function AdminGeneralConfigContent() {
                 </div>
 
                 <div className="form-group">
-                  <label className="control-label col-xs-12 col-sm-2">Tip</label>
+                  <label className="control-label col-xs-12 col-sm-2">提示信息</label>
                   <div className="col-xs-12 col-sm-6">
                     <input
                       type="text"
@@ -2180,11 +2152,9 @@ export default function AdminGeneralConfigContent() {
                 <div className="form-group">
                   <div className="col-xs-12 col-sm-6 col-sm-offset-2">
                     <button type="submit" className="btn btn-success btn-embossed">
-                      OK
-                    </button>
-                    <button
-                      type="reset"
-                      className="btn btn-default btn-embossed"
+                          确定
+                        </button>
+                    <button type="reset" className="btn btn-default btn-embossed"
                       onClick={() =>
                         setNewConfigForm({
                           type: "string",
@@ -2198,8 +2168,8 @@ export default function AdminGeneralConfigContent() {
                         })
                       }
                     >
-                      Reset
-                    </button>
+                          重置
+                        </button>
                   </div>
                 </div>
               </form>

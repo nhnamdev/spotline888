@@ -84,7 +84,7 @@ export default function AdminIpWhitelistContent() {
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      showToast("刷新成功 (Refresh successful)");
+      showToast("刷新成功");
     }, 400);
   };
 
@@ -95,7 +95,7 @@ export default function AdminIpWhitelistContent() {
         item.id === id ? { ...item, status: item.status === 1 ? 0 : 1 } : item
       )
     );
-    showToast("操作成功 (Status updated)");
+    showToast("操作成功");
   };
 
   // Add IP
@@ -120,7 +120,7 @@ export default function AdminIpWhitelistContent() {
     setItems([newItem, ...items]);
     setShowAddModal(false);
     setAddForm({ ip: "", remark: "" });
-    showToast("添加成功 (IP added successfully)");
+    showToast("添加成功");
   };
 
   // Batch delete click
@@ -140,7 +140,7 @@ export default function AdminIpWhitelistContent() {
       prev.filter((id) => !deleteConfirmIds.includes(id))
     );
     setDeleteConfirmIds(null);
-    showToast("删除成功 (Deleted successfully)");
+    showToast("删除成功");
   };
 
   return (
@@ -157,7 +157,7 @@ export default function AdminIpWhitelistContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -228,7 +228,7 @@ export default function AdminIpWhitelistContent() {
                         <input
                           type="text"
                           className="form-control input-sm"
-                          placeholder="Search"
+                          placeholder="搜索"
                           value={quickSearch}
                           onChange={(e) => {
                             setQuickSearch(e.target.value);
@@ -282,7 +282,7 @@ export default function AdminIpWhitelistContent() {
                         {currentItems.length === 0 ? (
                           <tr>
                             <td colSpan={7} className="text-center no-records">
-                              没有找到匹配的记录 (No records found)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -354,9 +354,7 @@ export default function AdminIpWhitelistContent() {
                   {/* Pagination */}
                   <div className="pagination-wrapper clearfix">
                     <div className="pull-left pagination-info">
-                      总共 {totalRows} 条记录 (Showing{" "}
-                      {totalRows > 0 ? startIndex + 1 : 0} to {endIndex} of{" "}
-                      {totalRows} rows)
+                      显示第 {totalRows > 0 ? startIndex + 1 : 0} 到第 {endIndex} 条记录，总共 {totalRows} 条记录
                     </div>
                     <div className="pull-right pagination-controls">
                       <div className="page-size-selector">

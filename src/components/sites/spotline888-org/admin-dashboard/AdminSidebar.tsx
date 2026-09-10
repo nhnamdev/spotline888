@@ -115,7 +115,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               type="button"
               className="mobile-close-btn"
               onClick={() => setIsMobileOpen(false)}
-              aria-label="Close menu"
+              aria-label="关闭菜单"
             >
               <i className="fa fa-times"></i>
             </button>
@@ -145,7 +145,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
           <div className="pull-left info">
             <p>Spot</p>
             <span className="status-indicator">
-              <i className="fa fa-circle text-success"></i> Online
+              <i className="fa fa-circle text-success"></i> 在线
             </span>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               type="text"
               name="q"
               className="form-control"
-              placeholder="Search menu"
+              placeholder="搜索菜单"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoComplete="off"
@@ -512,7 +512,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                           }}
                         >
                           <i className="fa fa-user fa-fw"></i>
-                          <span>Admin</span>
+                          <span>管理员管理</span>
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
@@ -529,7 +529,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                           }}
                         >
                           <i className="fa fa-list-alt fa-fw"></i>
-                          <span>Admin log</span>
+                          <span>管理员日志</span>
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
@@ -546,7 +546,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                           }}
                         >
                           <i className="fa fa-group fa-fw"></i>
-                          <span>Group</span>
+                          <span>角色组</span>
                           <span className="pull-right-container"> </span>
                         </a>
                       </li>
@@ -566,7 +566,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                           <span>菜单规则</span>
                           <span className="pull-right-container">
                             <small className="label pull-right bg-teal">
-                              Menu
+                              菜单
                             </small>
                           </span>
                         </a>
@@ -604,7 +604,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     }}
                   >
                     <i className="fa fa-file-image-o fa-fw"></i>
-                    <span>Attachment</span>
+                    <span>附件管理</span>
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>
@@ -621,7 +621,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
                     }}
                   >
                     <i className="fa fa-user fa-fw"></i>
-                    <span>Profile</span>
+                    <span>个人资料</span>
                     <span className="pull-right-container"> </span>
                   </a>
                 </li>

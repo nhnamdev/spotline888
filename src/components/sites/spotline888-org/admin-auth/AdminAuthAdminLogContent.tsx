@@ -104,7 +104,7 @@ export default function AdminAuthAdminLogContent() {
       setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
     } catch (err) {
       console.error("Delete logs failed:", err);
-      alert("Lỗi khi xóa nhật ký");
+      alert("删除日志失败");
     }
     setDeleteConfirmIds(null);
   };
@@ -137,14 +137,14 @@ export default function AdminAuthAdminLogContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>系统设置</span>
           <span className="breadcrumb-sep">/</span>
           <span>权限管理</span>
           <span className="breadcrumb-sep">/</span>
-          <span>Admin log</span>
+          <span>管理员日志</span>
         </div>
       </div>
 
@@ -166,7 +166,7 @@ export default function AdminAuthAdminLogContent() {
         <div className="panel panel-default panel-intro">
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>Admin log</em>Admin log tips
+              <em>管理员日志</em>管理人员操作日志,可以记录管理人员详细操作信息
             </div>
           </div>
 
@@ -181,7 +181,7 @@ export default function AdminAuthAdminLogContent() {
                   <fieldset>
                     <div className="row search-grid">
                       <div className="form-group-col">
-                        <label className="control-label">Username</label>
+                        <label className="control-label">用户名</label>
                         <input
                           type="text"
                           className="form-control"
@@ -193,12 +193,12 @@ export default function AdminAuthAdminLogContent() {
                               username: e.target.value,
                             })
                           }
-                          placeholder="Username"
+                          placeholder="用户名"
                         />
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Title</label>
+                        <label className="control-label">标题</label>
                         <input
                           type="text"
                           className="form-control"
@@ -215,7 +215,7 @@ export default function AdminAuthAdminLogContent() {
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Url</label>
+                        <label className="control-label">操作URL</label>
                         <input
                           type="text"
                           className="form-control"
@@ -227,12 +227,12 @@ export default function AdminAuthAdminLogContent() {
                               url: e.target.value,
                             })
                           }
-                          placeholder="Url"
+                          placeholder="操作URL"
                         />
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">IP</label>
+                        <label className="control-label">IP地址</label>
                         <input
                           type="text"
                           className="form-control"
@@ -244,7 +244,7 @@ export default function AdminAuthAdminLogContent() {
                               ip: e.target.value,
                             })
                           }
-                          placeholder="IP"
+                          placeholder="IP地址"
                         />
                       </div>
 
@@ -255,9 +255,7 @@ export default function AdminAuthAdminLogContent() {
                             type="button"
                             className="btn btn-success"
                             onClick={() => showToast("查询完成")}
-                          >
-                            Submit
-                          </button>
+                          >提交</button>
                           <button
                             type="button"
                             className="btn btn-default"
@@ -269,9 +267,7 @@ export default function AdminAuthAdminLogContent() {
                                 ip: "",
                               })
                             }
-                          >
-                            Reset
-                          </button>
+                          >重置</button>
                         </div>
                       </div>
                     </div>
@@ -287,7 +283,7 @@ export default function AdminAuthAdminLogContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => showToast("刷新成功")}
                 >
                   <i className="fa fa-refresh"></i>
@@ -297,11 +293,11 @@ export default function AdminAuthAdminLogContent() {
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "btn-disabled disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
               </div>
 
@@ -311,7 +307,7 @@ export default function AdminAuthAdminLogContent() {
                   <input
                     type="text"
                     className="form-control search-input"
-                    placeholder="Search"
+                    placeholder="搜索"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -320,7 +316,7 @@ export default function AdminAuthAdminLogContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Toggle view"
+                    title="切换视图"
                     onClick={() => {}}
                   >
                     <i className="fa fa-list-alt"></i>
@@ -328,7 +324,7 @@ export default function AdminAuthAdminLogContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Columns"
+                    title="列"
                     onClick={() => {}}
                   >
                     <i className="fa fa-th"></i>
@@ -336,7 +332,7 @@ export default function AdminAuthAdminLogContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Export"
+                    title="导出"
                     onClick={() => showToast("导出日志成功")}
                   >
                     <i className="fa fa-sign-out"></i>
@@ -346,7 +342,7 @@ export default function AdminAuthAdminLogContent() {
                     className={`btn btn-default ${
                       isCommonSearchOpen ? "active" : ""
                     }`}
-                    title="Common Search"
+                    title="通用搜索"
                     onClick={() => setIsCommonSearchOpen(!isCommonSearchOpen)}
                   >
                     <i className="fa fa-search"></i>
@@ -455,7 +451,7 @@ export default function AdminAuthAdminLogContent() {
                               <button
                                 type="button"
                                 className="btn btn-info btn-xs btn-detail btn-dialog"
-                                title="Detail"
+                                title="详情"
                                 onClick={() => setDetailLog(log)}
                               >
                                 <i className="fa fa-list"></i>
@@ -463,7 +459,7 @@ export default function AdminAuthAdminLogContent() {
                               <button
                                 type="button"
                                 className="btn btn-danger btn-xs btn-delone"
-                                title="Delete"
+                                title="删除"
                                 onClick={() => handleDeleteOne(log.id)}
                               >
                                 <i className="fa fa-trash"></i>
@@ -530,53 +526,53 @@ export default function AdminAuthAdminLogContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">Admin log 详情</h4>
+                <h4 className="modal-title">操作日志详情</h4>
               </div>
               <div className="modal-body modal-scroll">
                 <table className="table table-striped table-detail">
                   <thead>
                     <tr>
-                      <th style={{ width: "25%" }}>Title</th>
-                      <th style={{ width: "75%" }}>Content</th>
+                      <th style={{ width: "25%" }}>字段</th>
+                      <th style={{ width: "75%" }}>内容</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td><strong>id</strong></td>
+                      <td><strong>ID</strong></td>
                       <td>{detailLog.id}</td>
                     </tr>
                     <tr>
-                      <td><strong>admin_id</strong></td>
+                      <td><strong>管理员ID</strong></td>
                       <td>{detailLog.admin_id}</td>
                     </tr>
                     <tr>
-                      <td><strong>username</strong></td>
+                      <td><strong>用户名</strong></td>
                       <td>{detailLog.username}</td>
                     </tr>
                     <tr>
-                      <td><strong>url</strong></td>
+                      <td><strong>操作URL</strong></td>
                       <td><code>{detailLog.url}</code></td>
                     </tr>
                     <tr>
-                      <td><strong>title</strong></td>
+                      <td><strong>日志标题</strong></td>
                       <td>{detailLog.title || "-"}</td>
                     </tr>
                     <tr>
-                      <td><strong>content</strong></td>
+                      <td><strong>操作内容</strong></td>
                       <td>
                         <pre className="pre-content">{detailLog.content}</pre>
                       </td>
                     </tr>
                     <tr>
-                      <td><strong>ip</strong></td>
+                      <td><strong>IP地址</strong></td>
                       <td>{detailLog.ip}</td>
                     </tr>
                     <tr>
-                      <td><strong>useragent</strong></td>
+                      <td><strong>用户代理</strong></td>
                       <td>{detailLog.useragent}</td>
                     </tr>
                     <tr>
-                      <td><strong>createtime</strong></td>
+                      <td><strong>操作时间</strong></td>
                       <td>{detailLog.createtime} ({formatDateTime(detailLog.createtime)})</td>
                     </tr>
                   </tbody>
@@ -587,9 +583,7 @@ export default function AdminAuthAdminLogContent() {
                   type="button"
                   className="btn btn-primary btn-embossed"
                   onClick={() => setDetailLog(null)}
-                >
-                  Close
-                </button>
+                >关闭</button>
               </div>
             </div>
           </div>

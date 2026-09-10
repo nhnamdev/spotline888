@@ -1,3 +1,5 @@
+import { LanguageCode } from "../pages-login-login/i18n";
+
 export interface AboutUsTranslation {
   title: string;
   p1Heading: string;
@@ -11,7 +13,7 @@ export interface AboutUsTranslation {
   service5: string;
 }
 
-export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
+export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   "zh-CN": {
     title: "关于我们",
     p1Heading: "Spot Indonesia – 官方数字资产平台",
@@ -25,7 +27,7 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service4: "先进技术支持的自动化交易工具（AI Trading、Copy-Trade）",
     service5: "面向投资互动的社区功能（Community Investment Interaction）",
   },
-  "zh-TW": {
+  "hk-TW": {
     title: "關於我們",
     p1Heading: "Spot Indonesia – 官方數位資產平台",
     p1Body:
@@ -38,7 +40,7 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service4: "先進技術支援的自動化交易工具（AI Trading、Copy-Trade）",
     service5: "面向投資互動的社群功能（Community Investment Interaction）",
   },
-  en: {
+  "en-US": {
     title: "About Us",
     p1Heading: "Spot Indonesia – Official Digital Asset Platform",
     p1Body:
@@ -54,7 +56,7 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service5:
       "Community Investment Interaction (Community Investment Interaction)",
   },
-  vi: {
+  "vi-VN": {
     title: "Về chúng tôi",
     p1Heading: "Spot Indonesia – Nền tảng Tài sản Số Chính thức",
     p1Body:
@@ -70,35 +72,7 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
       "Công cụ giao dịch tự động hóa công nghệ cao (AI Trading, Copy-Trade)",
     service5: "Tính năng cộng đồng tương tác đầu tư (Community Investment)",
   },
-  ja: {
-    title: "私たちについて",
-    p1Heading: "Spot Indonesia – 公式デジタル資産プラットフォーム",
-    p1Body:
-      "私たちはSpot Indonesiaです。東南アジアのユーザーが暗号資産に安全、迅速、効率的にアクセスおよび管理できるよう支援するオンラインプラットフォームです。",
-    vision:
-      "私たちのビジョンは、便利で透明性があり、誰もが参加できる暗号資産取引環境を構築することです。",
-    servicesHeading: "Spotでは、以下の主要サービスを提供しています：",
-    service1: "暗号資産現物取引（Spot Trading）",
-    service2: "安全なデジタル資産ウォレット管理（Virtual Asset Wallet）",
-    service3: "プラットフォーム内トークン交換（Platform Token Exchange）",
-    service4: "高度な自動取引ツール（AI Trading、Copy-Trade）",
-    service5: "コミュニティ投資交流機能（Community Investment Interaction）",
-  },
-  ko: {
-    title: "회사 소개",
-    p1Heading: "Spot Indonesia – 공식 디지털 자산 플랫폼",
-    p1Body:
-      "Spot Indonesia는 동남아시아 사용자가 암호화 자산에 안전하고 신속하며 효율적으로 접근하고 관리할 수 있도록 지원하는 온라인 디지털 자산 플랫폼입니다.",
-    vision:
-      "우리의 비전은 편리하고 투명하며 누구나 참여할 수 있는 디지털 통화 거래 환경을 구축하는 것입니다.",
-    servicesHeading: "Spot은 다음과 같은 핵심 서비스를 제공합니다:",
-    service1: "암호화폐 즉시 거래 (Spot Trading)",
-    service2: "안전한 디지털 자산 지갑 관리 (Virtual Asset Wallet)",
-    service3: "플랫폼 내 토큰 교환 서비스 (Platform Token Exchange)",
-    service4: "첨단 자동화 거래 도구 (AI Trading, Copy-Trade)",
-    service5: "투자 커뮤니티 소통 기능 (Community Investment Interaction)",
-  },
-  id: {
+  "id-ID": {
     title: "Tentang Kami",
     p1Heading: "Spot Indonesia – Platform Aset Digital Resmi",
     p1Body:
@@ -114,25 +88,65 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service5:
       "Fitur Komunitas Interaksi Investasi (Community Investment Interaction)",
   },
-  es: {
-    title: "Sobre nosotros",
-    p1Heading: "Spot Indonesia – Plataforma Oficial de Activos Digitales",
+  "ms-MY": {
+    title: "Tentang Kami",
+    p1Heading: "Spot Indonesia – Platform Aset Digital Rasmi",
     p1Body:
-      "Somos Spot Indonesia, una plataforma de activos digitales en línea dedicada a ayudar a los usuarios del sudeste asiático a acceder y gestionar sus criptoactivos de forma segura, rápida y eficiente.",
+      "Kami adalah Spot Indonesia, platform aset digital dalam talian yang berdedikasi untuk membantu pengguna Asia Tenggara mengakses dan menguruskan aset kripto mereka secara selamat, pantas dan cekap.",
     vision:
-      "Nuestra visión es crear un entorno de negociación de divisas digitales cómodo, transparente y accesible para todos.",
+      "Visi kami adalah untuk membina persekitaran perdagangan mata wang digital yang mudah, telus dan boleh diakses oleh semua orang.",
     servicesHeading:
-      "En Spot, proporcionamos una variedad de servicios esenciales, que incluyen:",
-    service1: "Comercio Spot de criptomonedas (Spot Trading)",
-    service2:
-      "Gestión segura de billetera de activos digitales (Virtual Asset Wallet)",
-    service3:
-      "Servicio de intercambio de tokens en la plataforma (Platform Token Exchange)",
-    service4: "Herramientas de trading automatizado avanzadas (AI Trading, Copy-Trade)",
-    service5:
-      "Funciones comunitarias de interacción de inversión (Community Investment Interaction)",
+      "Di Spot, kami menyediakan rangkaian perkhidmatan teras kepada pengguna, termasuk:",
+    service1: "Perdagangan Spot Mata Wang Kripto (Spot Trading)",
+    service2: "Pengurusan Dompet Aset Digital Selamat (Virtual Asset Wallet)",
+    service3: "Perkhidmatan Pertukaran Token Platform (Platform Token Exchange)",
+    service4: "Alat Perdagangan Automatik Berteknologi Maju (AI Trading, Copy-Trade)",
+    service5: "Ciri Interaksi Pelaburan Komuniti (Community Investment Interaction)",
   },
-  fr: {
+  "ja-JP": {
+    title: "私たちについて",
+    p1Heading: "Spot Indonesia – 公式デジタル資産プラットフォーム",
+    p1Body:
+      "私たちはSpot Indonesiaです。東南アジアのユーザーが暗号資産に安全、迅速、効率的にアクセスおよび管理できるよう支援するオンラインプラットフォームです。",
+    vision:
+      "私たちのビジョンは、便利で透明性があり、誰もが参加できる暗号資産取引環境を構築することです。",
+    servicesHeading: "Spotでは、以下の主要サービスを提供しています：",
+    service1: "暗号資産現物取引（Spot Trading）",
+    service2: "安全なデジタル資産ウォレット管理（Virtual Asset Wallet）",
+    service3: "プラットフォーム内トークン交換（Platform Token Exchange）",
+    service4: "高度な自動取引ツール（AI Trading、Copy-Trade）",
+    service5: "コミュニティ投資交流機能（Community Investment Interaction）",
+  },
+  "th-TH": {
+    title: "เกี่ยวกับเรา",
+    p1Heading: "Spot Indonesia – แพลตฟอร์มสินทรัพย์ดิจิทัลอย่างเป็นทางการ",
+    p1Body:
+      "เราคือ Spot Indonesia แพลตฟอร์มสินทรัพย์ดิจิทัลออนไลน์ที่มุ่งมั่นช่วยให้ผู้ใช้ในเอเชียตะวันออกเฉียงใต้เข้าถึงและจัดการสินทรัพย์คริปโตได้อย่างปลอดภัย รวดเร็ว และมีประสิทธิภาพ",
+    vision:
+      "วิสัยทัศน์ของเราคือการสร้างสภาพแวดล้อมการซื้อขายสกุลเงินดิจิทัลที่สะดวก โปร่งใส และทุกคนสามารถเข้าถึงได้",
+    servicesHeading:
+      "ที่ Spot เราให้บริการหลักแก่ผู้ใช้ ได้แก่:",
+    service1: "การซื้อขายสปอตคริปโตเคอเรนซี (Spot Trading)",
+    service2: "การจัดการกระเป๋าเงินสินทรัพย์ดิจิทัลที่ปลอดภัย (Virtual Asset Wallet)",
+    service3: "บริการแลกเปลี่ยนโทเค็นบนแพลตฟอร์ม (Platform Token Exchange)",
+    service4: "เครื่องมือการซื้อขายอัตโนมัติขั้นสูง (AI Trading, Copy-Trade)",
+    service5: "ฟีเจอร์ชุมชนสำหรับการโต้ตอบการลงทุน (Community Investment)",
+  },
+  "ko-KR": {
+    title: "회사 소개",
+    p1Heading: "Spot Indonesia – 공식 디지털 자산 플랫폼",
+    p1Body:
+      "Spot Indonesia는 동남아시아 사용자가 암호화 자산에 안전하고 신속하며 효율적으로 접근하고 관리할 수 있도록 지원하는 온라인 디지털 자산 플랫폼입니다.",
+    vision:
+      "우리의 비전은 편리하고 투명하며 누구나 참여할 수 있는 디지털 통화 거래 환경을 구축하는 것입니다.",
+    servicesHeading: "Spot은 다음과 같은 핵심 서비스를 제공합니다:",
+    service1: "암호화폐 즉시 거래 (Spot Trading)",
+    service2: "안전한 디지털 자산 지갑 관리 (Virtual Asset Wallet)",
+    service3: "플랫폼 내 토큰 교환 서비스 (Platform Token Exchange)",
+    service4: "첨단 자동화 거래 도구 (AI Trading, Copy-Trade)",
+    service5: "투자 커뮤니티 소통 기능 (Community Investment Interaction)",
+  },
+  "fr-FR": {
     title: "À propos de nous",
     p1Heading: "Spot Indonesia – Plateforme officielle d'actifs numériques",
     p1Body:
@@ -150,7 +164,7 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service5:
       "Fonctionnalités communautaires d'investissement (Community Investment Interaction)",
   },
-  de: {
+  "de-DE": {
     title: "Über uns",
     p1Heading: "Spot Indonesia – Offizielle Plattform für digitale Vermögenswerte",
     p1Body:
@@ -164,20 +178,5 @@ export const ABOUT_US_TRANSLATIONS: Record<string, AboutUsTranslation> = {
     service4: "Erweiterte automatisierte Handelstools (AI Trading, Copy-Trade)",
     service5:
       "Community-Funktionen für Investitionsinteraktion (Community Investment Interaction)",
-  },
-  ru: {
-    title: "О нас",
-    p1Heading: "Spot Indonesia – Официальная платформа цифровых активов",
-    p1Body:
-      "Мы — Spot Indonesia, онлайн-платформа цифровых активов, помогающая пользователям Юго-Восточной Азии безопасно, быстро и эффективно управлять своими криптовалютными активами.",
-    vision:
-      "Наше видение — создать удобную, прозрачную и доступную для каждого среду торговли цифровыми активами.",
-    servicesHeading:
-      "В Spot мы предоставляем пользователям спектр ключевых услуг:",
-    service1: "Спотовая торговля криптовалютой (Spot Trading)",
-    service2: "Безопасное управление кошельком цифровых активов (Virtual Asset Wallet)",
-    service3: "Сервис обмена токенов на платформе (Platform Token Exchange)",
-    service4: "Передовые автоматизированные инструменты (AI Trading, Copy-Trade)",
-    service5: "Сообщество для инвестиционного взаимодействия (Community Investment)",
   },
 };

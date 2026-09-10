@@ -31,7 +31,7 @@ export default function AdminProductTypeContent() {
         setTypes(mapped);
       }
     } catch (err) {
-      console.error("Lỗi nạp phân loại sản phẩm:", err);
+      console.error("加载产品分类失败:", err);
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ export default function AdminProductTypeContent() {
       });
       fetchProductTypes();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái phân loại:", err);
+      console.error("更新产品分类状态失败:", err);
     }
   };
 
@@ -138,7 +138,7 @@ export default function AdminProductTypeContent() {
         setSelectedIds((prev) => prev.filter((i) => i !== id));
         fetchProductTypes();
       } catch (err) {
-        console.error("Lỗi xóa phân loại sản phẩm:", err);
+        console.error("删除产品分类失败:", err);
       }
     }
   };
@@ -153,7 +153,7 @@ export default function AdminProductTypeContent() {
         setSelectedIds([]);
         fetchProductTypes();
       } catch (err) {
-        console.error("Lỗi xóa nhiều phân loại sản phẩm:", err);
+        console.error("批量删除产品分类失败:", err);
       }
     }
   };
@@ -174,7 +174,7 @@ export default function AdminProductTypeContent() {
       }
       fetchProductTypes();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái hàng loạt:", err);
+      console.error("批量更新状态失败:", err);
     }
   };
 
@@ -202,7 +202,7 @@ export default function AdminProductTypeContent() {
       setIsAddModalOpen(false);
       fetchProductTypes();
     } catch (err) {
-      console.error("Lỗi lưu phân loại:", err);
+      console.error("保存产品分类失败:", err);
     }
   };
 
@@ -211,7 +211,7 @@ export default function AdminProductTypeContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>产品管理</span>
@@ -233,14 +233,14 @@ export default function AdminProductTypeContent() {
                   {/* Name */}
                   <div className="form-group">
                     <label className="control-label" htmlFor="search-name">
-                      Name
+                      分类名称
                     </label>
                     <div className="control-input">
                       <input
                         id="search-name"
                         type="text"
                         className="form-control"
-                        placeholder="Name"
+                        placeholder="分类名称"
                         value={searchForm.name}
                         onChange={(e) =>
                           setSearchForm({
@@ -255,7 +255,7 @@ export default function AdminProductTypeContent() {
                   {/* Status */}
                   <div className="form-group">
                     <label className="control-label" htmlFor="search-status">
-                      Status
+                      状态
                     </label>
                     <div className="control-input">
                       <select
@@ -269,7 +269,7 @@ export default function AdminProductTypeContent() {
                           })
                         }
                       >
-                        <option value="Choose">Choose</option>
+                        <option value="Choose">选择</option>
                         <option value="0">禁用</option>
                         <option value="1">启用</option>
                       </select>
@@ -279,7 +279,7 @@ export default function AdminProductTypeContent() {
                   {/* Action Buttons */}
                   <div className="form-group form-actions">
                     <button type="submit" className="btn btn-success">
-                      Submit
+                      提交
                     </button>
                     <button
                       type="button"
@@ -300,7 +300,7 @@ export default function AdminProductTypeContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => {
                     fetchProductTypes();
                     setSelectedIds([]);
@@ -314,7 +314,7 @@ export default function AdminProductTypeContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={() => {
                     setEditingType(null);
                     setModalForm({
@@ -325,7 +325,7 @@ export default function AdminProductTypeContent() {
                     setIsAddModalOpen(true);
                   }}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
 
                 {/* Edit */}
@@ -334,14 +334,14 @@ export default function AdminProductTypeContent() {
                   className={`btn btn-success btn-edit ${
                     selectedIds.length !== 1 ? "disabled" : ""
                   }`}
-                  title="Edit"
+                  title="编辑"
                   disabled={selectedIds.length !== 1}
                   onClick={() => {
                     const item = types.find((t) => t.id === selectedIds[0]);
                     if (item) handleOpenEdit(item);
                   }}
                 >
-                  <i className="fa fa-pencil"></i> Edit
+                  <i className="fa fa-pencil"></i> 编辑
                 </button>
 
                 {/* Delete */}
@@ -350,11 +350,11 @@ export default function AdminProductTypeContent() {
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
 
                 {/* More Dropdown */}
@@ -366,7 +366,7 @@ export default function AdminProductTypeContent() {
                     }`}
                     disabled={selectedIds.length === 0}
                   >
-                    <i className="fa fa-cog"></i> More
+                    <i className="fa fa-cog"></i> 更多
                   </button>
                 </div>
 
@@ -379,7 +379,7 @@ export default function AdminProductTypeContent() {
                   disabled={selectedIds.length === 0}
                   onClick={() => handleSetStatusMulti(true)}
                 >
-                  <i className="fa fa-eye"></i> Set to normal
+                  <i className="fa fa-eye"></i> 设为正常
                 </button>
 
                 {/* Set to hidden */}
@@ -391,7 +391,7 @@ export default function AdminProductTypeContent() {
                   disabled={selectedIds.length === 0}
                   onClick={() => handleSetStatusMulti(false)}
                 >
-                  <i className="fa fa-eye-slash"></i> Set to hidden
+                  <i className="fa fa-eye-slash"></i> 设为隐藏
                 </button>
               </div>
 
@@ -484,7 +484,7 @@ export default function AdminProductTypeContent() {
                 <button
                   type="button"
                   className="btn btn-default"
-                  title="Common search"
+                  title="通用搜索"
                   onClick={() => setShowSearchForm(!showSearchForm)}
                 >
                   <i className="fa fa-search"></i>
@@ -507,12 +507,12 @@ export default function AdminProductTypeContent() {
                         onChange={handleSelectAll}
                       />
                     </th>
-                    {columns.id && <th>Id</th>}
-                    {columns.name && <th>Name</th>}
-                    {columns.rank && <th>Rank</th>}
-                    {columns.status && <th>Status</th>}
-                    {columns.ctime && <th>Ctime</th>}
-                    {columns.operate && <th className="col-operate">Operate</th>}
+                    {columns.id && <th>ID</th>}
+                    {columns.name && <th>分类名称</th>}
+                    {columns.rank && <th>排序权重</th>}
+                    {columns.status && <th>状态</th>}
+                    {columns.ctime && <th>创建时间</th>}
+                    {columns.operate && <th className="col-operate">操作</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -560,7 +560,7 @@ export default function AdminProductTypeContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-success btn-editone"
-                                title="Edit"
+                                title="编辑"
                                 onClick={() => handleOpenEdit(item)}
                               >
                                 <i className="fa fa-pencil"></i>
@@ -568,7 +568,7 @@ export default function AdminProductTypeContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-danger btn-delone"
-                                title="Delete"
+                                title="删除"
                                 onClick={() => handleDelete(item.id)}
                               >
                                 <i className="fa fa-trash"></i>
@@ -606,7 +606,7 @@ export default function AdminProductTypeContent() {
               </div>
               <ul className="pagination">
                 <li className="disabled">
-                  <span>Previous</span>
+                  <span>上一页</span>
                 </li>
                 <li className={currentPage === 1 ? "active" : ""}>
                   <a
@@ -620,7 +620,7 @@ export default function AdminProductTypeContent() {
                   </a>
                 </li>
                 <li className="disabled">
-                  <span>Next</span>
+                  <span>下一页</span>
                 </li>
               </ul>
             </div>
@@ -651,7 +651,7 @@ export default function AdminProductTypeContent() {
               <form onSubmit={handleSaveType}>
                 <div className="modal-body">
                   <div className="modal-form-group">
-                    <label>Name</label>
+                    <label>分类名称</label>
                     <input
                       type="text"
                       className="form-control"
@@ -663,7 +663,7 @@ export default function AdminProductTypeContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>Rank</label>
+                    <label>排序权重</label>
                     <input
                       type="number"
                       className="form-control"
@@ -678,7 +678,7 @@ export default function AdminProductTypeContent() {
                     />
                   </div>
                   <div className="modal-form-group">
-                    <label>Status</label>
+                    <label>状态</label>
                     <select
                       className="form-control"
                       value={modalForm.status ? "1" : "0"}

@@ -25,15 +25,15 @@ export default function AdminLoginForm() {
     setErrorMessage("");
 
     if (!username.trim()) {
-      setErrorMessage("Username cannot be empty");
+      setErrorMessage("用户名不能为空");
       return;
     }
     if (!password.trim()) {
-      setErrorMessage("Password cannot be empty");
+      setErrorMessage("密码不能为空");
       return;
     }
     if (!captcha.trim()) {
-      setErrorMessage("Captcha cannot be empty");
+      setErrorMessage("验证码不能为空");
       return;
     }
 
@@ -66,12 +66,12 @@ export default function AdminLoginForm() {
             localStorage.setItem("admin_keep_login", "1");
           }
         }
-        setToastMessage({ type: "success", text: resData.msg || "Sign in successful" });
+        setToastMessage({ type: "success", text: resData.msg || "登录成功" });
         setTimeout(() => {
           window.location.href = "/admin/dashboard";
         }, 800);
       } else {
-        const errorText = (resData && resData.msg) || "Invalid username or password";
+        const errorText = (resData && resData.msg) || "用户名或密码错误";
         setErrorMessage(errorText);
         setToastMessage({ type: "error", text: errorText });
         setTimeout(() => {
@@ -87,12 +87,12 @@ export default function AdminLoginForm() {
             localStorage.setItem("admin_keep_login", "1");
           }
         }
-        setToastMessage({ type: "success", text: "Sign in successful" });
+        setToastMessage({ type: "success", text: "登录成功" });
         setTimeout(() => {
           router.push("/admin/dashboard");
         }, 800);
       } else {
-        const errorText = "Cannot connect to authentication server";
+        const errorText = "无法连接到认证服务器";
         setErrorMessage(errorText);
         setToastMessage({ type: "error", text: errorText });
         setTimeout(() => {
@@ -120,7 +120,7 @@ export default function AdminLoginForm() {
             id="profile-img"
             className="profile-img-card"
             src={getR2Url("/sites/spotline888-org/admin-login/avatar.png")}
-            alt="Profile Avatar"
+            alt="管理员头像"
             width={100}
             height={100}
             priority
@@ -153,7 +153,7 @@ export default function AdminLoginForm() {
                 type="text"
                 className={`form-control ${activeFocus === "username" ? "is-focused" : ""}`}
                 id="pd-form-username"
-                placeholder="Username"
+                placeholder="用户名"
                 name="username"
                 autoComplete="off"
                 value={username}
@@ -174,7 +174,7 @@ export default function AdminLoginForm() {
                 type="password"
                 className={`form-control ${activeFocus === "password" ? "is-focused" : ""}`}
                 id="pd-form-password"
-                placeholder="Password"
+                placeholder="密码"
                 name="password"
                 autoComplete="off"
                 value={password}
@@ -197,7 +197,7 @@ export default function AdminLoginForm() {
                 className={`form-control captcha-control ${
                   activeFocus === "captcha" ? "is-focused" : ""
                 }`}
-                placeholder="Captcha"
+                placeholder="验证码"
                 autoComplete="off"
                 value={captcha}
                 onChange={(e) => setCaptcha(e.target.value)}
@@ -223,7 +223,7 @@ export default function AdminLoginForm() {
                   checked={keepLogin}
                   onChange={(e) => setKeepLogin(e.target.checked)}
                 />
-                Keep login
+                保持会话
               </label>
             </div>
 
@@ -234,7 +234,7 @@ export default function AdminLoginForm() {
                 className="btn btn-success btn-lg btn-block"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? "登录中..." : "登 录"}
               </button>
             </div>
           </form>

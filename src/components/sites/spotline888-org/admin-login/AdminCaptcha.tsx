@@ -99,13 +99,13 @@ export default function AdminCaptcha({ onCodeChange }: AdminCaptchaProps) {
         lineHeight: 0,
       }}
       onClick={() => setClickCount((c) => c + 1)}
-      title="Click to refresh captcha"
+      title="点击刷新验证码"
     >
       {clickCount === 0 ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={getR2Url("/sites/spotline888-org/admin-login/captcha.png")}
-          alt="Captcha"
+          alt="验证码"
           width={100}
           height={30}
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

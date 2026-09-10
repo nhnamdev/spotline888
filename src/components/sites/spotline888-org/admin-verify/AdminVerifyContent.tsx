@@ -16,7 +16,7 @@ interface VerifyItem {
   id_img_front: string;
   id_img_back: string;
   profession?: string;
-  status: number; // 1: chờ duyệt, 2: duyệt, 3: từ chối
+  status: number; // 1: 待审核, 2: 已通过, 3: 已拒绝
   error_reason?: string;
   created_at: string;
   audit_time?: string;
@@ -59,10 +59,10 @@ export default function AdminVerifyContent() {
         setItems(res.data.rows || []);
         setTotal(res.data.total || 0);
       } else {
-        showToast(res.msg || "Không thể tải danh sách KYC", "error");
+        showToast(res.msg || "获取实名认证列表失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi tải hồ sơ KYC", "error");
+      showToast(err.message || "获取实名认证列表异常", "error");
     } finally {
       setLoading(false);
     }
@@ -77,15 +77,15 @@ export default function AdminVerifyContent() {
       setActionLoadingId(id);
       const res = await adminApi.auditVerify(id, status, reason);
       if (res.code === 1) {
-        showToast(status === "approved" ? "Đã duyệt hồ sơ KYC thành công" : "Đã từ chối hồ sơ KYC", "success");
+        showToast(status === "approved" ? "审核通过成功" : "已驳回实名认证", "success");
         setRejectModalId(null);
         setRejectReason("");
         fetchVerifies();
       } else {
-        showToast(res.msg || "Xử lý thất bại", "error");
+        showToast(res.msg || "操作失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi xử lý", "error");
+      showToast(err.message || "操作异常", "error");
     } finally {
       setActionLoadingId(null);
     }
@@ -127,27 +127,27 @@ export default function AdminVerifyContent() {
       <div className="panel panel-default panel-intro">
         <div className="panel-heading">
           <div className="panel-lead">
-            <em>实名认证管理 (Quản lý duyệt KYC)</em>
+            <em>实名认证管理</em>
           </div>
           <ul className="nav nav-tabs">
             <li className={statusFilter === "all" ? "active" : ""}>
               <a href="#all" onClick={(e) => { e.preventDefault(); setStatusFilter("all"); setCurrentPage(1); }}>
-                全部 (Tất cả)
+                全部
               </a>
             </li>
             <li className={statusFilter === "pending" || statusFilter === "1" ? "active" : ""}>
               <a href="#pending" onClick={(e) => { e.preventDefault(); setStatusFilter("1"); setCurrentPage(1); }}>
-                未审核 (Chờ duyệt)
+                未审核
               </a>
             </li>
             <li className={statusFilter === "approved" || statusFilter === "2" ? "active" : ""}>
               <a href="#approved" onClick={(e) => { e.preventDefault(); setStatusFilter("2"); setCurrentPage(1); }}>
-                审核通过 (Đã duyệt)
+                审核通过
               </a>
             </li>
             <li className={statusFilter === "rejected" || statusFilter === "3" ? "active" : ""}>
               <a href="#rejected" onClick={(e) => { e.preventDefault(); setStatusFilter("3"); setCurrentPage(1); }}>
-                审核未通过 (Đã từ chối)
+                审核未通过
               </a>
             </li>
           </ul>
@@ -163,10 +163,10 @@ export default function AdminVerifyContent() {
                   className="btn btn-default btn-refresh"
                   onClick={fetchVerifies}
                   disabled={loading}
-                  title="Làm mới"
+                  title="刷新"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 inline mr-1 ${loading ? "animate-spin" : ""}`} />
-                  刷新 (Làm mới)
+                  刷新
                 </button>
               </div>
 
@@ -174,7 +174,7 @@ export default function AdminVerifyContent() {
                 <input
                   type="text"
                   className="form-control input-sm"
-                  placeholder="Tìm tên, TK, CCCD..."
+                  placeholder="搜索姓名、账号、身份证号..."
                   style={{ width: "200px" }}
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
@@ -191,10 +191,10 @@ export default function AdminVerifyContent() {
                   value={statusFilter}
                   onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                 >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="1">Chờ duyệt</option>
-                  <option value="2">Đã duyệt</option>
-                  <option value="3">Từ chối</option>
+                  <option value="all">全部状态</option>
+                  <option value="1">未审核</option>
+                  <option value="2">审核通过</option>
+                  <option value="3">审核未通过</option>
                 </select>
               </div>
             </div>
@@ -212,17 +212,17 @@ export default function AdminVerifyContent() {
                       />
                     </th>
                     <th>ID</th>
-                    <th>Hội viên</th>
-                    <th>Số điện thoại</th>
-                    <th>Họ và tên thật</th>
-                    <th>Số CMND / CCCD</th>
-                    <th>Nghề nghiệp</th>
-                    <th>Ảnh mặt trước (R2)</th>
-                    <th>Ảnh mặt sau (R2)</th>
-                    <th>Thời gian gửi</th>
-                    <th>Lý do từ chối</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>会员</th>
+                    <th>手机号</th>
+                    <th>真实姓名</th>
+                    <th>身份证号</th>
+                    <th>职业</th>
+                    <th>身份证正面</th>
+                    <th>身份证反面</th>
+                    <th>申请时间</th>
+                    <th>驳回原因</th>
+                    <th>状态</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -230,13 +230,13 @@ export default function AdminVerifyContent() {
                     <tr>
                       <td colSpan={13} className="text-center py-8 text-gray-500">
                         <Loader2 className="w-6 h-6 animate-spin inline mr-2 text-primary" />
-                        Đang tải danh sách hồ sơ xác thực...
+                        正在加载实名认证数据...
                       </td>
                     </tr>
                   ) : items.length === 0 ? (
                     <tr>
                       <td colSpan={13} className="text-center py-8 text-gray-400">
-                        Không có hồ sơ xác minh nào
+                        暂无实名认证数据
                       </td>
                     </tr>
                   ) : (
@@ -261,37 +261,37 @@ export default function AdminVerifyContent() {
                             {item.id_img_front ? (
                               <button
                                 type="button"
-                                onClick={() => setPreviewImage({ url: item.id_img_front, title: `Mặt trước CCCD - ${item.real_name}` })}
+                                onClick={() => setPreviewImage({ url: item.id_img_front, title: `身份证正面 - ${item.real_name}` })}
                                 className="btn btn-xs btn-primary inline-flex items-center gap-1"
                               >
-                                <Eye className="w-3 h-3" /> Mặt trước
+                                <Eye className="w-3 h-3" /> 正面
                               </button>
                             ) : (
-                              <span className="text-gray-300 text-xs">Không có</span>
+                              <span className="text-gray-300 text-xs">无</span>
                             )}
                           </td>
                           <td className="text-center">
                             {item.id_img_back ? (
                               <button
                                 type="button"
-                                onClick={() => setPreviewImage({ url: item.id_img_back, title: `Mặt sau CCCD - ${item.real_name}` })}
+                                onClick={() => setPreviewImage({ url: item.id_img_back, title: `身份证反面 - ${item.real_name}` })}
                                 className="btn btn-xs btn-primary inline-flex items-center gap-1"
                               >
-                                <Eye className="w-3 h-3" /> Mặt sau
+                                <Eye className="w-3 h-3" /> 反面
                               </button>
                             ) : (
-                              <span className="text-gray-300 text-xs">Không có</span>
+                              <span className="text-gray-300 text-xs">无</span>
                             )}
                           </td>
                           <td className="cell-time text-xs text-gray-500">{item.created_at?.slice(0, 19).replace("T", " ")}</td>
                           <td className="text-xs text-rose-600">{item.error_reason || "-"}</td>
                           <td>
                             {item.status === 2 ? (
-                              <span className="badge badge-success">审核通过 (Đã duyệt)</span>
+                              <span className="badge badge-success">审核通过</span>
                             ) : item.status === 3 ? (
-                              <span className="badge badge-danger">审核未通过 (Từ chối)</span>
+                              <span className="badge badge-danger">审核未通过</span>
                             ) : (
-                              <span className="badge badge-warning">未审核 (Chờ duyệt)</span>
+                              <span className="badge badge-warning">未审核</span>
                             )}
                           </td>
                           <td>
@@ -304,7 +304,7 @@ export default function AdminVerifyContent() {
                                   className="btn btn-xs btn-success flex items-center gap-1"
                                 >
                                   {actionLoadingId === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                                  Duyệt
+                                  通过
                                 </button>
                                 <button
                                   type="button"
@@ -312,11 +312,11 @@ export default function AdminVerifyContent() {
                                   onClick={() => setRejectModalId(item.id)}
                                   className="btn btn-xs btn-danger flex items-center gap-1"
                                 >
-                                  <X className="w-3 h-3" /> Từ chối
+                                  <X className="w-3 h-3" /> 驳回
                                 </button>
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-xs">Hoàn tất</span>
+                              <span className="text-gray-400 text-xs">已处理</span>
                             )}
                           </td>
                         </tr>
@@ -330,7 +330,7 @@ export default function AdminVerifyContent() {
             {/* Pagination Controls */}
             <div className="pagination-container flex justify-between items-center mt-3">
               <div className="pagination-info text-sm text-gray-500">
-                Hiển thị trang {currentPage} / {totalPages} (Tổng số {total} hồ sơ)
+                显示第 {currentPage} / {totalPages} 页 (共 {total} 条记录)
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -339,7 +339,7 @@ export default function AdminVerifyContent() {
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
-                  Trang trước
+                  上一页
                 </button>
                 <span className="px-2 text-sm font-semibold">{currentPage}</span>
                 <button
@@ -348,7 +348,7 @@ export default function AdminVerifyContent() {
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Trang sau
+                  下一页
                 </button>
               </div>
             </div>
@@ -356,7 +356,7 @@ export default function AdminVerifyContent() {
         </div>
       </div>
 
-      {/* Modal Xem Ảnh Phóng To (Cloudflare R2) */}
+      {/* Modal 查看大图 */}
       {previewImage && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-4 max-w-2xl w-full max-h-[90vh] flex flex-col items-center">
@@ -384,25 +384,25 @@ export default function AdminVerifyContent() {
                 className="btn btn-sm btn-default"
                 onClick={() => setPreviewImage(null)}
               >
-                Đóng
+                关闭
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Từ Chối KYC Kèm Lý Do */}
+      {/* Modal 驳回实名认证 */}
       {rejectModalId !== null && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-5 max-w-md w-full shadow-2xl">
-            <h4 className="font-bold text-gray-800 text-base mb-2">Từ chối hồ sơ KYC #{rejectModalId}</h4>
-            <p className="text-xs text-gray-500 mb-3">Vui lòng nhập lý do từ chối để hội viên biết và gửi lại:</p>
+            <h4 className="font-bold text-gray-800 text-base mb-2">驳回实名认证 #{rejectModalId}</h4>
+            <p className="text-xs text-gray-500 mb-3">请输入驳回原因，以便会员了解并重新提交：</p>
             <textarea
               className="form-control w-full border border-gray-300 rounded-lg p-2.5 text-sm mb-4"
               rows={3}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Ví dụ: Ảnh mờ không rõ số CCCD, Họ tên không trùng khớp..."
+              placeholder="例如：照片模糊不清，姓名与身份证不符..."
             />
             <div className="flex justify-end gap-2">
               <button
@@ -410,7 +410,7 @@ export default function AdminVerifyContent() {
                 className="btn btn-default"
                 onClick={() => { setRejectModalId(null); setRejectReason(""); }}
               >
-                Hủy bỏ
+                取消
               </button>
               <button
                 type="button"
@@ -418,7 +418,7 @@ export default function AdminVerifyContent() {
                 onClick={() => handleAudit(rejectModalId, "rejected", rejectReason)}
                 className="btn btn-danger"
               >
-                Xác nhận từ chối
+                确认驳回
               </button>
             </div>
           </div>

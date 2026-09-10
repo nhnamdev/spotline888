@@ -101,7 +101,7 @@ export default function AdminAuthGuard({ children }: AdminAuthGuardProps) {
             style={{ color: "#18bc9c", marginBottom: 12 }}
           ></i>
           <div style={{ fontSize: 13, fontWeight: 500, color: "#555" }}>
-            正在验证管理员权限 (Đang xác thực quyền Admin)...
+            正在验证管理员权限...
           </div>
         </div>
       </div>

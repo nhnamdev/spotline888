@@ -102,7 +102,7 @@ export default function AdminAuthRuleContent() {
       await loadRules();
     } catch (err) {
       console.error(err);
-      alert("Lỗi cập nhật trạng thái");
+      alert("更新状态失败");
     }
     setIsMoreMenuOpen(false);
   };
@@ -118,7 +118,7 @@ export default function AdminAuthRuleContent() {
       await loadRules();
     } catch (err) {
       console.error(err);
-      alert("Lỗi cập nhật trạng thái menu");
+      alert("切换菜单状态失败");
     }
   };
 
@@ -161,7 +161,7 @@ export default function AdminAuthRuleContent() {
   const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim() || !formState.title.trim()) {
-      alert("Please fill in Name and Title");
+      alert("请填写规则和标题");
       return;
     }
 
@@ -185,11 +185,11 @@ export default function AdminAuthRuleContent() {
         showToast(modalMode === "add" ? "添加菜单规则成功！" : "更新菜单规则成功！");
         await loadRules();
       } else {
-        alert(res.msg || "Lỗi lưu quy tắc");
+        alert(res.msg || "保存规则失败");
       }
     } catch (err) {
       console.error(err);
-      alert("Lỗi kết nối");
+      alert("网络连接失败");
     }
 
     setModalMode(null);
@@ -216,7 +216,7 @@ export default function AdminAuthRuleContent() {
       setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
     } catch (err) {
       console.error(err);
-      alert("Lỗi khi xóa quy tắc");
+      alert("删除规则失败");
     }
     setDeleteConfirmIds(null);
   };
@@ -244,7 +244,7 @@ export default function AdminAuthRuleContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>系统设置</span>
@@ -273,7 +273,7 @@ export default function AdminAuthRuleContent() {
         <div className="panel panel-default panel-intro">
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>菜单规则</em>Rule tips
+              <em>菜单规则</em>规则通常对应一个控制器的方法,同时左侧的菜单栏也是从规则中重复构建,说明:必须在系统配置开启调试模式才可添加规则
             </div>
           </div>
 
@@ -285,7 +285,7 @@ export default function AdminAuthRuleContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => showToast("刷新成功")}
                 >
                   <i className="fa fa-refresh"></i>
@@ -293,35 +293,35 @@ export default function AdminAuthRuleContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={handleOpenAdd}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
                 <button
                   type="button"
                   className={`btn btn-success btn-edit ${
                     selectedIds.length !== 1 ? "btn-disabled disabled" : ""
                   }`}
-                  title="Edit"
+                  title="编辑"
                   disabled={selectedIds.length !== 1}
                   onClick={() => {
                     const ruleToEdit = rules.find((r) => r.id === selectedIds[0]);
                     if (ruleToEdit) handleOpenEdit(ruleToEdit);
                   }}
                 >
-                  <i className="fa fa-pencil"></i> Edit
+                  <i className="fa fa-pencil"></i> 编辑
                 </button>
                 <button
                   type="button"
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "btn-disabled disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
 
                 {/* More Dropdown */}
@@ -334,7 +334,7 @@ export default function AdminAuthRuleContent() {
                     disabled={selectedIds.length === 0}
                     onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
                   >
-                    <i className="fa fa-cog"></i> More <span className="caret"></span>
+                    <i className="fa fa-cog"></i> 更多 <span className="caret"></span>
                   </button>
                   {isMoreMenuOpen && selectedIds.length > 0 && (
                     <ul className="dropdown-menu">
@@ -343,7 +343,7 @@ export default function AdminAuthRuleContent() {
                           href="javascript:;"
                           onClick={() => handleSetStatus("normal")}
                         >
-                          <i className="fa fa-eye"></i> Set to normal
+                          <i className="fa fa-eye"></i> 设为正常
                         </a>
                       </li>
                       <li>
@@ -351,7 +351,7 @@ export default function AdminAuthRuleContent() {
                           href="javascript:;"
                           onClick={() => handleSetStatus("hidden")}
                         >
-                          <i className="fa fa-eye-slash"></i> Set to hidden
+                          <i className="fa fa-eye-slash"></i> 设为隐藏
                         </a>
                       </li>
                     </ul>
@@ -365,7 +365,7 @@ export default function AdminAuthRuleContent() {
                   onClick={handleToggleAll}
                 >
                   <i className={`fa ${isAllExpanded ? "fa-minus" : "fa-plus"}`}></i>{" "}
-                  Toggle all
+                  全部展开/折叠
                 </button>
               </div>
             </div>
@@ -396,7 +396,7 @@ export default function AdminAuthRuleContent() {
                         href="javascript:;"
                         className="btn btn-success btn-xs btn-toggle"
                         onClick={handleToggleAll}
-                        title="Toggle all"
+                        title="全部展开/折叠"
                       >
                         <i
                           className={`fa ${
@@ -469,7 +469,7 @@ export default function AdminAuthRuleContent() {
                             onClick={() => handleToggleIsmenu(rule.id)}
                             title="点击切换"
                           >
-                            {rule.ismenu === 1 ? "Yes" : "No"}
+                            {rule.ismenu === 1 ? "是" : "否"}
                           </button>
                         </td>
                         {/* Subnode Chevron */}
@@ -498,7 +498,7 @@ export default function AdminAuthRuleContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-success btn-editone"
-                              title="Edit"
+                              title="编辑"
                               onClick={() => handleOpenEdit(rule)}
                             >
                               <i className="fa fa-pencil"></i>
@@ -506,7 +506,7 @@ export default function AdminAuthRuleContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-danger btn-delone"
-                              title="Delete"
+                              title="删除"
                               onClick={() => handleDeleteOne(rule.id)}
                             >
                               <i className="fa fa-trash"></i>
@@ -552,7 +552,7 @@ export default function AdminAuthRuleContent() {
                 <div className="modal-body modal-scroll">
                   {/* Ismenu */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Ismenu:</label>
+                    <label className="control-label col-sm-3">菜单:</label>
                     <div className="col-sm-8 radio-group">
                       <label className="radio-inline">
                         <input
@@ -564,7 +564,7 @@ export default function AdminAuthRuleContent() {
                             setFormState({ ...formState, ismenu: 1 })
                           }
                         />{" "}
-                        Yes
+                        是
                       </label>
                       <label className="radio-inline">
                         <input
@@ -576,14 +576,14 @@ export default function AdminAuthRuleContent() {
                             setFormState({ ...formState, ismenu: 0 })
                           }
                         />{" "}
-                        No
+                        否
                       </label>
                     </div>
                   </div>
 
                   {/* Parent */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Parent:</label>
+                    <label className="control-label col-sm-3">父级:</label>
                     <div className="col-sm-8">
                       <select
                         className="form-control"
@@ -595,7 +595,7 @@ export default function AdminAuthRuleContent() {
                           })
                         }
                       >
-                        <option value={0}>None</option>
+                        <option value={0}>无</option>
                         {rules
                           .filter((r) => r.pid === 0 || r.ismenu === 1)
                           .map((r) => (
@@ -609,7 +609,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Name */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Name:</label>
+                    <label className="control-label col-sm-3">规则(URL):</label>
                     <div className="col-sm-8">
                       <input
                         type="text"
@@ -626,7 +626,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Title */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Title:</label>
+                    <label className="control-label col-sm-3">标题:</label>
                     <div className="col-sm-8">
                       <input
                         type="text"
@@ -643,7 +643,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Icon */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Icon:</label>
+                    <label className="control-label col-sm-3">图标:</label>
                     <div className="col-sm-8">
                       <div className="input-group">
                         <input
@@ -663,7 +663,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Weigh */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Weigh:</label>
+                    <label className="control-label col-sm-3">权重:</label>
                     <div className="col-sm-8">
                       <input
                         type="number"
@@ -681,7 +681,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Condition */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Condition:</label>
+                    <label className="control-label col-sm-3">规则条件:</label>
                     <div className="col-sm-8">
                       <textarea
                         className="form-control"
@@ -699,7 +699,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Remark */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Remark:</label>
+                    <label className="control-label col-sm-3">备注:</label>
                     <div className="col-sm-8">
                       <textarea
                         className="form-control"
@@ -714,7 +714,7 @@ export default function AdminAuthRuleContent() {
 
                   {/* Status */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Status:</label>
+                    <label className="control-label col-sm-3">状态:</label>
                     <div className="col-sm-8 radio-group">
                       <label className="radio-inline">
                         <input
@@ -726,7 +726,7 @@ export default function AdminAuthRuleContent() {
                             setFormState({ ...formState, status: "normal" })
                           }
                         />{" "}
-                        Normal
+                        正常
                       </label>
                       <label className="radio-inline">
                         <input
@@ -738,23 +738,19 @@ export default function AdminAuthRuleContent() {
                             setFormState({ ...formState, status: "hidden" })
                           }
                         />{" "}
-                        Hidden
+                        隐藏
                       </label>
                     </div>
                   </div>
                 </div>
 
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-success btn-embossed">
-                    OK
-                  </button>
+                  <button type="submit" className="btn btn-success btn-embossed">确定</button>
                   <button
                     type="button"
                     className="btn btn-default btn-embossed"
                     onClick={() => setModalMode(null)}
-                  >
-                    Reset
-                  </button>
+                  >重置</button>
                 </div>
               </form>
             </div>

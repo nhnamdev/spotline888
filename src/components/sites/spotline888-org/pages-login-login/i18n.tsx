@@ -218,39 +218,94 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationDict> = {
   },
 };
 
+export function normalizeLanguageCode(
+  code: string | null | undefined
+): LanguageCode {
+  if (!code) return "zh-CN";
+  const c = code.toLowerCase().trim();
+  if (c === "vi" || c.startsWith("vi")) return "vi-VN";
+  if (c === "en" || c.startsWith("en")) return "en-US";
+  if (c === "id" || c.startsWith("id")) return "id-ID";
+  if (c === "ms" || c.startsWith("ms")) return "ms-MY";
+  if (c === "zh-tw" || c === "tw" || c === "hk" || c === "hk-tw") return "hk-TW";
+  if (c === "zh" || c === "zh-cn" || c === "cn") return "zh-CN";
+  if (c === "ja" || c.startsWith("ja")) return "ja-JP";
+  if (c === "th" || c.startsWith("th")) return "th-TH";
+  if (c === "ko" || c.startsWith("ko")) return "ko-KR";
+  if (c === "fr" || c.startsWith("fr")) return "fr-FR";
+  if (c === "de" || c.startsWith("de")) return "de-DE";
+  return "zh-CN";
+}
+
 interface I18nContextType {
   currentLang: LanguageCode;
-  setLang: (lang: LanguageCode) => void;
+  setLang: (lang: LanguageCode | string) => void;
   t: TranslationDict;
+  isRoot?: boolean;
 }
 
 const I18nContext = createContext<I18nContextType>({
   currentLang: "zh-CN",
   setLang: () => {},
   t: TRANSLATIONS["zh-CN"],
+  isRoot: false,
 });
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const parent = useContext(I18nContext);
+  if (parent && parent.isRoot) {
+    return <>{children}</>;
+  }
+
   const [currentLang, setCurrentLangState] = useState<LanguageCode>("zh-CN");
 
   useEffect(() => {
     try {
-      const savedLang = localStorage.getItem("i18nLang") as LanguageCode | null;
-      if (savedLang && TRANSLATIONS[savedLang]) {
-        setCurrentLangState(savedLang);
+      const savedLang = localStorage.getItem("i18nLang");
+      if (savedLang) {
+        setCurrentLangState(normalizeLanguageCode(savedLang));
       }
     } catch {
       // ignore
     }
+
+    const handleCustomChange = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail) {
+        setCurrentLangState(normalizeLanguageCode(customEvent.detail));
+      } else {
+        const saved = localStorage.getItem("i18nLang");
+        if (saved) setCurrentLangState(normalizeLanguageCode(saved));
+      }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "i18nLang" && e.newValue) {
+        setCurrentLangState(normalizeLanguageCode(e.newValue));
+      }
+    };
+
+    window.addEventListener("i18n-lang-changed", handleCustomChange);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener("i18n-lang-changed", handleCustomChange);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
-  const setLang = (lang: LanguageCode) => {
-    setCurrentLangState(lang);
+  const setLang = (lang: LanguageCode | string) => {
+    const normalized = normalizeLanguageCode(lang);
+    setCurrentLangState(normalized);
     try {
-      localStorage.setItem("i18nLang", lang);
+      localStorage.setItem("i18nLang", normalized);
       localStorage.setItem("i18nLangManuallySet", "1");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("i18n-lang-changed", { detail: normalized })
+        );
+      }
     } catch {
       // ignore
     }
@@ -259,7 +314,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS["zh-CN"];
 
   return (
-    <I18nContext.Provider value={{ currentLang, setLang, t }}>
+    <I18nContext.Provider value={{ currentLang, setLang, t, isRoot: true }}>
       {children}
     </I18nContext.Provider>
   );

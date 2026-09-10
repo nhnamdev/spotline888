@@ -56,10 +56,10 @@ export default function AdminUpmarkContent() {
         setRecords(res.data.rows || []);
         setTotal(res.data.total || 0);
       } else {
-        showToast(res.msg || "Không thể tải danh sách nạp tiền", "error");
+        showToast(res.msg || "获取充值列表失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi tải dữ liệu", "error");
+      showToast(err.message || "获取充值列表异常", "error");
     } finally {
       setLoading(false);
     }
@@ -74,15 +74,15 @@ export default function AdminUpmarkContent() {
       setActionLoadingId(id);
       const res = await adminApi.checkUpmark(id, status, remark);
       if (res.code === 1) {
-        showToast(status === "approved" ? "Đã phê duyệt đơn nạp thành công" : "Đã từ chối đơn nạp", "success");
+        showToast(status === "approved" ? "审核通过成功" : "已驳回充值申请", "success");
         setRejectModalId(null);
         setRejectRemark("");
         fetchRecords();
       } else {
-        showToast(res.msg || "Xử lý thất bại", "error");
+        showToast(res.msg || "操作失败", "error");
       }
     } catch (err: any) {
-      showToast(err.message || "Lỗi xử lý", "error");
+      showToast(err.message || "操作异常", "error");
     } finally {
       setActionLoadingId(null);
     }
@@ -124,27 +124,27 @@ export default function AdminUpmarkContent() {
       <div className="panel panel-default panel-intro">
         <div className="panel-heading">
           <div className="panel-lead">
-            <em>充值管理 (Quản lý nạp tiền)</em>
+            <em>充值管理</em>
           </div>
           <ul className="nav nav-tabs">
             <li className={statusFilter === "all" ? "active" : ""}>
               <a href="#all" onClick={(e) => { e.preventDefault(); setStatusFilter("all"); setCurrentPage(1); }}>
-                全部 (Tất cả)
+                全部
               </a>
             </li>
             <li className={statusFilter === "pending" ? "active" : ""}>
               <a href="#pending" onClick={(e) => { e.preventDefault(); setStatusFilter("pending"); setCurrentPage(1); }}>
-                未审核 (Chờ duyệt)
+                未审核
               </a>
             </li>
             <li className={statusFilter === "approved" ? "active" : ""}>
               <a href="#approved" onClick={(e) => { e.preventDefault(); setStatusFilter("approved"); setCurrentPage(1); }}>
-                审核通过 (Đã duyệt)
+                审核通过
               </a>
             </li>
             <li className={statusFilter === "rejected" ? "active" : ""}>
               <a href="#rejected" onClick={(e) => { e.preventDefault(); setStatusFilter("rejected"); setCurrentPage(1); }}>
-                审核未通过 (Đã từ chối)
+                审核未通过
               </a>
             </li>
           </ul>
@@ -160,10 +160,10 @@ export default function AdminUpmarkContent() {
                   className="btn btn-default btn-refresh"
                   onClick={fetchRecords}
                   disabled={loading}
-                  title="Làm mới"
+                  title="刷新"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 inline mr-1 ${loading ? "animate-spin" : ""}`} />
-                  刷新 (Làm mới)
+                  刷新
                 </button>
               </div>
 
@@ -174,10 +174,10 @@ export default function AdminUpmarkContent() {
                   value={statusFilter}
                   onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
                 >
-                  <option value="all">Tất cả trạng thái</option>
-                  <option value="pending">Chờ duyệt</option>
-                  <option value="approved">Đã duyệt</option>
-                  <option value="rejected">Từ chối</option>
+                  <option value="all">全部状态</option>
+                  <option value="pending">未审核</option>
+                  <option value="approved">审核通过</option>
+                  <option value="rejected">审核未通过</option>
                 </select>
               </div>
             </div>
@@ -195,18 +195,18 @@ export default function AdminUpmarkContent() {
                       />
                     </th>
                     <th>ID</th>
-                    <th>Mã đơn</th>
-                    <th>Hội viên</th>
-                    <th>Tên thật</th>
-                    <th>Số tiền nạp</th>
-                    <th>Số dư trước nạp</th>
-                    <th>Kênh nạp</th>
-                    <th>Biên lai (R2)</th>
-                    <th>Thời gian tạo</th>
-                    <th>Ghi chú</th>
+                    <th>订单号</th>
+                    <th>会员</th>
+                    <th>真实姓名</th>
+                    <th>充值金额</th>
+                    <th>变动前余额</th>
+                    <th>支付方式</th>
+                    <th>支付凭证</th>
+                    <th>创建时间</th>
+                    <th>备注</th>
                     <th>IP</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th>状态</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -214,13 +214,13 @@ export default function AdminUpmarkContent() {
                     <tr>
                       <td colSpan={14} className="text-center py-8 text-gray-500">
                         <Loader2 className="w-6 h-6 animate-spin inline mr-2 text-primary" />
-                        Đang tải dữ liệu từ máy chủ...
+                        正在加载充值数据...
                       </td>
                     </tr>
                   ) : records.length === 0 ? (
                     <tr>
                       <td colSpan={14} className="text-center py-8 text-gray-400">
-                        Không có đơn nạp tiền nào phù hợp
+                        暂无充值记录
                       </td>
                     </tr>
                   ) : (
@@ -245,7 +245,7 @@ export default function AdminUpmarkContent() {
                           <td className="text-right text-gray-500">
                             {Number(item.balance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                           </td>
-                          <td><span className="label label-info">{item.pay_type || "Ngân hàng"}</span></td>
+                          <td><span className="label label-info">{item.pay_type || "银行转账"}</span></td>
                           <td className="text-center">
                             {item.voucher_img ? (
                               <button
@@ -253,10 +253,10 @@ export default function AdminUpmarkContent() {
                                 onClick={() => setPreviewVoucher(item.voucher_img || null)}
                                 className="btn btn-xs btn-primary inline-flex items-center gap-1"
                               >
-                                <Eye className="w-3 h-3" /> Xem ảnh
+                                <Eye className="w-3 h-3" /> 查看
                               </button>
                             ) : (
-                              <span className="text-gray-300 text-xs">Không có</span>
+                              <span className="text-gray-300 text-xs">无</span>
                             )}
                           </td>
                           <td className="cell-time text-xs text-gray-500">{item.created_at?.slice(0, 19).replace("T", " ")}</td>
@@ -264,11 +264,11 @@ export default function AdminUpmarkContent() {
                           <td className="text-xs text-gray-400">{item.source_ip || "-"}</td>
                           <td>
                             {item.status === "approved" ? (
-                              <span className="badge badge-success">审核通过 (Đã duyệt)</span>
+                              <span className="badge badge-success">审核通过</span>
                             ) : item.status === "rejected" ? (
-                              <span className="badge badge-danger">审核未通过 (Từ chối)</span>
+                              <span className="badge badge-danger">审核未通过</span>
                             ) : (
-                              <span className="badge badge-warning">未审核 (Chờ duyệt)</span>
+                              <span className="badge badge-warning">未审核</span>
                             )}
                           </td>
                           <td>
@@ -281,7 +281,7 @@ export default function AdminUpmarkContent() {
                                   className="btn btn-xs btn-success flex items-center gap-1"
                                 >
                                   {actionLoadingId === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                                  Duyệt
+                                  通过
                                 </button>
                                 <button
                                   type="button"
@@ -289,11 +289,11 @@ export default function AdminUpmarkContent() {
                                   onClick={() => setRejectModalId(item.id)}
                                   className="btn btn-xs btn-danger flex items-center gap-1"
                                 >
-                                  <X className="w-3 h-3" /> Từ chối
+                                  <X className="w-3 h-3" /> 驳回
                                 </button>
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-xs">Hoàn tất</span>
+                              <span className="text-gray-400 text-xs">已处理</span>
                             )}
                           </td>
                         </tr>
@@ -307,7 +307,7 @@ export default function AdminUpmarkContent() {
             {/* Pagination Controls */}
             <div className="pagination-container flex justify-between items-center mt-3">
               <div className="pagination-info text-sm text-gray-500">
-                Hiển thị trang {currentPage} / {totalPages} (Tổng số {total} đơn nạp)
+                显示第 {currentPage} / {totalPages} 页 (共 {total} 条记录)
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -316,7 +316,7 @@ export default function AdminUpmarkContent() {
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
-                  Trang trước
+                  上一页
                 </button>
                 <span className="px-2 text-sm font-semibold">{currentPage}</span>
                 <button
@@ -325,7 +325,7 @@ export default function AdminUpmarkContent() {
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Trang sau
+                  下一页
                 </button>
               </div>
             </div>
@@ -333,12 +333,12 @@ export default function AdminUpmarkContent() {
         </div>
       </div>
 
-      {/* Modal Xem Ảnh Biên Lai R2 */}
+      {/* Modal 查看大图 */}
       {previewVoucher && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-4 max-w-lg w-full max-h-[90vh] flex flex-col items-center">
             <div className="w-full flex justify-between items-center mb-3">
-              <h4 className="font-bold text-gray-800 text-sm">Biên lai chuyển khoản (Cloudflare R2)</h4>
+              <h4 className="font-bold text-gray-800 text-sm">支付凭证</h4>
               <button
                 type="button"
                 onClick={() => setPreviewVoucher(null)}
@@ -350,7 +350,7 @@ export default function AdminUpmarkContent() {
             <div className="relative w-full h-96 bg-slate-100 rounded-lg overflow-hidden">
               <Image
                 src={getR2Url(previewVoucher)}
-                alt="Biên lai nạp tiền"
+                alt="支付凭证"
                 fill
                 className="object-contain"
               />
@@ -361,25 +361,25 @@ export default function AdminUpmarkContent() {
                 className="btn btn-sm btn-default"
                 onClick={() => setPreviewVoucher(null)}
               >
-                Đóng
+                关闭
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Từ Chối Đơn Nạp Kèm Lý Do */}
+      {/* Modal 驳回充值订单 */}
       {rejectModalId !== null && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl p-5 max-w-md w-full shadow-2xl">
-            <h4 className="font-bold text-gray-800 text-base mb-2">Từ chối đơn nạp #{rejectModalId}</h4>
-            <p className="text-xs text-gray-500 mb-3">Vui lòng nhập lý do từ chối để hội viên được rõ:</p>
+            <h4 className="font-bold text-gray-800 text-base mb-2">驳回充值订单 #{rejectModalId}</h4>
+            <p className="text-xs text-gray-500 mb-3">请输入驳回原因，以便会员了解：</p>
             <textarea
               className="form-control w-full border border-gray-300 rounded-lg p-2.5 text-sm mb-4"
               rows={3}
               value={rejectRemark}
               onChange={(e) => setRejectRemark(e.target.value)}
-              placeholder="Ví dụ: Số tiền không khớp với biên lai, sai nội dung chuyển khoản..."
+              placeholder="例如：充值金额与凭证不符、转账备注有误..."
             />
             <div className="flex justify-end gap-2">
               <button
@@ -387,7 +387,7 @@ export default function AdminUpmarkContent() {
                 className="btn btn-default"
                 onClick={() => { setRejectModalId(null); setRejectRemark(""); }}
               >
-                Hủy bỏ
+                取消
               </button>
               <button
                 type="button"
@@ -395,7 +395,7 @@ export default function AdminUpmarkContent() {
                 onClick={() => handleAudit(rejectModalId, "rejected", rejectRemark)}
                 className="btn btn-danger"
               >
-                Xác nhận từ chối
+                确认驳回
               </button>
             </div>
           </div>

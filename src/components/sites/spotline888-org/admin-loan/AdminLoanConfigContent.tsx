@@ -39,7 +39,7 @@ export default function AdminLoanConfigContent() {
         setConfigs(mapped);
       }
     } catch (err) {
-      console.error("Lỗi nạp cấu hình gói vay:", err);
+      console.error("加载贷款配置失败:", err);
     } finally {
       setLoading(false);
     }
@@ -166,7 +166,7 @@ export default function AdminLoanConfigContent() {
       });
       fetchConfigs();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái gói vay:", err);
+      console.error("更新贷款配置状态失败:", err);
     }
   };
 
@@ -178,7 +178,7 @@ export default function AdminLoanConfigContent() {
         setSelectedIds((prev) => prev.filter((i) => i !== id));
         fetchConfigs();
       } catch (err) {
-        console.error("Lỗi xóa gói vay:", err);
+        console.error("删除贷款配置失败:", err);
       }
     }
   };
@@ -193,7 +193,7 @@ export default function AdminLoanConfigContent() {
         setSelectedIds([]);
         fetchConfigs();
       } catch (err) {
-        console.error("Lỗi xóa nhiều gói vay:", err);
+        console.error("批量删除贷款配置失败:", err);
       }
     }
   };
@@ -230,7 +230,7 @@ export default function AdminLoanConfigContent() {
       setIsAddModalOpen(false);
       fetchConfigs();
     } catch (err) {
-      console.error("Lỗi lưu gói vay:", err);
+      console.error("保存贷款配置失败:", err);
     }
   };
 
@@ -239,10 +239,10 @@ export default function AdminLoanConfigContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
-          <span>Dashboard</span>
+          <span>控制台</span>
           <span className="breadcrumb-sep">/</span>
           <span>贷款管理</span>
           <span className="breadcrumb-sep">/</span>
@@ -321,7 +321,7 @@ export default function AdminLoanConfigContent() {
                           })
                         }
                       >
-                        <option value="Choose">Choose</option>
+                        <option value="Choose">选择</option>
                         <option value="0">禁用</option>
                         <option value="1">启用</option>
                       </select>
@@ -353,7 +353,7 @@ export default function AdminLoanConfigContent() {
                   {/* Action Buttons */}
                   <div className="form-group form-actions">
                     <button type="submit" className="btn btn-success">
-                      Submit
+                      提交
                     </button>
                     <button
                       type="button"
@@ -374,7 +374,7 @@ export default function AdminLoanConfigContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => {
                     fetchConfigs();
                     setSelectedIds([]);
@@ -388,7 +388,7 @@ export default function AdminLoanConfigContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={() => {
                     setEditingItem(null);
                     setModalForm({
@@ -403,7 +403,7 @@ export default function AdminLoanConfigContent() {
                     setIsAddModalOpen(true);
                   }}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
 
                 {/* Delete */}
@@ -412,7 +412,7 @@ export default function AdminLoanConfigContent() {
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
@@ -520,7 +520,7 @@ export default function AdminLoanConfigContent() {
                 <button
                   type="button"
                   className="btn btn-default"
-                  title="Common search"
+                  title="通用搜索"
                   onClick={() => setShowSearchForm(!showSearchForm)}
                 >
                   <i className="fa fa-search"></i>
@@ -552,7 +552,7 @@ export default function AdminLoanConfigContent() {
                     {columns.status && <th>状态</th>}
                     {columns.weigh && <th>排序</th>}
                     {columns.ctime && <th>创建时间</th>}
-                    {columns.operate && <th className="col-operate">Operate</th>}
+                    {columns.operate && <th className="col-operate">操作</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -612,7 +612,7 @@ export default function AdminLoanConfigContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-success btn-editone"
-                                title="Edit"
+                                title="编辑"
                                 onClick={() => handleOpenEdit(item)}
                               >
                                 <i className="fa fa-pencil"></i>
@@ -620,7 +620,7 @@ export default function AdminLoanConfigContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-danger btn-delone"
-                                title="Delete"
+                                title="删除"
                                 onClick={() => handleDelete(item.id)}
                               >
                                 <i className="fa fa-trash"></i>
@@ -658,7 +658,7 @@ export default function AdminLoanConfigContent() {
               </div>
               <ul className="pagination">
                 <li className="disabled">
-                  <span>Previous</span>
+                  <span>上一页</span>
                 </li>
                 <li className={currentPage === 1 ? "active" : ""}>
                   <a
@@ -672,7 +672,7 @@ export default function AdminLoanConfigContent() {
                   </a>
                 </li>
                 <li className="disabled">
-                  <span>Next</span>
+                  <span>下一页</span>
                 </li>
               </ul>
             </div>

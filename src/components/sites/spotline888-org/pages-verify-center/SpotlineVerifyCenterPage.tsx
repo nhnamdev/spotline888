@@ -12,7 +12,9 @@ import { verifyApi, uploadApi } from "@/lib/api";
 function SpotlineVerifyCenterContent() {
   const router = useRouter();
   const { currentLang } = useI18n();
-  const t = VERIFY_CENTER_TRANSLATIONS[currentLang] || VERIFY_CENTER_TRANSLATIONS["vi"] || VERIFY_CENTER_TRANSLATIONS["zh-CN"];
+  const t =
+    VERIFY_CENTER_TRANSLATIONS[currentLang] ||
+    VERIFY_CENTER_TRANSLATIONS["zh-CN"];
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);

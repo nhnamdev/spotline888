@@ -255,7 +255,7 @@ export default function AdminCategoryContent() {
     setIsRefreshing(true);
     setTimeout(() => {
       setIsRefreshing(false);
-      showToast("数据刷新成功 (Refresh successful)");
+      showToast("数据刷新成功");
     }, 400);
   };
 
@@ -300,7 +300,7 @@ export default function AdminCategoryContent() {
   const handleSaveForm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim()) {
-      alert("Name cannot be empty");
+      alert("栏目名称不能为空");
       return;
     }
 
@@ -325,7 +325,7 @@ export default function AdminCategoryContent() {
         flag_text: formState.flag.join(","),
       };
       setCategories([newItem, ...categories]);
-      showToast("添加成功 (Added successfully)");
+      showToast("添加成功");
     } else if (modalMode === "edit" && editingItem) {
       setCategories((prev) =>
         prev.map((c) =>
@@ -347,7 +347,7 @@ export default function AdminCategoryContent() {
             : c
         )
       );
-      showToast("修改成功 (Updated successfully)");
+      showToast("修改成功");
     }
 
     setModalMode(null);
@@ -359,7 +359,7 @@ export default function AdminCategoryContent() {
     setCategories((prev) => prev.filter((c) => !deleteConfirmIds.includes(c.id)));
     setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
     setDeleteConfirmIds(null);
-    showToast("删除成功 (Deleted successfully)");
+    showToast("删除成功");
   };
 
   // Status toggle from table
@@ -375,7 +375,7 @@ export default function AdminCategoryContent() {
           : c
       )
     );
-    showToast("状态已更新 (Status updated)");
+    showToast("状态已更新");
   };
 
   // Batch status change
@@ -387,7 +387,7 @@ export default function AdminCategoryContent() {
       )
     );
     setIsMoreOpen(false);
-    showToast(`已批量更新为 ${status === "normal" ? "Normal" : "Hidden"}`);
+    showToast(`已批量更新为 ${status === "normal" ? "正常" : "隐藏"}`);
   };
 
   const isAllSelected =
@@ -408,7 +408,7 @@ export default function AdminCategoryContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -432,7 +432,7 @@ export default function AdminCategoryContent() {
           {/* Panel Heading with Lead & Tabs */}
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>图文管理</em>Category tips
+              <em>图文管理</em>用于管理网站的轮播图及图文分类信息
             </div>
             <ul className="nav nav-tabs">
               <li className={activeTab === "all" ? "active" : ""}>
@@ -442,9 +442,7 @@ export default function AdminCategoryContent() {
                     e.preventDefault();
                     setActiveTab("all");
                   }}
-                >
-                  All
-                </a>
+                >全部</a>
               </li>
               <li className={activeTab === "banner" ? "active" : ""}>
                 <a
@@ -470,7 +468,7 @@ export default function AdminCategoryContent() {
                     <a
                       href="javascript:;"
                       className="btn btn-primary btn-refresh"
-                      title="Refresh"
+                      title="刷新"
                       onClick={handleRefresh}
                     >
                       <i
@@ -483,10 +481,10 @@ export default function AdminCategoryContent() {
                     <a
                       href="javascript:;"
                       className="btn btn-success btn-add"
-                      title="Add"
+                      title="添加"
                       onClick={handleOpenAdd}
                     >
-                      <i className="fa fa-plus"></i> Add
+                      <i className="fa fa-plus"></i> 添加
                     </a>
 
                     <a
@@ -494,10 +492,10 @@ export default function AdminCategoryContent() {
                       className={`btn btn-success btn-edit ${
                         selectedIds.length !== 1 ? "btn-disabled disabled" : ""
                       }`}
-                      title="Edit"
+                      title="编辑"
                       onClick={() => selectedIds.length === 1 && handleOpenEdit()}
                     >
-                      <i className="fa fa-pencil"></i> Edit
+                      <i className="fa fa-pencil"></i> 编辑
                     </a>
 
                     <a
@@ -505,13 +503,13 @@ export default function AdminCategoryContent() {
                       className={`btn btn-danger btn-del ${
                         selectedIds.length === 0 ? "btn-disabled disabled" : ""
                       }`}
-                      title="Delete"
+                      title="删除"
                       onClick={() =>
                         selectedIds.length > 0 &&
                         setDeleteConfirmIds([...selectedIds])
                       }
                     >
-                      <i className="fa fa-trash"></i> Delete
+                      <i className="fa fa-trash"></i> 删除
                     </a>
 
                     {/* More Dropdown */}
@@ -525,7 +523,7 @@ export default function AdminCategoryContent() {
                           selectedIds.length > 0 && setIsMoreOpen(!isMoreOpen)
                         }
                       >
-                        <i className="fa fa-cog"></i> More{" "}
+                        <i className="fa fa-cog"></i> 更多{" "}
                         <span className="caret"></span>
                       </button>
 
@@ -537,7 +535,7 @@ export default function AdminCategoryContent() {
                               href="javascript:;"
                               onClick={() => handleBatchStatus("normal")}
                             >
-                              <i className="fa fa-eye"></i> Set to normal
+                              <i className="fa fa-eye"></i> 设为正常
                             </a>
                           </li>
                           <li>
@@ -546,7 +544,7 @@ export default function AdminCategoryContent() {
                               href="javascript:;"
                               onClick={() => handleBatchStatus("hidden")}
                             >
-                              <i className="fa fa-eye-slash"></i> Set to hidden
+                              <i className="fa fa-eye-slash"></i> 设为隐藏
                             </a>
                           </li>
                         </ul>
@@ -567,28 +565,28 @@ export default function AdminCategoryContent() {
                             />
                           </th>
                           <th style={{ width: 60 }} className="text-center">
-                            <div className="th-inner">Id</div>
+                            <div className="th-inner">ID</div>
                           </th>
                           <th style={{ width: 100 }} className="text-center">
-                            <div className="th-inner">Type</div>
+                            <div className="th-inner">类型</div>
                           </th>
                           <th className="text-left">
-                            <div className="th-inner">Name</div>
+                            <div className="th-inner">栏目名称</div>
                           </th>
                           <th style={{ width: 80 }} className="text-center">
-                            <div className="th-inner">Flag</div>
+                            <div className="th-inner">标志</div>
                           </th>
                           <th style={{ width: 140 }} className="text-center">
-                            <div className="th-inner">Image</div>
+                            <div className="th-inner">图片</div>
                           </th>
                           <th style={{ width: 70 }} className="text-center">
-                            <div className="th-inner">Weigh</div>
+                            <div className="th-inner">权重</div>
                           </th>
                           <th style={{ width: 100 }} className="text-center">
-                            <div className="th-inner">Status</div>
+                            <div className="th-inner">状态</div>
                           </th>
                           <th style={{ width: 100 }} className="text-center">
-                            <div className="th-inner">Operate</div>
+                            <div className="th-inner">操作</div>
                           </th>
                         </tr>
                       </thead>
@@ -596,7 +594,7 @@ export default function AdminCategoryContent() {
                         {filteredCategories.length === 0 ? (
                           <tr>
                             <td colSpan={9} className="text-center no-records">
-                              没有找到匹配的记录 (No matching records found)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -637,7 +635,7 @@ export default function AdminCategoryContent() {
                                   <div
                                     className="image-thumb-wrapper"
                                     onClick={() => setPreviewImage(row.image)}
-                                    title="Click to preview"
+                                    title="点击预览"
                                   >
                                     <img
                                       src={row.image}
@@ -658,11 +656,11 @@ export default function AdminCategoryContent() {
                                       : "text-muted"
                                   }`}
                                   onClick={() => handleToggleStatus(row.id)}
-                                  title="Click to toggle status"
+                                  title="点击切换状态"
                                   style={{ cursor: "pointer" }}
                                 >
                                   <i className="fa fa-circle"></i>{" "}
-                                  {row.status === "normal" ? "Normal" : "Hidden"}
+                                  {row.status === "normal" ? "正常" : "隐藏"}
                                 </span>
                               </td>
                               <td className="text-center">
@@ -670,7 +668,7 @@ export default function AdminCategoryContent() {
                                   <button
                                     type="button"
                                     className="btn btn-xs btn-success btn-editone"
-                                    title="Edit"
+                                    title="编辑"
                                     onClick={() => handleOpenEdit(row)}
                                   >
                                     <i className="fa fa-pencil"></i>
@@ -678,7 +676,7 @@ export default function AdminCategoryContent() {
                                   <button
                                     type="button"
                                     className="btn btn-xs btn-danger btn-delone"
-                                    title="Delete"
+                                    title="删除"
                                     onClick={() => setDeleteConfirmIds([row.id])}
                                   >
                                     <i className="fa fa-trash"></i>
@@ -712,7 +710,7 @@ export default function AdminCategoryContent() {
                   &times;
                 </button>
                 <h4 className="modal-title">
-                  {modalMode === "add" ? "Add" : "Edit"}
+                  {modalMode === "add" ? "添加" : "编辑"}
                 </h4>
               </div>
               <form
@@ -721,15 +719,15 @@ export default function AdminCategoryContent() {
                 autoComplete="off"
               >
                 <div className="modal-body">
-                  {/* Category warmtips */}
+                  {/* 温馨提示：栏目类型和栏目名称为必填项 */}
                   <div className="alert alert-warning-light">
-                    Category warmtips
+                    温馨提示：栏目类型和栏目名称为必填项
                   </div>
 
                   {/* Type */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Type:
+                      类型:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <select
@@ -747,7 +745,7 @@ export default function AdminCategoryContent() {
                   {/* Pid */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Pid:
+                      父级:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <select
@@ -757,7 +755,7 @@ export default function AdminCategoryContent() {
                           setFormState({ ...formState, pid: e.target.value })
                         }
                       >
-                        <option value="0">None</option>
+                        <option value="0">无</option>
                         {categories.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
@@ -770,7 +768,7 @@ export default function AdminCategoryContent() {
                   {/* Name */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Name:
+                      栏目名称:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -781,7 +779,7 @@ export default function AdminCategoryContent() {
                         onChange={(e) =>
                           setFormState({ ...formState, name: e.target.value })
                         }
-                        placeholder="Name"
+                        placeholder="栏目名称"
                       />
                     </div>
                   </div>
@@ -789,7 +787,7 @@ export default function AdminCategoryContent() {
                   {/* Flag */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Flag:
+                      标志:
                     </label>
                     <div className="col-xs-12 col-sm-8 flag-checkboxes">
                       {["hot", "index", "recommend"].map((fl) => (
@@ -811,7 +809,7 @@ export default function AdminCategoryContent() {
                               }
                             }}
                           />{" "}
-                          {fl.charAt(0).toUpperCase() + fl.slice(1)}
+                          {fl === "hot" ? "热门" : fl === "index" ? "首页" : fl === "recommend" ? "推荐" : fl}
                         </label>
                       ))}
                     </div>
@@ -820,7 +818,7 @@ export default function AdminCategoryContent() {
                   {/* Image */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Image:
+                      图片:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <div className="input-group">
@@ -842,10 +840,10 @@ export default function AdminCategoryContent() {
                                 const sample =
                                   "/uploads/20251210/7d1a6e22287f5cfe705e5eaad36a0e06.jpg";
                                 setFormState({ ...formState, image: sample });
-                                showToast("已选择示例图片 (Sample uploaded)");
+                                showToast("已选择示例图片");
                               }}
                             >
-                              <i className="fa fa-upload"></i> Upload
+                              <i className="fa fa-upload"></i> 上传
                             </button>
                           </span>
                           <span>
@@ -856,10 +854,10 @@ export default function AdminCategoryContent() {
                                 const sample =
                                   "/uploads/20250817/da2366df80bfc80ff3cb5d923373aa1f.jpg";
                                 setFormState({ ...formState, image: sample });
-                                showToast("已选择图片 (Image chosen)");
+                                showToast("已选择图片");
                               }}
                             >
-                              <i className="fa fa-list"></i> Choose
+                              <i className="fa fa-list"></i> 选择
                             </button>
                           </span>
                         </div>
@@ -879,7 +877,7 @@ export default function AdminCategoryContent() {
                   {/* Keywords */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Keywords:
+                      关键字:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -899,7 +897,7 @@ export default function AdminCategoryContent() {
                   {/* Description */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Description:
+                      描述:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <textarea
@@ -919,7 +917,7 @@ export default function AdminCategoryContent() {
                   {/* Weigh */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Weigh:
+                      权重:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <input
@@ -939,7 +937,7 @@ export default function AdminCategoryContent() {
                   {/* Status */}
                   <div className="form-group">
                     <label className="control-label col-xs-12 col-sm-2">
-                      Status:
+                      状态:
                     </label>
                     <div className="col-xs-12 col-sm-8">
                       <label className="radio-inline">
@@ -952,7 +950,7 @@ export default function AdminCategoryContent() {
                             setFormState({ ...formState, status: "normal" })
                           }
                         />{" "}
-                        Normal
+                        正常
                       </label>
                       <label className="radio-inline">
                         <input
@@ -964,7 +962,7 @@ export default function AdminCategoryContent() {
                             setFormState({ ...formState, status: "hidden" })
                           }
                         />{" "}
-                        Hidden
+                        隐藏
                       </label>
                     </div>
                   </div>
@@ -976,16 +974,12 @@ export default function AdminCategoryContent() {
                       <button
                         type="submit"
                         className="btn btn-success btn-embossed"
-                      >
-                        OK
-                      </button>
+                      >确定</button>
                       <button
                         type="button"
                         className="btn btn-default btn-embossed"
                         onClick={() => setModalMode(null)}
-                      >
-                        Reset
-                      </button>
+                      >重置</button>
                     </div>
                   </div>
                 </div>
@@ -1008,12 +1002,11 @@ export default function AdminCategoryContent() {
                 >
                   &times;
                 </button>
-                <h4 className="modal-title">提示 (Notice)</h4>
+                <h4 className="modal-title">温馨提示</h4>
               </div>
               <div className="modal-body">
                 <p>
-                  确定要删除这 {deleteConfirmIds.length} 项吗？ (Are you sure you
-                  want to delete the selected item(s)?)
+                  确定要删除所选的 {deleteConfirmIds.length} 项吗？此操作无法撤销。
                 </p>
               </div>
               <div className="modal-footer">
@@ -1022,14 +1015,14 @@ export default function AdminCategoryContent() {
                   className="btn btn-danger"
                   onClick={handleConfirmDelete}
                 >
-                  确定 (Confirm)
+                  确定
                 </button>
                 <button
                   type="button"
                   className="btn btn-default"
                   onClick={() => setDeleteConfirmIds(null)}
                 >
-                  取消 (Cancel)
+                  取消
                 </button>
               </div>
             </div>

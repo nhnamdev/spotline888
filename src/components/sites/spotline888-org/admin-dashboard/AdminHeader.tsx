@@ -73,7 +73,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           type="button"
           className="sidebar-toggle"
           onClick={handleSidebarToggle}
-          title="Toggle navigation"
+          title="折叠菜单"
         >
           <i className="fa fa-bars"></i>
         </button>
@@ -100,7 +100,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -119,7 +119,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -138,7 +138,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -157,7 +157,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -176,7 +176,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -195,7 +195,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -214,7 +214,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -233,7 +233,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -252,7 +252,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -264,14 +264,14 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               onClick={() => router.push("/general/auth/admin")}
             >
               <i className="fa fa-user fa-fw"></i>
-              <span>Admin</span>
+              <span>管理员管理</span>
               <span
                 className="close-tab"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -283,14 +283,14 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               onClick={() => router.push("/general/auth/adminlog")}
             >
               <i className="fa fa-list-alt fa-fw"></i>
-              <span>Admin log</span>
+              <span>管理员日志</span>
               <span
                 className="close-tab"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -302,14 +302,14 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               onClick={() => router.push("/general/auth/group")}
             >
               <i className="fa fa-group fa-fw"></i>
-              <span>Group</span>
+              <span>角色组</span>
               <span
                 className="close-tab"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -328,7 +328,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -347,7 +347,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -359,14 +359,14 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               onClick={() => router.push("/general/attachment")}
             >
               <i className="fa fa-file-image-o fa-fw"></i>
-              <span>Attachment</span>
+              <span>附件管理</span>
               <span
                 className="close-tab"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -378,14 +378,14 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
               onClick={() => router.push("/general/profile")}
             >
               <i className="fa fa-user fa-fw"></i>
-              <span>Profile</span>
+              <span>个人资料</span>
               <span
                 className="close-tab"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -404,7 +404,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -423,7 +423,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -442,7 +442,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -461,7 +461,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -480,7 +480,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   e.stopPropagation();
                   router.push("/admin/dashboard");
                 }}
-                title="Close tab"
+                title="关闭标签"
               >
                 <i className="fa fa-times"></i>
               </span>
@@ -508,7 +508,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           <ul className="nav navbar-nav">
             {/* Home link */}
             <li>
-              <a href="/" target="_blank" className="nav-btn-link" title="Home">
+              <a href="/" target="_blank" className="nav-btn-link" title="前台首页">
                 <i className="fa fa-home"></i>
               </a>
             </li>
@@ -522,7 +522,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                   setIsCacheMenuOpen(!isCacheMenuOpen);
                   setIsUserMenuOpen(false);
                 }}
-                title="Wipe cache"
+                title="清除缓存"
               >
                 <i className="fa fa-trash"></i>
               </button>
@@ -530,22 +530,22 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                 <ul className="dropdown-menu">
                   <li>
                     <button type="button" onClick={() => setIsCacheMenuOpen(false)}>
-                      <i className="fa fa-trash"></i> Wipe all cache
+                      <i className="fa fa-trash"></i> 一键清除缓存
                     </button>
                   </li>
                   <li>
                     <button type="button" onClick={() => setIsCacheMenuOpen(false)}>
-                      <i className="fa fa-file-text"></i> Wipe content cache
+                      <i className="fa fa-file-text"></i> 清除内容缓存
                     </button>
                   </li>
                   <li>
                     <button type="button" onClick={() => setIsCacheMenuOpen(false)}>
-                      <i className="fa fa-file-image-o"></i> Wipe template cache
+                      <i className="fa fa-file-image-o"></i> 清除模板缓存
                     </button>
                   </li>
                   <li>
                     <button type="button" onClick={() => setIsCacheMenuOpen(false)}>
-                      <i className="fa fa-rocket"></i> Wipe addons cache
+                      <i className="fa fa-rocket"></i> 清除插件缓存
                     </button>
                   </li>
                 </ul>
@@ -558,7 +558,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                 type="button"
                 className="nav-btn"
                 onClick={toggleFullscreen}
-                title="Fullscreen"
+                title="全屏"
               >
                 <i className="fa fa-arrows-alt"></i>
               </button>
@@ -608,7 +608,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                           router.push("/general/profile");
                         }}
                       >
-                        Profile
+                        个人资料
                       </button>
                     </div>
                     <div className="pull-right">
@@ -617,7 +617,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                         className="btn btn-danger btn-flat"
                         onClick={handleLogout}
                       >
-                        Logout
+                        退出登录
                       </button>
                     </div>
                   </li>
@@ -627,7 +627,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
 
             {/* Control Sidebar Gears */}
             <li className="hidden-xs">
-              <button type="button" className="nav-btn" title="Settings">
+              <button type="button" className="nav-btn" title="系统设置">
                 <i className="fa fa-gears"></i>
               </button>
             </li>

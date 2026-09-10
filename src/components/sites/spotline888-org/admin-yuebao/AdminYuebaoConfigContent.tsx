@@ -28,7 +28,7 @@ export default function AdminYuebaoConfigContent() {
         setConfigs(mapped);
       }
     } catch (err) {
-      console.error("Lỗi nạp cấu hình Yu'e Bao:", err);
+      console.error("加载余额宝配置失败:", err);
     } finally {
       setIsRefreshing(false);
     }
@@ -185,10 +185,10 @@ export default function AdminYuebaoConfigContent() {
         min_money: target.min_money,
         status: newStatus,
       });
-      showToast("状态已更新 (Status updated)");
+      showToast("状态已更新");
       fetchConfigs();
     } catch (err) {
-      console.error("Lỗi cập nhật trạng thái Yu'e Bao:", err);
+      console.error("更新余额宝状态失败:", err);
     }
   };
 
@@ -213,7 +213,7 @@ export default function AdminYuebaoConfigContent() {
           min_money: formState.min_money,
           status: Number(formState.status),
         });
-        showToast("添加成功 (Config added successfully)");
+        showToast("添加成功");
       } else if (modalMode === "edit" && editingItem) {
         await adminApi.saveYuebaoConfig({
           id: editingItem.id,
@@ -223,12 +223,12 @@ export default function AdminYuebaoConfigContent() {
           min_money: formState.min_money,
           status: Number(formState.status),
         });
-        showToast("修改成功 (Config updated successfully)");
+        showToast("修改成功");
       }
       setModalMode(null);
       fetchConfigs();
     } catch (err) {
-      console.error("Lỗi lưu cấu hình Yu'e Bao:", err);
+      console.error("保存余额宝配置失败:", err);
     }
   };
 
@@ -243,10 +243,10 @@ export default function AdminYuebaoConfigContent() {
         prev.filter((id) => !deleteConfirmIds.includes(id))
       );
       setDeleteConfirmIds(null);
-      showToast("删除成功 (Deleted successfully)");
+      showToast("删除成功");
       fetchConfigs();
     } catch (err) {
-      console.error("Lỗi xóa cấu hình Yu'e Bao:", err);
+      console.error("删除余额宝配置失败:", err);
     }
   };
 
@@ -264,7 +264,7 @@ export default function AdminYuebaoConfigContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -295,7 +295,7 @@ export default function AdminYuebaoConfigContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-primary btn-refresh"
-                        title="Refresh"
+                        title="刷新"
                         onClick={handleRefresh}
                       >
                         <i
@@ -307,33 +307,33 @@ export default function AdminYuebaoConfigContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-success btn-add"
-                        title="Add"
+                        title="添加"
                         onClick={handleOpenAdd}
                       >
-                        <i className="fa fa-plus"></i> Add
+                        <i className="fa fa-plus"></i> 添加
                       </a>
                       <a
                         href="javascript:;"
                         className={`btn btn-success btn-edit ${
                           selectedIds.length !== 1 ? "btn-disabled disabled" : ""
                         }`}
-                        title="Edit"
+                        title="编辑"
                         onClick={() => selectedIds.length === 1 && handleOpenEdit()}
                       >
-                        <i className="fa fa-pencil"></i> Edit
+                        <i className="fa fa-pencil"></i> 编辑
                       </a>
                       <a
                         href="javascript:;"
                         className={`btn btn-danger btn-del ${
                           selectedIds.length === 0 ? "btn-disabled disabled" : ""
                         }`}
-                        title="Delete"
+                        title="删除"
                         onClick={() =>
                           selectedIds.length > 0 &&
                           setDeleteConfirmIds(selectedIds)
                         }
                       >
-                        <i className="fa fa-trash"></i> Delete
+                        <i className="fa fa-trash"></i> 删除
                       </a>
                     </div>
 
@@ -342,7 +342,7 @@ export default function AdminYuebaoConfigContent() {
                         <input
                           type="text"
                           className="form-control input-sm"
-                          placeholder="Search"
+                          placeholder="搜索"
                           value={quickSearch}
                           onChange={(e) => {
                             setQuickSearch(e.target.value);
@@ -387,7 +387,7 @@ export default function AdminYuebaoConfigContent() {
                           </th>
                           <th
                             className="sortable"
-                            style={{ width: "200px" }}
+                            style={{ width: "150px" }}
                             onClick={() => handleSort("title")}
                           >
                             配置标题{" "}
@@ -403,10 +403,10 @@ export default function AdminYuebaoConfigContent() {
                           </th>
                           <th
                             className="sortable"
-                            style={{ width: "100px" }}
+                            style={{ width: "120px" }}
                             onClick={() => handleSort("radio")}
                           >
-                            收益率{" "}
+                            日利率{" "}
                             <i
                               className={`fa fa-sort${
                                 sortField === "radio"
@@ -422,7 +422,7 @@ export default function AdminYuebaoConfigContent() {
                             style={{ width: "120px" }}
                             onClick={() => handleSort("day")}
                           >
-                            计算周期(天){" "}
+                            周期(天){" "}
                             <i
                               className={`fa fa-sort${
                                 sortField === "day"
@@ -490,7 +490,7 @@ export default function AdminYuebaoConfigContent() {
                         {currentConfigs.length === 0 ? (
                           <tr>
                             <td colSpan={9} className="text-center no-records">
-                              没有找到匹配的记录 (No records found)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -533,7 +533,7 @@ export default function AdminYuebaoConfigContent() {
                               <td className="text-center">
                                 <button
                                   className="btn btn-xs btn-success btn-editone"
-                                  title="Edit"
+                                  title="编辑"
                                   style={{ marginRight: "5px" }}
                                   onClick={() => handleOpenEdit(item)}
                                 >
@@ -541,7 +541,7 @@ export default function AdminYuebaoConfigContent() {
                                 </button>
                                 <button
                                   className="btn btn-xs btn-danger btn-delone"
-                                  title="Delete"
+                                  title="删除"
                                   onClick={() => setDeleteConfirmIds([item.id])}
                                 >
                                   <i className="fa fa-trash"></i>
@@ -557,9 +557,7 @@ export default function AdminYuebaoConfigContent() {
                   {/* Pagination */}
                   <div className="pagination-wrapper clearfix">
                     <div className="pull-left pagination-info">
-                      总共 {totalRows} 条记录 (Showing{" "}
-                      {totalRows > 0 ? startIndex + 1 : 0} to {endIndex} of{" "}
-                      {totalRows} rows)
+                      显示第 {totalRows > 0 ? startIndex + 1 : 0} 到第 {endIndex} 条记录，总共 {totalRows} 条记录
                     </div>
                     <div className="pull-right pagination-controls">
                       <div className="page-size-selector">
@@ -636,7 +634,7 @@ export default function AdminYuebaoConfigContent() {
           <div className="fastadmin-modal-dialog">
             <div className="fastadmin-modal-header">
               <span className="modal-title">
-                {modalMode === "add" ? "Add" : "Edit"} - 余额宝配置
+                {modalMode === "add" ? "添加" : "编辑"} - 余额宝配置
               </span>
               <button
                 type="button"

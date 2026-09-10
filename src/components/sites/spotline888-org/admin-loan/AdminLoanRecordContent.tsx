@@ -191,7 +191,7 @@ export default function AdminLoanRecordContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>贷款管理</span>
@@ -271,7 +271,7 @@ export default function AdminLoanRecordContent() {
                           })
                         }
                       >
-                        <option value="Choose">Choose</option>
+                        <option value="Choose">选择</option>
                         <option value="0">待审核</option>
                         <option value="1">借款中</option>
                         <option value="2">已还款</option>
@@ -350,7 +350,7 @@ export default function AdminLoanRecordContent() {
                   {/* Action Buttons */}
                   <div className="form-group form-actions">
                     <button type="submit" className="btn btn-success">
-                      Submit
+                      提交
                     </button>
                     <button
                       type="button"
@@ -371,7 +371,7 @@ export default function AdminLoanRecordContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => {
                     setRecords([]);
                     setSelectedIds([]);
@@ -529,7 +529,7 @@ export default function AdminLoanRecordContent() {
                 <button
                   type="button"
                   className="btn btn-default"
-                  title="Common search"
+                  title="通用搜索"
                   onClick={() => setShowSearchForm(!showSearchForm)}
                 >
                   <i className="fa fa-search"></i>
@@ -655,10 +655,10 @@ export default function AdminLoanRecordContent() {
               </div>
               <ul className="pagination">
                 <li className="disabled">
-                  <span>Previous</span>
+                  <span>上一页</span>
                 </li>
                 <li className="disabled">
-                  <span>Next</span>
+                  <span>下一页</span>
                 </li>
               </ul>
             </div>

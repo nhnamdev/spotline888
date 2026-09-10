@@ -33,26 +33,12 @@ interface YuebaoData {
 function SpotlineUserPageContent() {
   const router = useRouter();
   const { currentLang } = useI18n();
-  const [activeLang, setActiveLang] = useState<LanguageCode>(currentLang);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("i18nLang") as LanguageCode | null;
-      if (saved && USER_TRANSLATIONS[saved]) {
-        setActiveLang(saved);
-      } else {
-        setActiveLang(currentLang);
-      }
-    } catch {
-      setActiveLang(currentLang);
-    }
-  }, [currentLang]);
-
   const t: UserTranslations =
-    USER_TRANSLATIONS[activeLang] || USER_TRANSLATIONS["zh-CN"];
+    USER_TRANSLATIONS[currentLang] || USER_TRANSLATIONS["zh-CN"];
   const indexT =
-    INDEX_TRANSLATIONS[activeLang] || INDEX_TRANSLATIONS["zh-CN"];
+    INDEX_TRANSLATIONS[currentLang] || INDEX_TRANSLATIONS["zh-CN"];
 
   const [userInfo, setUserInfo] = useState<UserInfoData>({
     username: "ak111",

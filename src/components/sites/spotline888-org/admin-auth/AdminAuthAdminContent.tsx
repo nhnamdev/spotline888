@@ -32,7 +32,7 @@ function formatDateTime(timestamp: number): string {
 }
 
 export default function AdminAuthAdminContent() {
-  // Danh sách quản trị viên từ MySQL Database
+  // 管理员列表（来自数据库）
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,7 +47,7 @@ export default function AdminAuthAdminContent() {
         setAdmins(res.data);
       }
     } catch (err) {
-      console.error("Lỗi nạp danh sách admin:", err);
+      console.error("加载管理员列表失败:", err);
     }
   }, []);
 
@@ -147,7 +147,7 @@ export default function AdminAuthAdminContent() {
   const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.username.trim()) {
-      alert("Please enter username");
+      alert("请输入用户名");
       return;
     }
 
@@ -167,7 +167,7 @@ export default function AdminAuthAdminContent() {
       setModalMode(null);
       fetchAdmins();
     } catch (err) {
-      console.error("Lỗi lưu quản trị viên:", err);
+      console.error("保存管理员失败:", err);
     }
   };
 
@@ -193,7 +193,7 @@ export default function AdminAuthAdminContent() {
       showToast("删除成功！");
       fetchAdmins();
     } catch (err) {
-      console.error("Lỗi xóa quản trị viên:", err);
+      console.error("删除管理员失败:", err);
     }
   };
 
@@ -227,14 +227,14 @@ export default function AdminAuthAdminContent() {
       {/* Ribbon Header */}
       <div className="content-header-ribbon">
         <div className="breadcrumb-left">
-          <i className="fa fa-dashboard"></i> Dashboard
+          <i className="fa fa-dashboard"></i> 控制台
         </div>
         <div className="breadcrumb-right">
           <span>系统设置</span>
           <span className="breadcrumb-sep">/</span>
           <span>权限管理</span>
           <span className="breadcrumb-sep">/</span>
-          <span>Admin</span>
+          <span>管理员管理</span>
         </div>
       </div>
 
@@ -256,7 +256,7 @@ export default function AdminAuthAdminContent() {
         <div className="panel panel-default panel-intro">
           <div className="panel-heading">
             <div className="panel-lead">
-              <em>Admin</em>Admin tips
+              <em>管理员管理</em>一个管理员可以有多个角色组,左侧的菜单根据管理员所拥有的权限进行生成
             </div>
           </div>
 
@@ -271,7 +271,7 @@ export default function AdminAuthAdminContent() {
                   <fieldset>
                     <div className="row search-grid">
                       <div className="form-group-col">
-                        <label className="control-label">Id</label>
+                        <label className="control-label">ID</label>
                         <input
                           type="text"
                           className="form-control"
@@ -285,7 +285,7 @@ export default function AdminAuthAdminContent() {
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Username</label>
+                        <label className="control-label">用户名</label>
                         <input
                           type="text"
                           className="form-control"
@@ -297,12 +297,12 @@ export default function AdminAuthAdminContent() {
                               username: e.target.value,
                             })
                           }
-                          placeholder="Username"
+                          placeholder="用户名"
                         />
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Nickname</label>
+                        <label className="control-label">昵称</label>
                         <input
                           type="text"
                           className="form-control"
@@ -314,7 +314,7 @@ export default function AdminAuthAdminContent() {
                               nickname: e.target.value,
                             })
                           }
-                          placeholder="Nickname"
+                          placeholder="昵称"
                         />
                       </div>
 
@@ -336,7 +336,7 @@ export default function AdminAuthAdminContent() {
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Email</label>
+                        <label className="control-label">电子邮箱</label>
                         <input
                           type="text"
                           className="form-control"
@@ -348,12 +348,12 @@ export default function AdminAuthAdminContent() {
                               email: e.target.value,
                             })
                           }
-                          placeholder="Email"
+                          placeholder="电子邮箱"
                         />
                       </div>
 
                       <div className="form-group-col">
-                        <label className="control-label">Status</label>
+                        <label className="control-label">状态</label>
                         <select
                           className="form-control"
                           value={commonSearch.status}
@@ -364,9 +364,9 @@ export default function AdminAuthAdminContent() {
                             })
                           }
                         >
-                          <option value="">Choose</option>
-                          <option value="normal">Normal</option>
-                          <option value="hidden">Hidden</option>
+                          <option value="">选择</option>
+                          <option value="normal">正常</option>
+                          <option value="hidden">隐藏</option>
                         </select>
                       </div>
 
@@ -377,9 +377,7 @@ export default function AdminAuthAdminContent() {
                             type="button"
                             className="btn btn-success"
                             onClick={() => showToast("查询完成")}
-                          >
-                            Submit
-                          </button>
+                          >提交</button>
                           <button
                             type="button"
                             className="btn btn-default"
@@ -394,9 +392,7 @@ export default function AdminAuthAdminContent() {
                                 logintime: "",
                               })
                             }
-                          >
-                            Reset
-                          </button>
+                          >重置</button>
                         </div>
                       </div>
                     </div>
@@ -412,7 +408,7 @@ export default function AdminAuthAdminContent() {
                 <button
                   type="button"
                   className="btn btn-primary btn-refresh"
-                  title="Refresh"
+                  title="刷新"
                   onClick={() => showToast("刷新成功")}
                 >
                   <i className="fa fa-refresh"></i>
@@ -420,21 +416,21 @@ export default function AdminAuthAdminContent() {
                 <button
                   type="button"
                   className="btn btn-success btn-add"
-                  title="Add"
+                  title="添加"
                   onClick={handleOpenAdd}
                 >
-                  <i className="fa fa-plus"></i> Add
+                  <i className="fa fa-plus"></i> 添加
                 </button>
                 <button
                   type="button"
                   className={`btn btn-danger btn-del ${
                     selectedIds.length === 0 ? "btn-disabled disabled" : ""
                   }`}
-                  title="Delete"
+                  title="删除"
                   disabled={selectedIds.length === 0}
                   onClick={handleDeleteSelected}
                 >
-                  <i className="fa fa-trash"></i> Delete
+                  <i className="fa fa-trash"></i> 删除
                 </button>
               </div>
 
@@ -444,7 +440,7 @@ export default function AdminAuthAdminContent() {
                   <input
                     type="text"
                     className="form-control search-input"
-                    placeholder="Search"
+                    placeholder="搜索"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -453,7 +449,7 @@ export default function AdminAuthAdminContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Toggle view"
+                    title="切换视图"
                     onClick={() => {}}
                   >
                     <i className="fa fa-list-alt"></i>
@@ -461,7 +457,7 @@ export default function AdminAuthAdminContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Columns"
+                    title="列"
                     onClick={() => {}}
                   >
                     <i className="fa fa-th"></i>
@@ -469,7 +465,7 @@ export default function AdminAuthAdminContent() {
                   <button
                     type="button"
                     className="btn btn-default"
-                    title="Export"
+                    title="导出"
                     onClick={() => showToast("导出数据成功")}
                   >
                     <i className="fa fa-sign-out"></i>
@@ -479,7 +475,7 @@ export default function AdminAuthAdminContent() {
                     className={`btn btn-default ${
                       isCommonSearchOpen ? "active" : ""
                     }`}
-                    title="Common Search"
+                    title="通用搜索"
                     onClick={() => setIsCommonSearchOpen(!isCommonSearchOpen)}
                   >
                     <i className="fa fa-search"></i>
@@ -548,12 +544,12 @@ export default function AdminAuthAdminContent() {
                         <td>
                           <span
                             className={`label ${
-                              admin.groups_text === "Admin group"
+                              admin.groups_text === "Admin group" || admin.groups_text === "超级管理组"
                                 ? "label-info"
                                 : "label-success"
                             }`}
                           >
-                            {admin.groups_text}
+                            {admin.groups_text === "Admin group" ? "超级管理组" : admin.groups_text}
                           </span>
                         </td>
                         {/* Email */}
@@ -585,7 +581,7 @@ export default function AdminAuthAdminContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-success btn-editone"
-                                title="Edit"
+                                title="编辑"
                                 onClick={() => handleOpenEdit(admin)}
                               >
                                 <i className="fa fa-pencil"></i>
@@ -593,7 +589,7 @@ export default function AdminAuthAdminContent() {
                               <button
                                 type="button"
                                 className="btn btn-xs btn-danger btn-delone"
-                                title="Delete"
+                                title="删除"
                                 onClick={() => handleDeleteOne(admin.id)}
                               >
                                 <i className="fa fa-trash"></i>
@@ -659,7 +655,7 @@ export default function AdminAuthAdminContent() {
                 <div className="modal-body">
                   {/* Group */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Group:</label>
+                    <label className="control-label col-sm-3">所属组别:</label>
                     <div className="col-sm-8">
                       <select
                         className="form-control"
@@ -668,7 +664,7 @@ export default function AdminAuthAdminContent() {
                           setFormState({ ...formState, group: e.target.value })
                         }
                       >
-                        <option value="1">Admin group</option>
+                        <option value="1">超级管理组</option>
                         <option value="10">&nbsp;├ 代理</option>
                         <option value="11">&nbsp;│&nbsp;└ 超级会员</option>
                         <option value="12">&nbsp;└ 分组</option>
@@ -678,7 +674,7 @@ export default function AdminAuthAdminContent() {
 
                   {/* Username */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Username:</label>
+                    <label className="control-label col-sm-3">用户名:</label>
                     <div className="col-sm-8">
                       <input
                         type="text"
@@ -709,7 +705,7 @@ export default function AdminAuthAdminContent() {
 
                   {/* Email */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Email:</label>
+                    <label className="control-label col-sm-3">电子邮箱:</label>
                     <div className="col-sm-8">
                       <input
                         type="email"
@@ -725,7 +721,7 @@ export default function AdminAuthAdminContent() {
 
                   {/* Nickname */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Nickname:</label>
+                    <label className="control-label col-sm-3">昵称:</label>
                     <div className="col-sm-8">
                       <input
                         type="text"
@@ -741,7 +737,7 @@ export default function AdminAuthAdminContent() {
 
                   {/* Password */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Password:</label>
+                    <label className="control-label col-sm-3">密码:</label>
                     <div className="col-sm-8">
                       <input
                         type="password"
@@ -761,7 +757,7 @@ export default function AdminAuthAdminContent() {
 
                   {/* Status */}
                   <div className="form-group">
-                    <label className="control-label col-sm-3">Status:</label>
+                    <label className="control-label col-sm-3">状态:</label>
                     <div className="col-sm-8 radio-group">
                       <label className="radio-inline">
                         <input
@@ -773,7 +769,7 @@ export default function AdminAuthAdminContent() {
                             setFormState({ ...formState, status: "normal" })
                           }
                         />{" "}
-                        Normal
+                        正常
                       </label>
                       <label className="radio-inline">
                         <input
@@ -785,7 +781,7 @@ export default function AdminAuthAdminContent() {
                             setFormState({ ...formState, status: "hidden" })
                           }
                         />{" "}
-                        Hidden
+                        隐藏
                       </label>
                     </div>
                   </div>
@@ -823,16 +819,12 @@ export default function AdminAuthAdminContent() {
                 </div>
 
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-success btn-embossed">
-                    OK
-                  </button>
+                  <button type="submit" className="btn btn-success btn-embossed">确定</button>
                   <button
                     type="button"
                     className="btn btn-default btn-embossed"
                     onClick={() => setModalMode(null)}
-                  >
-                    Reset
-                  </button>
+                  >重置</button>
                 </div>
               </form>
             </div>

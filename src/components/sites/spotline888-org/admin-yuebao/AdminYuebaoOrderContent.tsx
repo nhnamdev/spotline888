@@ -199,7 +199,7 @@ export default function AdminYuebaoOrderContent() {
         <ol className="breadcrumb pull-left">
           <li>
             <a href="/admin/dashboard" className="addtabsit">
-              <i className="fa fa-dashboard"></i> Dashboard
+              <i className="fa fa-dashboard"></i> 控制台
             </a>
           </li>
         </ol>
@@ -230,7 +230,7 @@ export default function AdminYuebaoOrderContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-primary btn-refresh"
-                        title="Refresh"
+                        title="刷新"
                         onClick={handleRefresh}
                       >
                         <i
@@ -242,23 +242,23 @@ export default function AdminYuebaoOrderContent() {
                       <a
                         href="javascript:;"
                         className="btn btn-success btn-add"
-                        title="Add"
+                        title="添加"
                         onClick={() => setShowAddModal(true)}
                       >
-                        <i className="fa fa-plus"></i> Add
+                        <i className="fa fa-plus"></i> 添加
                       </a>
                       <a
                         href="javascript:;"
                         className={`btn btn-danger btn-del ${
                           selectedIds.length === 0 ? "btn-disabled disabled" : ""
                         }`}
-                        title="Delete"
+                        title="删除"
                         onClick={() =>
                           selectedIds.length > 0 &&
                           setDeleteConfirmIds(selectedIds)
                         }
                       >
-                        <i className="fa fa-trash"></i> Delete
+                        <i className="fa fa-trash"></i> 删除
                       </a>
                     </div>
 
@@ -267,7 +267,7 @@ export default function AdminYuebaoOrderContent() {
                         <input
                           type="text"
                           className="form-control input-sm"
-                          placeholder="Search"
+                          placeholder="搜索"
                           value={quickSearch}
                           onChange={(e) => {
                             setQuickSearch(e.target.value);
@@ -383,13 +383,13 @@ export default function AdminYuebaoOrderContent() {
                         {loading ? (
                           <tr>
                             <td colSpan={7} className="text-center py-8 text-gray-500">
-                              <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载余利宝订单 (Đang tải dữ liệu từ CSDL)...
+                              <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载余利宝订单...
                             </td>
                           </tr>
                         ) : currentOrders.length === 0 ? (
                           <tr>
                             <td colSpan={7} className="text-center no-records">
-                              没有找到匹配的记录 (Không có đơn hàng nào)
+                              没有找到匹配的记录
                             </td>
                           </tr>
                         ) : (
@@ -422,8 +422,9 @@ export default function AdminYuebaoOrderContent() {
                               <td>{item.create_time || "未设置"}</td>
                               <td className="text-center">
                                 <button
-                                  className="btn btn-xs btn-danger btn-del"
-                                  title="删除这条记录"
+                                  type="button"
+                                  className="btn btn-xs btn-danger btn-delone"
+                                  title="删除"
                                   onClick={() =>
                                     setDeleteConfirmIds([item.share_id])
                                   }
@@ -441,9 +442,7 @@ export default function AdminYuebaoOrderContent() {
                   {/* Pagination */}
                   <div className="pagination-wrapper clearfix">
                     <div className="pull-left pagination-info">
-                      总共 {totalRows} 条记录 (Showing{" "}
-                      {totalRows > 0 ? startIndex + 1 : 0} to {endIndex} of{" "}
-                      {totalRows} rows)
+                      显示第 {totalRows > 0 ? startIndex + 1 : 0} 到第 {endIndex} 条记录，总共 {totalRows} 条记录
                     </div>
                     <div className="pull-right pagination-controls">
                       <div className="page-size-selector">
@@ -519,7 +518,7 @@ export default function AdminYuebaoOrderContent() {
         <div className="fastadmin-modal-overlay">
           <div className="fastadmin-modal-dialog">
             <div className="fastadmin-modal-header">
-              <span className="modal-title">Add - 余额宝订单</span>
+              <span className="modal-title">添加 - 余额宝订单</span>
               <button
                 type="button"
                 className="close"
@@ -532,14 +531,14 @@ export default function AdminYuebaoOrderContent() {
               <div className="fastadmin-modal-body">
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    User ID:
+                    用户ID:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <input
                       type="number"
                       className="form-control"
                       value={addForm.user_id}
-                      placeholder="Enter user id"
+                      placeholder="请输入用户ID"
                       required
                       onChange={(e) =>
                         setAddForm({ ...addForm, user_id: e.target.value })
@@ -550,14 +549,14 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Username:
+                    用户名:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <input
                       type="text"
                       className="form-control"
                       value={addForm.username}
-                      placeholder="Username (optional)"
+                      placeholder="用户名（选填）"
                       onChange={(e) =>
                         setAddForm({ ...addForm, username: e.target.value })
                       }
@@ -567,7 +566,7 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Amount:
+                    金额:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <input
@@ -586,7 +585,7 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Type:
+                    订单类型:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <select
@@ -606,7 +605,7 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Status:
+                    状态:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <select
@@ -624,14 +623,14 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Config ID:
+                    配置ID:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <input
                       type="number"
                       className="form-control"
                       value={addForm.config_id}
-                      placeholder="Optional config id"
+                      placeholder="配置ID（选填）"
                       onChange={(e) =>
                         setAddForm({ ...addForm, config_id: e.target.value })
                       }
@@ -641,7 +640,7 @@ export default function AdminYuebaoOrderContent() {
 
                 <div className="form-group row">
                   <label className="col-xs-12 col-sm-3 control-label">
-                    Transaction Type:
+                    转入/转出:
                   </label>
                   <div className="col-xs-12 col-sm-8">
                     <select
@@ -660,14 +659,14 @@ export default function AdminYuebaoOrderContent() {
 
               <div className="fastadmin-modal-footer">
                 <button type="submit" className="btn btn-success btn-embossed">
-                  OK
+                  确定
                 </button>
                 <button
                   type="button"
                   className="btn btn-default btn-embossed"
                   onClick={() => setShowAddModal(false)}
                 >
-                  Cancel
+                  取消
                 </button>
               </div>
             </form>

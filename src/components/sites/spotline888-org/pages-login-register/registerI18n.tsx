@@ -338,53 +338,25 @@ export const REGISTER_TRANSLATIONS: Record<LanguageCode, RegisterTranslationDict
   },
 };
 
-interface I18nContextType {
-  currentLang: LanguageCode;
-  setLang: (lang: LanguageCode) => void;
-  t: RegisterTranslationDict;
-}
-
-const I18nContext = createContext<I18nContextType>({
-  currentLang: "zh-CN",
-  setLang: () => {},
-  t: REGISTER_TRANSLATIONS["zh-CN"],
-});
+import {
+  useI18n as useBaseI18n,
+  normalizeLanguageCode,
+} from "../pages-login-login/i18n";
 
 export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [currentLang, setCurrentLangState] = useState<LanguageCode>("zh-CN");
-
-  useEffect(() => {
-    try {
-      const saved =
-        (localStorage.getItem("i18nLang") as LanguageCode) ||
-        (localStorage.getItem("i18nDefaultLang") as LanguageCode);
-      if (saved && REGISTER_TRANSLATIONS[saved]) {
-        setCurrentLangState(saved);
-      }
-    } catch {
-      // LocalStorage unavailable
-    }
-  }, []);
-
-  const setLang = (lang: LanguageCode) => {
-    setCurrentLangState(lang);
-    try {
-      localStorage.setItem("i18nLang", lang);
-      localStorage.setItem("i18nLangManuallySet", "1");
-    } catch {
-      // ignore
-    }
-  };
-
-  const t = REGISTER_TRANSLATIONS[currentLang] || REGISTER_TRANSLATIONS["zh-CN"];
-
-  return (
-    <I18nContext.Provider value={{ currentLang, setLang, t }}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <>{children}</>;
 };
 
-export const useI18n = () => useContext(I18nContext);
+export const useI18n = () => {
+  const base = useBaseI18n();
+  const currentLang = normalizeLanguageCode(base?.currentLang || "zh-CN");
+  const t =
+    REGISTER_TRANSLATIONS[currentLang] || REGISTER_TRANSLATIONS["zh-CN"];
+  return {
+    currentLang,
+    setLang: base?.setLang || (() => {}),
+    t,
+  };
+};
