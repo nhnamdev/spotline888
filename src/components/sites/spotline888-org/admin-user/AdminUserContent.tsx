@@ -155,6 +155,68 @@ export default function AdminUserContent() {
     historyLoading: false,
   });
 
+  // Modal State for Customer Detail & Bank Info (会员详情与银行卡管理)
+  const [detailModal, setDetailModal] = useState<{
+    isOpen: boolean;
+    userItem: UserItem | null;
+    userDetail: any | null;
+    banks: any[];
+    verify: any | null;
+    activeTab: 'basic' | 'bank';
+    loading: boolean;
+    savingUser: boolean;
+    savingBank: boolean;
+    isEditingBank: boolean;
+    bankForm: {
+      bankId?: number;
+      type: 'bank' | 'usdt_trc20' | 'usdt_erc20';
+      bank_name: string;
+      bank_branch: string;
+      card_number: string;
+      account_holder: string;
+      nationality: string;
+      is_default: boolean;
+    };
+    userForm: {
+      real_name: string;
+      phone: string;
+      remark: string;
+      credit_score: number;
+      status: number;
+      level: number;
+      kong_style: number;
+    };
+  }>({
+    isOpen: false,
+    userItem: null,
+    userDetail: null,
+    banks: [],
+    verify: null,
+    activeTab: 'basic',
+    loading: false,
+    savingUser: false,
+    savingBank: false,
+    isEditingBank: false,
+    bankForm: {
+      type: 'bank',
+      bank_name: '',
+      bank_branch: '',
+      card_number: '',
+      account_holder: '',
+      nationality: 'Vietnam',
+      is_default: true,
+    },
+    userForm: {
+      real_name: '',
+      phone: '',
+      remark: '',
+      credit_score: 100,
+      status: 1,
+      level: 1,
+      kong_style: 0,
+    },
+  });
+
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const showToast = (type: 'success' | 'error', text: string) => {
@@ -226,7 +288,7 @@ export default function AdminUserContent() {
 
         setUsers(prev => prev.map(u => u.uid === balanceModal.user!.uid ? { ...u, money: newBalance } : u));
         setBalanceModal({ isOpen: false, user: null, type: 'add', amount: '', memo: '', loading: false });
-        showToast('success', `调整余额成功！当前余额: ${newBalance} MYR`);
+        showToast('success', `调整余额成功！当前余额: ${newBalance} $`);
       } else {
         alert(res?.msg || '调整余额失败');
         setBalanceModal(prev => ({ ...prev, loading: false }));
@@ -353,6 +415,186 @@ export default function AdminUserContent() {
       }
     } catch {
       alert('删除消息失败');
+    }
+  };
+
+  const handleOpenDetailModal = async (user: UserItem) => {
+    setDetailModal({
+      isOpen: true,
+      userItem: user,
+      userDetail: null,
+      banks: [],
+      verify: null,
+      activeTab: 'basic',
+      loading: true,
+      savingUser: false,
+      savingBank: false,
+      isEditingBank: false,
+      bankForm: {
+        type: 'bank',
+        bank_name: '',
+        bank_branch: '',
+        card_number: '',
+        account_holder: user.realName || '',
+        nationality: 'Vietnam',
+        is_default: true,
+      },
+      userForm: {
+        real_name: user.realName || '',
+        phone: user.phone || '',
+        remark: '',
+        credit_score: user.creditScore ?? 100,
+        status: 1,
+        level: 1,
+        kong_style: 0,
+      },
+    });
+
+    try {
+      const res = await adminApi.getUserDetail(user.uid);
+      if (res.code === 1 && res.data) {
+        const u = res.data.user || {};
+        const b = res.data.banks || [];
+        const v = res.data.verify || null;
+        setDetailModal(prev => ({
+          ...prev,
+          loading: false,
+          userDetail: u,
+          banks: b,
+          verify: v,
+          userForm: {
+            real_name: u.real_name || user.realName || '',
+            phone: u.phone || user.phone || '',
+            remark: u.remark || '',
+            credit_score: u.credit_score !== undefined ? Number(u.credit_score) : 100,
+            status: u.status !== undefined ? Number(u.status) : 1,
+            level: u.level !== undefined ? Number(u.level) : 1,
+            kong_style: u.kong_style !== undefined ? Number(u.kong_style) : 0,
+          },
+          bankForm: {
+            type: 'bank',
+            bank_name: '',
+            bank_branch: '',
+            card_number: '',
+            account_holder: u.real_name || user.realName || '',
+            nationality: 'Vietnam',
+            is_default: b.length === 0,
+          },
+        }));
+      } else {
+        setDetailModal(prev => ({ ...prev, loading: false }));
+      }
+    } catch (err: any) {
+      console.error('加载会员详情失败:', err);
+      setDetailModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleSaveUserDetail = async () => {
+    if (!detailModal.userItem) return;
+    try {
+      setDetailModal(prev => ({ ...prev, savingUser: true }));
+      const res = await adminApi.updateUserDetail(detailModal.userItem.uid, detailModal.userForm);
+      if (res.code === 1) {
+        showToast('success', '保存会员信息成功！');
+        setUsers(prev => prev.map(u => u.uid === detailModal.userItem!.uid ? {
+          ...u,
+          realName: detailModal.userForm.real_name,
+          phone: detailModal.userForm.phone,
+          creditScore: detailModal.userForm.credit_score,
+        } : u));
+        setDetailModal(prev => ({ ...prev, savingUser: false }));
+      } else {
+        alert(res?.msg || '保存会员信息失败');
+        setDetailModal(prev => ({ ...prev, savingUser: false }));
+      }
+    } catch (err: any) {
+      alert('保存失败: ' + err.message);
+      setDetailModal(prev => ({ ...prev, savingUser: false }));
+    }
+  };
+
+  const handleStartAddBank = () => {
+    setDetailModal(prev => ({
+      ...prev,
+      isEditingBank: true,
+      bankForm: {
+        bankId: undefined,
+        type: 'bank',
+        bank_name: '',
+        bank_branch: '',
+        card_number: '',
+        account_holder: prev.userForm.real_name || prev.userItem?.realName || '',
+        nationality: 'Vietnam',
+        is_default: prev.banks.length === 0,
+      },
+    }));
+  };
+
+  const handleStartEditBank = (bank: any) => {
+    setDetailModal(prev => ({
+      ...prev,
+      isEditingBank: true,
+      bankForm: {
+        bankId: bank.id,
+        type: bank.type || 'bank',
+        bank_name: bank.bank_name || '',
+        bank_branch: bank.bank_branch || '',
+        card_number: bank.card_number || '',
+        account_holder: bank.account_holder || '',
+        nationality: bank.nationality || 'Vietnam',
+        is_default: Boolean(bank.is_default),
+      },
+    }));
+  };
+
+  const handleSaveBank = async () => {
+    if (!detailModal.userItem) return;
+    if (!detailModal.bankForm.card_number.trim()) {
+      alert('请输入卡号或钱包地址');
+      return;
+    }
+    try {
+      setDetailModal(prev => ({ ...prev, savingBank: true }));
+      const res = await adminApi.saveUserBank(detailModal.userItem.uid, detailModal.bankForm);
+      if (res.code === 1) {
+        showToast('success', detailModal.bankForm.bankId ? '修改银行卡成功！' : '添加银行卡成功！');
+        setDetailModal(prev => ({
+          ...prev,
+          banks: res.data || prev.banks,
+          isEditingBank: false,
+          savingBank: false,
+        }));
+      } else {
+        alert(res?.msg || '保存银行卡失败');
+        setDetailModal(prev => ({ ...prev, savingBank: false }));
+      }
+    } catch (err: any) {
+      alert('保存失败: ' + err.message);
+      setDetailModal(prev => ({ ...prev, savingBank: false }));
+    }
+  };
+
+  const handleDeleteBank = async (bankId: number) => {
+    if (!detailModal.userItem) return;
+    if (!confirm('确定要删除该银行卡/钱包地址吗？')) return;
+    try {
+      const res = await adminApi.saveUserBank(detailModal.userItem.uid, {
+        action: 'delete',
+        bankId,
+      });
+      if (res.code === 1) {
+        showToast('success', '删除银行卡成功！');
+        setDetailModal(prev => ({
+          ...prev,
+          banks: res.data || prev.banks.filter(b => b.id !== bankId),
+          isEditingBank: prev.bankForm.bankId === bankId ? false : prev.isEditingBank,
+        }));
+      } else {
+        alert(res?.msg || '删除失败');
+      }
+    } catch (err: any) {
+      alert('删除失败: ' + err.message);
     }
   };
 
@@ -676,6 +918,8 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-success"
+                              title="查看会员详情及银行卡资料"
+                              onClick={() => handleOpenDetailModal(user)}
                             >
                               <i className="fa fa-list"></i> 详情
                             </button>
@@ -750,7 +994,8 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-success btn-icon-only"
-                              title="编辑"
+                              title="编辑会员详情及银行卡"
+                              onClick={() => handleOpenDetailModal(user)}
                             >
                               <i className="fa fa-pencil"></i>
                             </button>
@@ -890,7 +1135,7 @@ export default function AdminUserContent() {
                 </div>
                 <div className="info-item">
                   <span className="info-label">当前余额:</span>
-                  <strong className="info-value" style={{ color: '#18bc9c' }}>{balanceModal.user.money} MYR</strong>
+                  <strong className="info-value" style={{ color: '#18bc9c' }}>$ {balanceModal.user.money}</strong>
                 </div>
               </div>
 
@@ -921,7 +1166,7 @@ export default function AdminUserContent() {
               </div>
 
               <div className="form-field-group">
-                <label className="field-label">调整金额 (MYR) <span style={{ color: '#e74c3c' }}>*</span></label>
+                <label className="field-label">调整金额 ($) <span style={{ color: '#e74c3c' }}>*</span></label>
                 <input 
                   type="number" 
                   className="modal-input" 
@@ -1285,6 +1530,474 @@ export default function AdminUserContent() {
         </div>
       )}
 
+      {/* Modal 会员详情与银行卡管理 */}
+      {detailModal.isOpen && detailModal.userItem && (
+        <div className="modal-backdrop">
+          <div className="modal-box modal-box-detail">
+            <div className="modal-header">
+              <h3 className="modal-title">
+                <i className="fa fa-id-card-o" style={{ color: '#18bc9c' }}></i>
+                会员详情与资料编辑 - {detailModal.userItem.account} (UID: {detailModal.userItem.uid})
+              </h3>
+              <button 
+                type="button" 
+                className="close-btn"
+                onClick={() => setDetailModal(prev => ({ ...prev, isOpen: false, userItem: null }))}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Subnav Tabs */}
+            <div className="modal-subnav">
+              <button
+                type="button"
+                className={`modal-subnav-tab ${detailModal.activeTab === 'basic' ? 'active' : ''}`}
+                onClick={() => setDetailModal(prev => ({ ...prev, activeTab: 'basic' }))}
+              >
+                <i className="fa fa-user"></i> 基本资料与风控
+              </button>
+              <button
+                type="button"
+                className={`modal-subnav-tab ${detailModal.activeTab === 'bank' ? 'active' : ''}`}
+                onClick={() => setDetailModal(prev => ({ ...prev, activeTab: 'bank' }))}
+              >
+                <i className="fa fa-credit-card"></i> 银行卡 / USDT 地址 ({detailModal.banks.length})
+              </button>
+            </div>
+
+            <div className="modal-body modal-body-scroll">
+              {detailModal.loading ? (
+                <div style={{ padding: '30px 0', textAlign: 'center', color: '#666' }}>
+                  <i className="fa fa-refresh fa-spin mr-2"></i> 正在加载会员资料...
+                </div>
+              ) : detailModal.activeTab === 'basic' ? (
+                <div>
+                  {/* Account Overview Cards */}
+                  <div className="info-badge-row" style={{ flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                    <div className="info-item">
+                      <span className="info-label">会员账号:</span>
+                      <strong className="info-value" style={{ color: '#2c3e50' }}>{detailModal.userItem.account}</strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">UID:</span>
+                      <strong className="info-value">{detailModal.userItem.uid}</strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">现金余额:</span>
+                      <strong className="info-value" style={{ color: '#18bc9c' }}>$ {detailModal.userDetail?.money ?? detailModal.userItem.money}</strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">USDT余额:</span>
+                      <strong className="info-value" style={{ color: '#2980b9' }}>{detailModal.userDetail?.usdt ?? detailModal.userItem.usdtBalance} USDT</strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">冻结资金:</span>
+                      <strong className="info-value" style={{ color: '#e74c3c' }}>$ {detailModal.userDetail?.freeze_funds ?? 0}</strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">实名状态:</span>
+                      <strong className="info-value" style={{ color: detailModal.userDetail?.is_auth === 2 ? '#18bc9c' : '#f39c12' }}>
+                        {detailModal.userDetail?.is_auth === 2 ? '已实名' : detailModal.userDetail?.is_auth === 1 ? '待审核' : '未认证'}
+                      </strong>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">注册IP:</span>
+                      <span className="info-value">{detailModal.userDetail?.reg_ip || '-'}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">注册时间:</span>
+                      <span className="info-value">{detailModal.userDetail?.reg_time || detailModal.userDetail?.created_at || '-'}</span>
+                    </div>
+                  </div>
+
+                  {/* Form fields */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                    <div className="form-field-group">
+                      <label className="field-label">真实姓名</label>
+                      <input
+                        type="text"
+                        className="modal-input"
+                        value={detailModal.userForm.real_name}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, real_name: e.target.value }
+                        }))}
+                        placeholder="输入客户真实姓名"
+                      />
+                    </div>
+
+                    <div className="form-field-group">
+                      <label className="field-label">手机号码</label>
+                      <input
+                        type="text"
+                        className="modal-input"
+                        value={detailModal.userForm.phone}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, phone: e.target.value }
+                        }))}
+                        placeholder="输入客户手机号码"
+                      />
+                    </div>
+
+                    <div className="form-field-group">
+                      <label className="field-label">信用评分 (0-100)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        className="modal-input"
+                        value={detailModal.userForm.credit_score}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, credit_score: Number(e.target.value) }
+                        }))}
+                      />
+                    </div>
+
+                    <div className="form-field-group">
+                      <label className="field-label">账号状态</label>
+                      <select
+                        className="modal-input"
+                        value={detailModal.userForm.status}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, status: Number(e.target.value) }
+                        }))}
+                      >
+                        <option value={1}>正常开启</option>
+                        <option value={0}>已禁用锁定</option>
+                      </select>
+                    </div>
+
+                    <div className="form-field-group">
+                      <label className="field-label">单控风格 (交易胜负)</label>
+                      <select
+                        className="modal-input"
+                        value={detailModal.userForm.kong_style}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, kong_style: Number(e.target.value) }
+                        }))}
+                      >
+                        <option value={0}>自然随机 (平台默认)</option>
+                        <option value={1}>强制必赢 (100%盈利)</option>
+                        <option value={2}>强制必输 (100%亏损)</option>
+                      </select>
+                    </div>
+
+                    <div className="form-field-group">
+                      <label className="field-label">会员等级</label>
+                      <select
+                        className="modal-input"
+                        value={detailModal.userForm.level}
+                        onChange={(e) => setDetailModal(prev => ({
+                          ...prev,
+                          userForm: { ...prev.userForm, level: Number(e.target.value) }
+                        }))}
+                      >
+                        <option value={1}>普通会员</option>
+                        <option value={2}>VIP 银卡会员</option>
+                        <option value={3}>VIP 金卡会员</option>
+                        <option value={4}>VIP 钻石会员</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-field-group" style={{ marginTop: '10px' }}>
+                    <label className="field-label">管理员备注 (内部)</label>
+                    <textarea
+                      className="modal-textarea"
+                      rows={2}
+                      value={detailModal.userForm.remark}
+                      onChange={(e) => setDetailModal(prev => ({
+                        ...prev,
+                        userForm: { ...prev.userForm, remark: e.target.value }
+                      }))}
+                      placeholder="内部管理备注信息..."
+                    />
+                  </div>
+                </div>
+              ) : (
+                /* Tab 2: 银行卡 / USDT 地址管理 */
+                <div>
+                  {detailModal.isEditingBank ? (
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#2c3e50' }}>
+                          <i className="fa fa-pencil-square mr-1"></i>
+                          {detailModal.bankForm.bankId ? '编辑银行卡 / 钱包地址' : '添加新的收款银行卡 / 钱包地址'}
+                        </h4>
+                        <button
+                          type="button"
+                          className="btn btn-default btn-xs"
+                          onClick={() => setDetailModal(prev => ({ ...prev, isEditingBank: false }))}
+                        >
+                          返回列表
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                        <div className="form-field-group">
+                          <label className="field-label">账户类型 <span style={{ color: '#e74c3c' }}>*</span></label>
+                          <select
+                            className="modal-input"
+                            value={detailModal.bankForm.type}
+                            onChange={(e) => setDetailModal(prev => ({
+                              ...prev,
+                              bankForm: { ...prev.bankForm, type: e.target.value as any }
+                            }))}
+                          >
+                            <option value="bank">银行卡 (Bank Card)</option>
+                            <option value="usdt_trc20">USDT (TRC20)</option>
+                            <option value="usdt_erc20">USDT (ERC20)</option>
+                          </select>
+                        </div>
+
+                        <div className="form-field-group">
+                          <label className="field-label">
+                            {detailModal.bankForm.type === 'bank' ? '开户银行名称' : '网络协议'} <span style={{ color: '#e74c3c' }}>*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="modal-input"
+                            value={detailModal.bankForm.bank_name}
+                            onChange={(e) => setDetailModal(prev => ({
+                              ...prev,
+                              bankForm: { ...prev.bankForm, bank_name: e.target.value }
+                            }))}
+                            placeholder={detailModal.bankForm.type === 'bank' ? "例如: Vietcombank, ICBC..." : "TRC20 / ERC20"}
+                          />
+                        </div>
+
+                        <div className="form-field-group">
+                          <label className="field-label">开户人姓名 <span style={{ color: '#e74c3c' }}>*</span></label>
+                          <input
+                            type="text"
+                            className="modal-input"
+                            value={detailModal.bankForm.account_holder}
+                            onChange={(e) => setDetailModal(prev => ({
+                              ...prev,
+                              bankForm: { ...prev.bankForm, account_holder: e.target.value }
+                            }))}
+                            placeholder="持卡人姓名"
+                          />
+                        </div>
+
+                        <div className="form-field-group">
+                          <label className="field-label">开户支行 / 备注</label>
+                          <input
+                            type="text"
+                            className="modal-input"
+                            value={detailModal.bankForm.bank_branch}
+                            onChange={(e) => setDetailModal(prev => ({
+                              ...prev,
+                              bankForm: { ...prev.bankForm, bank_branch: e.target.value }
+                            }))}
+                            placeholder="例如: 河内分行 / 无"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-field-group" style={{ marginTop: '10px' }}>
+                        <label className="field-label">
+                          {detailModal.bankForm.type === 'bank' ? '银行卡号' : 'USDT 钱包地址'} <span style={{ color: '#e74c3c' }}>*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="modal-input"
+                          style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '14px' }}
+                          value={detailModal.bankForm.card_number}
+                          onChange={(e) => setDetailModal(prev => ({
+                            ...prev,
+                            bankForm: { ...prev.bankForm, card_number: e.target.value }
+                          }))}
+                          placeholder={detailModal.bankForm.type === 'bank' ? "输入银行卡账号" : "输入以T或0x开头的钱包地址"}
+                        />
+                      </div>
+
+                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="checkbox"
+                          id="is_default_check"
+                          checked={detailModal.bankForm.is_default}
+                          onChange={(e) => setDetailModal(prev => ({
+                            ...prev,
+                            bankForm: { ...prev.bankForm, is_default: e.target.checked }
+                          }))}
+                        />
+                        <label htmlFor="is_default_check" style={{ fontSize: '13px', color: '#475569', cursor: 'pointer', margin: 0 }}>
+                          设为默认提现账户
+                        </label>
+                      </div>
+
+                      <div style={{ marginTop: '16px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <button
+                          type="button"
+                          className="btn btn-default"
+                          onClick={() => setDetailModal(prev => ({ ...prev, isEditingBank: false }))}
+                        >
+                          取消
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          disabled={detailModal.savingBank}
+                          onClick={handleSaveBank}
+                        >
+                          {detailModal.savingBank ? (
+                            <>
+                              <i className="fa fa-spinner fa-spin mr-1"></i> 保存中...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fa fa-check mr-1"></i> 保存账户信息
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                        <span style={{ fontSize: '13px', color: '#64748b' }}>
+                          当前已绑定 <strong style={{ color: '#2c3e50' }}>{detailModal.banks.length}</strong> 个提现账户
+                        </span>
+                        <button
+                          type="button"
+                          className="btn btn-success btn-sm"
+                          onClick={handleStartAddBank}
+                        >
+                          <i className="fa fa-plus mr-1"></i> 添加银行卡 / USDT
+                        </button>
+                      </div>
+
+                      {detailModal.banks.length === 0 ? (
+                        <div style={{ padding: '30px 0', textAlign: 'center', color: '#94a3b8', background: '#f8fafc', borderRadius: '8px', border: '1px dashed #cbd5e1' }}>
+                          <i className="fa fa-credit-card" style={{ fontSize: '28px', color: '#cbd5e1', marginBottom: '8px', display: 'block' }}></i>
+                          该客户尚未绑定任何银行卡或USDT钱包地址
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {detailModal.banks.map((b: any) => (
+                            <div
+                              key={b.id}
+                              style={{
+                                background: '#fff',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '8px',
+                                padding: '14px 16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: '12px',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                              }}
+                            >
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                                  <span
+                                    className="badge"
+                                    style={{
+                                      backgroundColor: b.type === 'bank' ? '#3498db' : '#16a085',
+                                      color: '#fff',
+                                      fontSize: '11px',
+                                      padding: '2px 8px',
+                                      borderRadius: '4px',
+                                    }}
+                                  >
+                                    {b.type === 'bank' ? '银行卡' : b.type?.toUpperCase()}
+                                  </span>
+                                  {Boolean(b.is_default) && (
+                                    <span
+                                      className="badge"
+                                      style={{
+                                        backgroundColor: '#f39c12',
+                                        color: '#fff',
+                                        fontSize: '11px',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                      }}
+                                    >
+                                      默认
+                                    </span>
+                                  )}
+                                  <strong style={{ fontSize: '14px', color: '#1e293b' }}>
+                                    {b.bank_name || (b.type === 'bank' ? '银行' : 'USDT')}
+                                  </strong>
+                                </div>
+
+                                <div style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 600, color: '#2563eb', marginBottom: '4px' }}>
+                                  {b.card_number}
+                                </div>
+
+                                <div style={{ fontSize: '12px', color: '#64748b', display: 'flex', gap: '14px' }}>
+                                  <span><i className="fa fa-user mr-1"></i> 开户人: <strong>{b.account_holder || '-'}</strong></span>
+                                  {b.bank_branch && <span><i className="fa fa-building mr-1"></i> 开户行: {b.bank_branch}</span>}
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <button
+                                  type="button"
+                                  className="btn btn-default btn-xs"
+                                  title="修改"
+                                  onClick={() => handleStartEditBank(b)}
+                                >
+                                  <i className="fa fa-pencil mr-1"></i> 修改
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger btn-xs"
+                                  title="删除"
+                                  onClick={() => handleDeleteBank(b.id)}
+                                >
+                                  <i className="fa fa-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button 
+                type="button" 
+                className="btn btn-default"
+                onClick={() => setDetailModal(prev => ({ ...prev, isOpen: false, userItem: null }))}
+              >
+                关闭
+              </button>
+
+              {detailModal.activeTab === 'basic' && (
+                <button 
+                  type="button" 
+                  className="btn btn-success"
+                  disabled={detailModal.savingUser}
+                  onClick={handleSaveUserDetail}
+                >
+                  {detailModal.savingUser ? (
+                    <>
+                      <i className="fa fa-spinner fa-spin mr-1"></i> 保存中...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa fa-check mr-1"></i> 保存基本资料
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         /* Modal Popup Styles */
         .modal-backdrop {
@@ -1311,6 +2024,20 @@ export default function AdminUserContent() {
 
         .modal-box-large {
           max-width: 580px;
+        }
+
+        .modal-box-detail {
+          max-width: 680px;
+          width: 95%;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .modal-body-scroll {
+          overflow-y: auto;
+          max-height: calc(90vh - 120px);
+          padding: 16px 20px;
         }
 
         .modal-subnav {

@@ -164,10 +164,10 @@ async function adjustScore(req, res) {
     );
 
     // Ghi sổ cái fa_user_money_log
-    const actionMemo = memo || (type === 'add' ? `管理员加款: +${numAmount}` : `管理员扣款: -${numAmount}`);
+    const actionMemo = memo || (type === 'add' ? `充值入金: +${numAmount}` : `扣除资金: -${numAmount}`);
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'MYR', 'admin_adjust', ?, ?, ?, ?, NOW())`,
+       VALUES (?, 'USD', 'admin_adjust', ?, ?, ?, ?, NOW())`,
       [rawUserId, diffMoney, currentMoney, newMoney, actionMemo]
     );
 
@@ -447,6 +447,168 @@ async function deleteMessage(req, res) {
   }
 }
 
+/**
+ * Thêm / Sửa / Xóa thẻ ngân hàng / ví USDT của hội viên (Admin)
+ * Route: POST /api/admin/user/:id/bank
+ */
+async function saveUserBank(req, res) {
+  try {
+    const userId = Number(req.params.id);
+    if (!userId) {
+      return error(res, 'ID hội viên không hợp lệ');
+    }
+
+    const { action, bankId, type = 'bank', bank_name, bank_branch, card_number, account_holder, nationality, is_default } = req.body;
+
+    if (action === 'delete') {
+      if (!bankId) return error(res, 'Vui lòng cung cấp ID ngân hàng cần xóa');
+      await pool.query('DELETE FROM fa_user_bank WHERE id = ? AND user_id = ?', [bankId, userId]);
+
+      // Ghi log quản trị
+      await pool.query(
+        `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
+         VALUES (?, ?, '/api/admin/user/bank/delete', '删除会员银行卡', ?, ?, NOW())`,
+        [
+          req.admin?.id || 1,
+          req.admin?.username || 'admin',
+          JSON.stringify({ userId, bankId }),
+          req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+        ]
+      );
+    } else if (bankId) {
+      // Sửa thẻ ngân hàng / ví hiện có
+      if (!card_number || !String(card_number).trim()) {
+        return error(res, 'Vui lòng nhập số tài khoản hoặc địa chỉ ví');
+      }
+      await pool.query(
+        `UPDATE fa_user_bank 
+         SET type = ?, bank_name = ?, bank_branch = ?, card_number = ?, account_holder = ?, nationality = ?, is_default = ?
+         WHERE id = ? AND user_id = ?`,
+        [
+          type,
+          bank_name || '',
+          bank_branch || '',
+          String(card_number).trim(),
+          (account_holder || '').trim(),
+          nationality || 'Vietnam',
+          is_default ? 1 : 0,
+          bankId,
+          userId,
+        ]
+      );
+
+      // Ghi log quản trị
+      await pool.query(
+        `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
+         VALUES (?, ?, '/api/admin/user/bank/edit', '修改会员银行卡', ?, ?, NOW())`,
+        [
+          req.admin?.id || 1,
+          req.admin?.username || 'admin',
+          JSON.stringify({ userId, bankId, type, card_number, bank_name }),
+          req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+        ]
+      );
+    } else {
+      // Thêm thẻ ngân hàng / ví mới
+      if (!card_number || !String(card_number).trim()) {
+        return error(res, 'Vui lòng nhập số tài khoản hoặc địa chỉ ví');
+      }
+      const [insertResult] = await pool.query(
+        `INSERT INTO fa_user_bank (user_id, type, bank_name, bank_branch, card_number, account_holder, nationality, is_default, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        [
+          userId,
+          type,
+          bank_name || '',
+          bank_branch || '',
+          String(card_number).trim(),
+          (account_holder || '').trim(),
+          nationality || 'Vietnam',
+          is_default ? 1 : 0,
+        ]
+      );
+
+      // Ghi log quản trị
+      await pool.query(
+        `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
+         VALUES (?, ?, '/api/admin/user/bank/add', '添加会员银行卡', ?, ?, NOW())`,
+        [
+          req.admin?.id || 1,
+          req.admin?.username || 'admin',
+          JSON.stringify({ userId, bankId: insertResult.insertId, type, card_number, bank_name }),
+          req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+        ]
+      );
+    }
+
+    const [banks] = await pool.query('SELECT * FROM fa_user_bank WHERE user_id = ? ORDER BY is_default DESC, id DESC', [userId]);
+    return success(res, 'Cập nhật tài khoản ngân hàng thành công', banks);
+  } catch (err) {
+    return error(res, 'Lỗi cập nhật ngân hàng: ' + err.message);
+  }
+}
+
+/**
+ * Cập nhật thông tin cơ bản hội viên
+ * Route: POST /api/admin/user/:id/update
+ */
+async function updateUserDetail(req, res) {
+  try {
+    const userId = Number(req.params.id);
+    if (!userId) {
+      return error(res, 'ID hội viên không hợp lệ');
+    }
+
+    const { real_name, phone, remark, status, level, credit_score, kong_style } = req.body;
+    const updates = [];
+    const params = [];
+
+    if (real_name !== undefined) {
+      updates.push('real_name = ?');
+      params.push(String(real_name).trim());
+    }
+    if (phone !== undefined) {
+      updates.push('phone = ?');
+      params.push(String(phone).trim());
+    }
+    if (remark !== undefined) {
+      updates.push('remark = ?');
+      params.push(String(remark));
+    }
+    if (status !== undefined) {
+      updates.push('status = ?');
+      params.push(Number(status));
+    }
+    if (level !== undefined) {
+      updates.push('level = ?');
+      params.push(Number(level));
+    }
+    if (credit_score !== undefined) {
+      updates.push('credit_score = ?');
+      params.push(Math.max(0, Math.min(100, Math.round(Number(credit_score)))));
+    }
+    if (kong_style !== undefined) {
+      updates.push('kong_style = ?');
+      params.push(Number(kong_style));
+    }
+
+    if (updates.length > 0) {
+      params.push(userId);
+      await pool.query(`UPDATE fa_user SET ${updates.join(', ')} WHERE id = ?`, params);
+    }
+
+    const [users] = await pool.query('SELECT * FROM fa_user WHERE id = ?', [userId]);
+    if (users.length > 0) {
+      delete users[0].password;
+      delete users[0].mpassword;
+    }
+
+    return success(res, 'Cập nhật thông tin hội viên thành công', users[0] || null);
+  } catch (err) {
+    return error(res, 'Lỗi cập nhật hội viên: ' + err.message);
+  }
+}
+
 module.exports = {
   getUsers,
   getUserDetail,
@@ -456,4 +618,6 @@ module.exports = {
   sendMessage,
   getUserMessagesForAdmin,
   deleteMessage,
+  saveUserBank,
+  updateUserDetail,
 };

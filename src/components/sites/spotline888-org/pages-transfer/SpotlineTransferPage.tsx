@@ -13,12 +13,12 @@ function SpotlineTransferContent() {
   const t =
     TRANSFER_TRANSLATIONS[currentLang] || TRANSFER_TRANSLATIONS["zh-CN"];
 
-  const [direction, setDirection] = useState<"myrToUsdt" | "usdtToMyr">(
-    "myrToUsdt"
+  const [direction, setDirection] = useState<"usdToUsdt" | "usdtToUsd">(
+    "usdToUsdt"
   );
   const [myrBalance, setMyrBalance] = useState(0.0);
   const [usdtBalance, setUsdtBalance] = useState(0.0);
-  const [rate, setRate] = useState(4.07);
+  const [rate, setRate] = useState(1.0);
   const [amount, setAmount] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ function SpotlineTransferContent() {
         setUsdtBalance(parseFloat(profRes.data.usdt || "0"));
       }
       if (rateRes.code === 1 && rateRes.data) {
-        setRate(parseFloat(rateRes.data.rate || "4.07"));
+        setRate(parseFloat(rateRes.data.rate || "1.0"));
       }
     } catch (err) {
       console.error("Lỗi nạp số dư đổi tiền:", err);
@@ -51,8 +51,8 @@ function SpotlineTransferContent() {
   };
 
   const currentAvailable =
-    direction === "myrToUsdt" ? myrBalance : usdtBalance;
-  const currentUnit = direction === "myrToUsdt" ? "RM" : "USDT";
+    direction === "usdToUsdt" ? myrBalance : usdtBalance;
+  const currentUnit = direction === "usdToUsdt" ? "$" : "USDT";
 
   const handleAll = () => {
     setAmount(currentAvailable.toFixed(2));
@@ -71,11 +71,12 @@ function SpotlineTransferContent() {
 
     try {
       setLoading(true);
-      const fromCurrency = direction === "myrToUsdt" ? "MYR" : "USDT";
-      const toCurrency = direction === "myrToUsdt" ? "USDT" : "MYR";
+      const fromCurrency = direction === "usdToUsdt" ? "USD" : "USDT";
+      const toCurrency = direction === "usdToUsdt" ? "USDT" : "USD";
       const res = await exchangeApi.swap({
         fromCurrency,
         toCurrency,
+        direction,
         amount: val,
       });
 
@@ -119,17 +120,17 @@ function SpotlineTransferContent() {
 
         {/* Top 2 Balance Cards */}
         <div className="grid grid-cols-2 gap-3 mb-3">
-          {/* MYR Balance */}
+          {/* USD Balance */}
           <div className="bg-white rounded-[14px] p-3.5 shadow-[0_3px_12px_rgba(15,23,42,0.06)] flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#f59e0b] text-white flex items-center justify-center font-bold text-[15px] shrink-0">
-              ₮
+            <div className="w-9 h-9 rounded-full bg-[#f59e0b] text-white flex items-center justify-center font-bold text-[16px] shrink-0">
+              $
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] text-[#9ca3af] truncate">
                 {t.myrBalanceTitle}
               </span>
               <span className="text-[14.5px] font-bold text-[#111827] leading-tight mt-0.5">
-                RM{myrBalance.toFixed(2)}
+                ${myrBalance.toFixed(2)}
               </span>
             </div>
           </div>
@@ -156,18 +157,18 @@ function SpotlineTransferContent() {
             {t.transferDirection}
           </label>
           <div className="grid grid-cols-2 gap-2.5">
-            {/* MYR -> USDT */}
+            {/* USD -> USDT */}
             <button
               type="button"
-              onClick={() => setDirection("myrToUsdt")}
+              onClick={() => setDirection("usdToUsdt")}
               className={`p-3 rounded-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer border ${
-                direction === "myrToUsdt"
+                direction === "usdToUsdt"
                   ? "border-[#4f46e5] bg-[#eef2ff] text-[#4f46e5] font-semibold shadow-sm"
                   : "border-gray-200/80 bg-[#f8fafc] text-[#475569] hover:bg-gray-100"
               }`}
             >
-              <span className="text-[12.5px] leading-tight text-center">
-                Malaysian Ringgit
+              <span className="text-[12.5px] leading-tight text-center font-semibold">
+                USD ($)
               </span>
               <div className="w-5 h-5 rounded-full bg-[#4f46e5] text-white flex items-center justify-center shrink-0">
                 <ArrowRight className="w-3 h-3" />
@@ -175,12 +176,12 @@ function SpotlineTransferContent() {
               <span className="text-[12.5px] font-bold">USDT</span>
             </button>
 
-            {/* USDT -> MYR */}
+            {/* USDT -> USD */}
             <button
               type="button"
-              onClick={() => setDirection("usdtToMyr")}
+              onClick={() => setDirection("usdtToUsd")}
               className={`p-3 rounded-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer border ${
-                direction === "usdtToMyr"
+                direction === "usdtToUsd"
                   ? "border-[#4f46e5] bg-[#eef2ff] text-[#4f46e5] font-semibold shadow-sm"
                   : "border-gray-200/80 bg-[#f8fafc] text-[#475569] hover:bg-gray-100"
               }`}
@@ -189,8 +190,8 @@ function SpotlineTransferContent() {
               <div className="w-5 h-5 rounded-full bg-gray-300 text-white flex items-center justify-center shrink-0">
                 <ArrowRight className="w-3 h-3" />
               </div>
-              <span className="text-[12.5px] leading-tight text-center">
-                Malaysian Ringgit
+              <span className="text-[12.5px] leading-tight text-center font-semibold">
+                USD ($)
               </span>
             </button>
           </div>
@@ -215,8 +216,7 @@ function SpotlineTransferContent() {
           </div>
           <div className="flex items-center justify-between pt-3">
             <span className="text-[12.5px] text-[#64748b]">
-              {t.availableAmount}: {currentUnit}
-              {currentAvailable.toFixed(2)}
+              {t.availableAmount}: {currentUnit === "$" ? "$" : ""}{currentAvailable.toFixed(2)}{currentUnit === "USDT" ? " USDT" : ""}
             </span>
             <button
               type="button"
@@ -232,7 +232,7 @@ function SpotlineTransferContent() {
         <div className="bg-white rounded-[14px] px-4 py-3.5 shadow-[0_4px_16px_rgba(15,23,42,0.06)] flex items-center justify-between mb-6">
           <span className="text-[13px] text-[#64748b]">{t.currentRate}</span>
           <span className="text-[14px] font-bold text-[#2563eb]">
-            1 USDT = RM4.07
+            1 USDT = ${rate.toFixed(2)}
           </span>
         </div>
 

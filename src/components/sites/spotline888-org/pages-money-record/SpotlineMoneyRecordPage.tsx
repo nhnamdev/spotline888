@@ -4,12 +4,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
-import { MONEY_RECORD_TRANSLATIONS } from "./moneyRecordI18n";
+import { MONEY_RECORD_TRANSLATIONS, formatFundRecordMemo } from "./moneyRecordI18n";
 import { withdrawApi } from "@/lib/api";
 
 interface RecordItem {
   id: number;
-  title: string;
+  rawMemo: string;
+  type?: string;
   time: string;
   amount: string;
 }
@@ -33,7 +34,8 @@ function SpotlineMoneyRecordContent() {
         if (Array.isArray(rows)) {
           const mapped: RecordItem[] = rows.map((r: any) => ({
             id: r.id,
-            title: r.memo || (r.type === 'recharge' ? 'Recharge' : 'Withdrawal'),
+            rawMemo: r.memo || '',
+            type: r.type,
             time: r.created_at ? new Date(r.created_at).toISOString().slice(0, 19).replace('T', ' ') : '-',
             amount: `${parseFloat(r.money || '0') >= 0 ? '+' : ''}${parseFloat(r.money || '0').toFixed(2)}`,
           }));
@@ -78,24 +80,28 @@ function SpotlineMoneyRecordContent() {
             </div>
           ) : (
             <>
-              {records.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-[14px] p-4 shadow-[0_3px_12px_rgba(15,23,42,0.06)] flex items-center justify-between"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-[14.5px] font-medium text-[#1e293b]">
-                      {item.title}
-                    </span>
-                    <span className="text-[12px] text-[#9ca3af] mt-1 font-normal">
-                      {item.time}
+              {records.map((item) => {
+                const displayTitle = formatFundRecordMemo(item.rawMemo, currentLang) || 
+                  (item.type === 'recharge' ? 'Recharge' : 'Withdrawal');
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-[14px] p-4 shadow-[0_3px_12px_rgba(15,23,42,0.06)] flex items-center justify-between"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-[14.5px] font-medium text-[#1e293b]">
+                        {displayTitle}
+                      </span>
+                      <span className="text-[12px] text-[#9ca3af] mt-1 font-normal">
+                        {item.time}
+                      </span>
+                    </div>
+                    <span className="text-[15px] font-semibold text-[#10b981]">
+                      {item.amount}
                     </span>
                   </div>
-                  <span className="text-[15px] font-semibold text-[#10b981]">
-                    {item.amount}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
 
               <div className="text-center py-6 text-[12.5px] text-[#9ca3af]">
                 {t.noMore}

@@ -75,8 +75,8 @@ async function getUserMessages(req, res) {
     if (rows.length === 0) {
       await pool.query(
         `INSERT INTO fa_message (user_id, title, content, is_read, created_at) VALUES 
-         (?, '欢迎来到SPOT', '欢迎来到SPOT！感谢您选择我们的平台。如果您有任何疑问，请随时联系在线客服。', 0, NOW()),
-         (?, '安全提醒', '安全提醒：切勿向任何人透露您的登录密码或提现资金密码。', 1, NOW())`,
+         (?, 'Welcome to SPOT', 'Welcome to SPOT! Thank you for choosing our platform. If you have any questions, please feel free to contact online customer service.', 0, NOW()),
+         (?, 'Security Reminder', 'Security Reminder: Do not disclose your login password or withdrawal fund password to anyone.', 1, NOW())`,
         [userId, userId]
       );
       const [seeded] = await pool.query(

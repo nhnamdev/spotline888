@@ -17,9 +17,9 @@ export default function AdminGeneralConfigContent() {
   // Form states for all tabs
   const [basicForm, setBasicForm] = useState<Record<string, any>>({
     default_frontend_lang: "zh-CN",
-    currency_code: "MYR",
-    currency_short: "RM",
-    currency_name: "Malaysian Ringgit",
+    currency_code: "USD",
+    currency_short: "$",
+    currency_name: "US Dollar",
     enabled_langs: "zh-CN",
     currency_icon: "",
     name: "Spotline",

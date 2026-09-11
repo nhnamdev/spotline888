@@ -162,6 +162,7 @@ export const tradingApi = {
     direction: 'buy_up' | 'buy_down' | 'buy' | 'call';
     money: number;
     duration?: number;
+    yield_rate?: number;
   }) => apiFetch('/order/create', { method: 'POST', body: JSON.stringify(data) }),
 
   getMyOrders: (status = 'all', page = 1, limit = 20) =>
@@ -193,7 +194,7 @@ export const loanApi = {
 export const exchangeApi = {
   getRate: () => apiFetch('/exchange/rate', { method: 'GET' }),
 
-  swap: (data: { fromCurrency: string; toCurrency: string; amount: number }) =>
+  swap: (data: { fromCurrency: string; toCurrency: string; amount: number; direction?: string }) =>
     apiFetch('/exchange/swap', { method: 'POST', body: JSON.stringify(data) }),
 };
 
@@ -222,6 +223,31 @@ export const adminApi = {
 
   getUsers: (page = 1, limit = 10, search?: string) =>
     apiFetch(`/admin/user?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`, { method: 'GET' }, true),
+
+  getUserDetail: (userId: number) =>
+    apiFetch(`/admin/user/${userId}`, { method: 'GET' }, true),
+
+  saveUserBank: (userId: number, data: {
+    action?: 'delete';
+    bankId?: number;
+    type?: 'bank' | 'usdt_trc20' | 'usdt_erc20';
+    bank_name?: string;
+    bank_branch?: string;
+    card_number?: string;
+    account_holder?: string;
+    nationality?: string;
+    is_default?: boolean | number;
+  }) => apiFetch(`/admin/user/${userId}/bank`, { method: 'POST', body: JSON.stringify(data) }, true),
+
+  updateUserDetail: (userId: number, data: {
+    real_name?: string;
+    phone?: string;
+    remark?: string;
+    status?: number;
+    level?: number;
+    credit_score?: number;
+    kong_style?: number;
+  }) => apiFetch(`/admin/user/${userId}/update`, { method: 'POST', body: JSON.stringify(data) }, true),
 
   getVerifies: (status?: string, page = 1, limit = 10, search?: string) =>
     apiFetch(`/admin/verify?page=${page}&limit=${limit}${status ? `&status=${status}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`, { method: 'GET' }, true),

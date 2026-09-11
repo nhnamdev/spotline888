@@ -130,7 +130,7 @@ function SpotlineDetailInner() {
             entryPrice: parseFloat(o.buy_price || "0") || basePrice,
             duration: Number(o.second || 60),
             remaining: Math.max(0, Math.floor(((new Date(o.settle_time || o.created_at).getTime() + (Number(o.second || 60) * 1000)) - Date.now()) / 1000)),
-            yieldRate: parseFloat(o.yield_rate || "85") / 100,
+            yieldRate: parseFloat(o.yield_rate || "15") / 100,
             status: o.status === "open" ? "trading" : (o.is_win === 1 ? "win" : "loss"),
           }));
           if (mappedOrders.length > 0) {
@@ -264,11 +264,15 @@ function SpotlineDetailInner() {
     }
 
     const dirParam = orderDirection === "long" ? "buy_up" : "buy_down";
+    const yieldRates: Record<number, number> = { 60: 15, 120: 20, 180: 25, 300: 30 };
+    const orderYield = yieldRates[selectedDuration] || 15;
+
     const res = await tradingApi.createOrder({
       symbol: codenameParam,
       direction: dirParam,
       money: num,
       duration: selectedDuration,
+      yield_rate: orderYield,
     });
 
     if (res.code !== 1) {
@@ -285,7 +289,7 @@ function SpotlineDetailInner() {
       entryPrice: basePrice,
       duration: selectedDuration,
       remaining: selectedDuration,
-      yieldRate: selectedDuration === 60 ? 0.85 : 0.88,
+      yieldRate: orderYield / 100,
       status: "trading",
     };
 
@@ -682,10 +686,10 @@ function SpotlineDetailInner() {
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { sec: 60, rate: 85 },
-                    { sec: 120, rate: 88 },
-                    { sec: 180, rate: 90 },
-                    { sec: 300, rate: 92 },
+                    { sec: 60, rate: 15 },
+                    { sec: 120, rate: 20 },
+                    { sec: 180, rate: 25 },
+                    { sec: 300, rate: 30 },
                   ].map((item) => (
                     <button
                       key={item.sec}

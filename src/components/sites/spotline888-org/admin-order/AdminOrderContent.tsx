@@ -67,7 +67,7 @@ export default function AdminOrderContent() {
           sellPrice: String(row.sell_price || 0),
           buyTime: row.buy_time ? String(row.buy_time).replace('T', ' ').substring(0, 19) : '',
           sellTime: row.sell_time ? String(row.sell_time).replace('T', ' ').substring(0, 19) : '',
-          type: row.duration ? `${row.duration}/${row.yield_rate || 85}%` : (row.type_desc || '60/85%'),
+          type: row.duration ? `${row.duration}/${row.yield_rate || 15}%` : (row.type_desc || '60/15%'),
           ploss: parseFloat(row.ploss || 0).toFixed(0),
           kongType: (row.kong_type || 'default') as "default" | "win" | "loss" | "closed",
           isSelectKongType: row.status === 'holding',

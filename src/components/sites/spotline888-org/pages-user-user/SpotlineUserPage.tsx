@@ -79,9 +79,12 @@ function SpotlineUserPageContent() {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
+        const storedMoney = parsed.usdt_money || parsed.money || "0.00";
         setUserInfo((prev) => ({
           ...prev,
           ...parsed,
+          money: storedMoney,
+          usdt_money: storedMoney,
         }));
       }
     } catch {}
@@ -92,12 +95,13 @@ function SpotlineUserPageContent() {
         const res = await authApi.getProfile();
         if (res.code === 1 && res.data) {
           const u = res.data;
+          const liveBalance = parseFloat(u.usdt ?? u.money ?? "0").toFixed(2);
           const updatedUser: UserInfoData = {
             username: u.username || u.account || "ak111",
             real_name: u.real_name || "Chưa xác minh",
             credit_score: u.credit_score ?? 100,
-            money: parseFloat(u.money || "0").toFixed(2),
-            usdt_money: parseFloat(u.usdt || "0").toFixed(2),
+            money: liveBalance,
+            usdt_money: liveBalance,
             yk: "0.00",
             yk_today: "0.00",
             user_avatar: u.avatar || USER_ICONS.avatar,
@@ -363,16 +367,12 @@ function SpotlineUserPageContent() {
             <div className="normal">
               {/* Top Block: Total Assets */}
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <div className="text-xs">
-                  {t.totalAssets}({t.currencyCode})
+                <div className="text-xs font-medium text-[#4b5563]">
+                  {t.totalAssets}($)
                 </div>
-                <div className="pice">
-                  <span className="unit">{t.currencySymbol}</span>
-                  {totalAssets}
-                </div>
-                <div className="mt-sm">
-                  <span>≈</span>
-                  <div className="unit">{userInfo.usdt_money}USDT</div>
+                <div className="pice" style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
+                  <span className="unit font-semibold text-[16px] text-[#111827]">$</span>
+                  <span>{totalAssets}</span>
                 </div>
               </div>
 
@@ -390,10 +390,10 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size" style={{ whiteSpace: "nowrap" }}>
-                    {t.yuebaoTotal}
+                    {t.yuebaoTotal}($ )
                   </div>
                   <div className="big-size">
-                    {yuebaoData.all_money || "0.00"}
+                    ${yuebaoData.all_money || "0.00"}
                   </div>
                 </div>
 
@@ -407,7 +407,7 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size">{t.accountPL}</div>
-                  <div className="big-size">{userInfo.yk || "0.00"}</div>
+                  <div className="big-size">${userInfo.yk || "0.00"}</div>
                 </div>
 
                 {/* Col 3: Today's P&L */}
@@ -419,19 +419,15 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size">{t.todayPL}</div>
-                  <div className="big-size">{userInfo.yk_today || "0.00"}</div>
+                  <div className="big-size">${userInfo.yk_today || "0.00"}</div>
                 </div>
               </div>
 
-              {/* Currency Position Flag/Icon on top right */}
-              <div className="tui-position">
-                <img
-                  src={currencyIcon || USER_ICONS.cny}
-                  alt={t.currencyCode}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = USER_ICONS.cny;
-                  }}
-                />
+              {/* Currency Position Badge on top right */}
+              <div className="tui-position" style={{ width: "auto", height: "auto" }}>
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-50/90 border border-blue-200/60 shadow-xs text-blue-600 font-bold text-sm">
+                  $
+                </div>
               </div>
             </div>
           </div>
@@ -441,12 +437,11 @@ function SpotlineUserPageContent() {
             {/* Available Balance */}
             <div className="tui-spendMoneyItem">
               <div className="cny">
-                {t.availableBalance}
-                {t.currencySymbol}
+                {t.availableBalance}$
               </div>
-              <div className="pice">
-                {t.currencySymbol}
-                {userInfo.money}
+              <div className="pice" style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
+                <span style={{ fontSize: "14px", fontWeight: "600", color: "#111827" }}>$</span>
+                <span>{userInfo.money}</span>
               </div>
             </div>
 

@@ -122,6 +122,8 @@ router.get('/admin/dashboard/stats', adminAuthMiddleware, adminDashboardControll
 // Quản lý Hội viên
 router.get('/admin/user', adminAuthMiddleware, adminUserController.getUsers);
 router.get('/admin/user/:id', adminAuthMiddleware, adminUserController.getUserDetail);
+router.post('/admin/user/:id/bank', adminAuthMiddleware, adminUserController.saveUserBank);
+router.post('/admin/user/:id/update', adminAuthMiddleware, adminUserController.updateUserDetail);
 // Điều chỉnh số dư tiền mặt (上下分)
 router.post('/admin/user/score', adminAuthMiddleware, adminUserController.adjustScore);
 router.post('/admin/user/balance', adminAuthMiddleware, adminUserController.adjustScore);

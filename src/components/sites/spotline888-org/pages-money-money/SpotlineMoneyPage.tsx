@@ -158,7 +158,7 @@ function SpotlineMoneyPageContent() {
       ctx.textAlign = "center";
       const labelFontSize = Math.max(11, Math.round(rpxToPx(24, a * (750 / 630))));
       ctx.font = `500 ${labelFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-      ctx.fillText(tMoney.totalBalanceLabel, r, A - rpxToPx(120, a * (750 / 630)));
+      ctx.fillText(tMoney.totalBalanceLabel + " (USDT)", r, A - rpxToPx(120, a * (750 / 630)));
 
       // 4. Center Number: Amount (all_money)
       ctx.fillStyle = "#000000";
@@ -608,7 +608,7 @@ function SpotlineMoneyPageContent() {
                 draggable={false}
               />
               <div className="title oneLine">{tMoney.confirmedShares}</div>
-              <div className="desc">{Number(pageData.yue_start_money).toFixed(2)}</div>
+              <div className="desc">{Number(pageData.yue_start_money).toFixed(2)} USDT</div>
             </div>
 
             {/* Item 2: Pending Shares (b11b / product.dqrfe / show when gradItem > 3) */}
@@ -620,7 +620,7 @@ function SpotlineMoneyPageContent() {
                 draggable={false}
               />
               <div className="title oneLine">{tMoney.pendingShares}</div>
-              <div className="desc">{Number(pageData.yue_stop_money).toFixed(2)}</div>
+              <div className="desc">{Number(pageData.yue_stop_money).toFixed(2)} USDT</div>
             </div>
 
             {/* Item 3: Earnings (22c4 / product.sy / show when gradItem > 2) */}
@@ -632,7 +632,7 @@ function SpotlineMoneyPageContent() {
                 draggable={false}
               />
               <div className="title oneLine">{tMoney.earnings}</div>
-              <div className="desc">{Number(pageData.sy).toFixed(2)}</div>
+              <div className="desc">{Number(pageData.sy).toFixed(2)} USDT</div>
             </div>
 
             {/* Item 4: Yield Rate (3efdb / product.syl / show when gradItem > 2) */}

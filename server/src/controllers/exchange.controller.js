@@ -8,7 +8,7 @@ const { success, error } = require('../utils/response');
 async function getExchangeRate(req, res) {
   try {
     const [configs] = await pool.query("SELECT value FROM fa_config WHERE name = 'usdt_cny_rate' LIMIT 1");
-    const rate = configs.length > 0 ? parseFloat(configs[0].value) : 4.07;
+    const rate = configs.length > 0 ? parseFloat(configs[0].value) : 1.0;
     return success(res, 'Lấy tỷ giá thành công', { rate });
   } catch (err) {
     return error(res, err.message);
@@ -16,7 +16,7 @@ async function getExchangeRate(req, res) {
 }
 
 /**
- * Thực hiện quy đổi tiền (MYR sang USDT hoặc ngược lại)
+ * Thực hiện quy đổi tiền (USD sang USDT hoặc ngược lại)
  * Route: POST /api/exchange/swap
  */
 async function swapCurrency(req, res) {
@@ -31,7 +31,7 @@ async function swapCurrency(req, res) {
     const toCurr = (req.body.toCurrency || '').toUpperCase();
 
     if (!direction) {
-      if (fromCurr === 'USDT' || toCurr === 'VND' || toCurr === 'MYR') {
+      if (fromCurr === 'USDT' || toCurr === 'USD' || toCurr === 'VND' || toCurr === 'MYR') {
         direction = 'usdtToFiat';
       } else {
         direction = 'fiatToUsdt';
@@ -46,7 +46,7 @@ async function swapCurrency(req, res) {
 
     // Lấy tỷ giá
     const [configs] = await connection.query("SELECT value FROM fa_config WHERE name = 'usdt_cny_rate' LIMIT 1");
-    const rate = configs.length > 0 ? parseFloat(configs[0].value) : 4.07;
+    const rate = configs.length > 0 ? parseFloat(configs[0].value) : 1.0;
 
     const [users] = await connection.query(
       'SELECT id, money, usdt FROM fa_user WHERE id = ? FOR UPDATE',
@@ -63,10 +63,10 @@ async function swapCurrency(req, res) {
     let fromAmount = numAmount;
     let toAmount = 0;
 
-    const isFiatToUsdt = (direction === 'myrToUsdt' || direction === 'fiatToUsdt' || direction === 'vndToUsdt');
+    const isFiatToUsdt = (direction === 'usdToUsdt' || direction === 'myrToUsdt' || direction === 'fiatToUsdt' || direction === 'vndToUsdt');
 
     if (isFiatToUsdt) {
-      fromCurrency = fromCurr || 'VND';
+      fromCurrency = fromCurr || 'USD';
       toCurrency = 'USDT';
       if (currentMoney < numAmount) {
         await connection.rollback();
@@ -78,7 +78,7 @@ async function swapCurrency(req, res) {
       newUsdt = currentUsdt + toAmount;
     } else {
       fromCurrency = 'USDT';
-      toCurrency = toCurr || 'VND';
+      toCurrency = toCurr || 'USD';
       if (currentUsdt < numAmount) {
         await connection.rollback();
         connection.release();
@@ -105,10 +105,10 @@ async function swapCurrency(req, res) {
     // Ghi sổ cái
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'MYR', 'exchange', ?, ?, ?, ?, NOW())`,
+       VALUES (?, 'USD', 'exchange', ?, ?, ?, ?, NOW())`,
       [
         userId,
-        direction === 'myrToUsdt' ? -numAmount : toAmount,
+        isFiatToUsdt ? -numAmount : toAmount,
         currentMoney,
         newMoney,
         `闪兑 ${fromAmount} ${fromCurrency} 兑换 ${toAmount} ${toCurrency} (汇率: ${rate})`,
@@ -119,6 +119,7 @@ async function swapCurrency(req, res) {
     connection.release();
 
     return success(res, 'Quy đổi tiền tệ thành công', {
+      usdBalance: newMoney,
       myrBalance: newMoney,
       usdtBalance: newUsdt,
       convertedAmount: toAmount,

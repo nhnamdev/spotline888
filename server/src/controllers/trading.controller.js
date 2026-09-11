@@ -108,8 +108,7 @@ async function createOrder(req, res) {
     const rawDuration = req.body.duration || req.body.second || 60;
     const rawSymbol = req.body.symbol || req.body.productCode || 'BTC/USDT';
     const product_id = req.body.product_id || req.body.productId;
-    const yield_rate = req.body.yield_rate || 85;
-
+    const rawYieldRate = req.body.yield_rate;
     const numAmount = parseFloat(rawAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
       connection.release();
@@ -117,8 +116,9 @@ async function createOrder(req, res) {
     }
 
     const ostyle = (rawDirection === 'buy_up' || rawDirection === 'long' || rawDirection === 'buy' || rawDirection === 'call') ? 'buy_up' : 'buy_down';
+    const defaultYieldMap = { 60: 15, 120: 20, 180: 25, 300: 30 };
     const numDuration = Math.max(30, Number(rawDuration));
-    const numYield = parseFloat(yield_rate) || 85.0;
+    const numYield = parseFloat(rawYieldRate) || defaultYieldMap[numDuration] || 15.0;
     const symbol = rawSymbol;
 
     // 1. Kiểm tra số dư người dùng
@@ -154,7 +154,7 @@ async function createOrder(req, res) {
     // 4. Ghi sổ cái fa_user_money_log
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'MYR', 'trade_buy', ?, ?, ?, ?, NOW())`,
+       VALUES (?, 'USD', 'trade_buy', ?, ?, ?, ?, NOW())`,
       [userId, -numAmount, currentBalance, newBalance, `下单${ostyle === 'buy_up' ? '买涨' : '买跌'} ${symbol}`]
     );
 
@@ -296,7 +296,7 @@ async function settleExpiredOrders() {
         // Ghi sổ cái
         await connection.query(
           `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
-           VALUES (?, 'MYR', 'trade_win', ?, ?, ?, ?, ?, NOW())`,
+           VALUES (?, 'USD', 'trade_win', ?, ?, ?, ?, ?, NOW())`,
           [ord.user_id, totalReturn, currentMoney, newMoney, `订单结算盈利 ${ord.product_title} (+${winProfit.toFixed(2)})`, ord.id]
         );
       }

@@ -68,7 +68,7 @@ export default function AdminDashboardContent() {
             <div className="sum-item">
               <i className="fa fa-database"></i>
               <span>
-                用户总余额 <strong>{Number(stats.user?.total_money || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</strong>
+                用户总余额 (USDT) <strong>{Number(stats.user?.total_usdt || stats.user?.total_money || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} USDT</strong>
               </span>
             </div>
           </div>
@@ -156,9 +156,9 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-up"></i>
               </div>
               <div className="card-val-sm">
-                总计: <span>{Number(stats.recharge?.total_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                总计: <span>{Number(stats.recharge?.total_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} USDT</span>
                 <br />
-                今日: <span>{Number(stats.recharge?.today_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                今日: <span>{Number(stats.recharge?.today_recharge || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} USDT</span>
               </div>
               <div className="card-label">充值统计</div>
             </div>
@@ -170,9 +170,9 @@ export default function AdminDashboardContent() {
                 <i className="fa fa-arrow-circle-down"></i>
               </div>
               <div className="card-val-sm">
-                总计: <span>{Number(stats.withdraw?.total_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                总计: <span>{Number(stats.withdraw?.total_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} USDT</span>
                 <br />
-                今日: <span>{Number(stats.withdraw?.today_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                今日: <span>{Number(stats.withdraw?.today_withdraw || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })} USDT</span>
               </div>
               <div className="card-label">提现统计</div>
             </div>
