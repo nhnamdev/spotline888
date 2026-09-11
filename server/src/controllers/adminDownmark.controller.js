@@ -41,7 +41,14 @@ async function getDownmarks(req, res) {
     const total = countResult[0].total;
 
     const [rows] = await pool.query(
-      `SELECT d.*, u.account as username, u.phone, u.money as current_balance 
+      `SELECT d.*, 
+              d.amount as money, 
+              d.actual_amount as real_money, 
+              d.card_number as bank_card, 
+              d.note as remark,
+              u.account as username, 
+              u.phone, 
+              u.money as current_balance 
        FROM fa_downmark d 
        JOIN fa_user u ON d.user_id = u.id 
        WHERE ${whereClause} 
@@ -139,14 +146,14 @@ async function checkDownmark(req, res) {
       const refundedBalance = currentBalance + withdrawAmount;
 
       await connection.query(
-        'UPDATE fa_user SET money = ?, freeze_funds = ? WHERE id = ?',
-        [refundedBalance, newFreeze, mark.user_id]
+        'UPDATE fa_user SET money = ?, usdt = ?, freeze_funds = ? WHERE id = ?',
+        [refundedBalance, refundedBalance, newFreeze, mark.user_id]
       );
 
       // Ghi sổ cái hoàn tiền
       await connection.query(
         `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
-         VALUES (?, 'MYR', 'withdraw_refund', ?, ?, ?, ?, ?, NOW())`,
+         VALUES (?, 'USDT', 'withdraw_refund', ?, ?, ?, ?, ?, NOW())`,
         [mark.user_id, withdrawAmount, currentBalance, refundedBalance, `Hoàn tiền rút thất bại (${note || 'Từ chối'})`, id]
       );
 

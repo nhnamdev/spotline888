@@ -347,10 +347,113 @@ async function updateUserControl(req, res) {
   }
 }
 
+/**
+ * Gửi tin nhắn hệ thống cho hội viên
+ * Route: POST /api/admin/user/message
+ */
+async function sendMessage(req, res) {
+  try {
+    const rawUserId = req.body.userId ?? req.body.id ?? req.body.uid;
+    const title = (req.body.title || '系统通知').trim();
+    const content = (req.body.content || '').trim();
+
+    if (!content) {
+      return error(res, 'Vui lòng nhập nội dung tin nhắn');
+    }
+
+    const targetUserId = rawUserId !== undefined && rawUserId !== null ? Number(rawUserId) : 0;
+
+    let targetAccount = 'Toàn bộ hội viên';
+    if (targetUserId > 0) {
+      const [users] = await pool.query('SELECT id, account FROM fa_user WHERE id = ?', [targetUserId]);
+      if (users.length === 0) {
+        return error(res, 'Không tìm thấy hội viên nhận tin nhắn');
+      }
+      targetAccount = users[0].account;
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO fa_message (user_id, title, content, is_read, created_at)
+       VALUES (?, ?, ?, 0, NOW())`,
+      [targetUserId, title, content]
+    );
+
+    // Ghi log quản trị
+    await pool.query(
+      `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
+       VALUES (?, ?, '/api/admin/user/message', 'Gửi tin nhắn hệ thống cho hội viên', ?, ?, NOW())`,
+      [
+        req.admin?.id || 1,
+        req.admin?.username || 'admin',
+        JSON.stringify({ targetUserId, targetAccount, title, content, messageId: result.insertId }),
+        req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+      ]
+    );
+
+    return success(res, 'Gửi tin nhắn thành công', {
+      id: result.insertId,
+      user_id: targetUserId,
+      account: targetAccount,
+      title,
+      content,
+      created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    });
+  } catch (err) {
+    return error(res, 'Lỗi gửi tin nhắn: ' + err.message);
+  }
+}
+
+/**
+ * Lấy lịch sử tin nhắn đã gửi cho hội viên (phía Admin)
+ * Route: GET /api/admin/user/:id/messages
+ */
+async function getUserMessagesForAdmin(req, res) {
+  try {
+    const userId = Number(req.params.id);
+    if (!userId) {
+      return error(res, 'ID hội viên không hợp lệ');
+    }
+
+    const [rows] = await pool.query(
+      `SELECT id, user_id, title, content, is_read, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as created_at
+       FROM fa_message
+       WHERE user_id = ?
+       ORDER BY id DESC
+       LIMIT 50`,
+      [userId]
+    );
+
+    return success(res, 'Lấy lịch sử tin nhắn thành công', rows);
+  } catch (err) {
+    return error(res, 'Lỗi lấy tin nhắn: ' + err.message);
+  }
+}
+
+/**
+ * Xóa tin nhắn hệ thống (phía Admin)
+ * Route: DELETE /api/admin/message/:id
+ */
+async function deleteMessage(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return error(res, 'Vui lòng cung cấp ID tin nhắn');
+    }
+
+    await pool.query('DELETE FROM fa_message WHERE id = ?', [Number(id)]);
+    return success(res, 'Xóa tin nhắn thành công');
+  } catch (err) {
+    return error(res, 'Lỗi xóa tin nhắn: ' + err.message);
+  }
+}
+
 module.exports = {
   getUsers,
   getUserDetail,
   adjustScore,
   adjustCreditScore,
   updateUserControl,
+  sendMessage,
+  getUserMessagesForAdmin,
+  deleteMessage,
 };

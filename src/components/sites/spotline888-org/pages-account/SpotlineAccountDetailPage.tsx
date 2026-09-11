@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { ACCOUNT_TRANSLATIONS } from "./accountI18n";
+import { authApi } from "@/lib/api";
 
 function SpotlineAccountDetailInner() {
   const router = useRouter();
@@ -25,16 +26,31 @@ function SpotlineAccountDetailInner() {
   const [walletAddr, setWalletAddr] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("saved_usdt_wallet");
+      if (saved) setWalletAddr(saved);
+    } catch {}
+  }, []);
+
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 2000);
   };
 
-  const handleSaveWallet = () => {
+  const handleSaveWallet = async () => {
     if (!walletAddr.trim()) {
       showToast(t.placeholderWallet);
       return;
     }
+    try {
+      localStorage.setItem("saved_usdt_wallet", walletAddr.trim());
+      await authApi.bindBank({
+        bankName: payType === "usdt-erc20" ? "USDT (ERC20)" : "USDT (TRC20)",
+        bankCard: walletAddr.trim(),
+        type: "usdt",
+      });
+    } catch {}
     showToast(t.saveSuccess);
     setTimeout(() => {
       router.back();

@@ -9,6 +9,7 @@ import { contentApi } from "@/lib/api";
 
 interface MessageItem {
   id: number;
+  title?: string;
   content: string;
   date: string;
   isRead: boolean;
@@ -32,7 +33,8 @@ function SpotlineSystemMessageContent() {
       if (res.code === 1 && Array.isArray(res.data)) {
         const mapped: MessageItem[] = res.data.map((m: any) => ({
           id: m.id,
-          content: m.content || m.title,
+          title: m.title && m.title !== m.content ? m.title : undefined,
+          content: m.content || m.title || '',
           date: m.date || (m.created_at ? new Date(m.created_at).toISOString().slice(0, 19).replace("T", " ") : "-"),
           isRead: Boolean(m.is_read),
         }));
@@ -140,9 +142,16 @@ function SpotlineSystemMessageContent() {
                   <div className="w-8 h-8 rounded-full bg-[#eff6ff] flex items-center justify-center text-[#3b82f6] shrink-0 mt-0.5">
                     <Bell className="w-4 h-4" />
                   </div>
-                  <p className="text-[13.5px] text-[#1e293b] leading-relaxed font-normal flex-1">
-                    {item.content}
-                  </p>
+                  <div className="flex-1 flex flex-col gap-1">
+                    {item.title && (
+                      <h3 className="text-[14px] font-semibold text-[#0f172a] leading-snug">
+                        {item.title}
+                      </h3>
+                    )}
+                    <p className="text-[13px] text-[#334155] leading-relaxed font-normal whitespace-pre-wrap">
+                      {item.content}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between pt-1 border-t border-[#f8fafc]">
                   <span className="text-[11.5px] text-[#9ca3af]">

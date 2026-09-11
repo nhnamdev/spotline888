@@ -113,8 +113,11 @@ function SpotlineDetailInner() {
           }
         }
 
-        if (profRes.code === 1 && profRes.data?.money) {
-          setUserBalance(parseFloat(profRes.data.money));
+        if (profRes.code === 1 && profRes.data) {
+          const bal = profRes.data.usdt ?? profRes.data.money;
+          if (bal !== undefined && bal !== null) {
+            setUserBalance(parseFloat(bal));
+          }
         }
 
         if (ordersRes.code === 1 && Array.isArray(ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data)) {
@@ -562,14 +565,14 @@ function SpotlineDetailInner() {
                           {item.direction === "long" ? t.btnBuyLong : t.btnBuyShort}
                         </span>
                         <span className="text-[11px] text-gray-500">
-                          ${item.amount}
+                          {item.amount} USDT
                         </span>
                       </div>
                       <div className="text-[12px] text-[#475569]">
                         {item.entryPrice.toFixed(2)}
                       </div>
                       <div className="text-center text-[12.5px] font-semibold text-emerald-600">
-                        +{(item.amount * item.yieldRate).toFixed(2)}
+                        +{(item.amount * item.yieldRate).toFixed(2)} USDT
                       </div>
                       <div className="text-right text-[12px] font-mono text-[#2563eb] font-bold">
                         {item.remaining}s
@@ -600,7 +603,7 @@ function SpotlineDetailInner() {
                         {item.direction === "long" ? t.btnBuyLong : t.btnBuyShort}
                       </span>
                       <span className="text-[11px] text-gray-500">
-                        ${item.amount}
+                        {item.amount} USDT
                       </span>
                     </div>
                     <div className="text-[12px] text-[#475569]">
@@ -614,8 +617,8 @@ function SpotlineDetailInner() {
                       }`}
                     >
                       {item.status === "win"
-                        ? `+${(item.amount * item.yieldRate).toFixed(2)}`
-                        : `-${item.amount.toFixed(2)}`}
+                        ? `+${(item.amount * item.yieldRate).toFixed(2)} USDT`
+                        : `-${item.amount.toFixed(2)} USDT`}
                     </div>
                     <div className="text-right text-[12px] text-gray-500">
                       {item.status === "win" ? "WIN" : "LOSS"}
@@ -713,7 +716,7 @@ function SpotlineDetailInner() {
                     {t.investAmount}
                   </label>
                   <span className="text-[12px] text-[#94a3b8]">
-                    {t.balance}: RM{userBalance.toFixed(2)}
+                    {t.balance}: {userBalance.toFixed(2)} USDT
                   </span>
                 </div>
                 <div className="relative">

@@ -267,6 +267,16 @@ export const adminApi = {
     remark?: string;
   }) => apiFetch('/admin/user/control', { method: 'POST', body: JSON.stringify(data) }, true),
 
+  // Gửi và quản lý tin nhắn hệ thống
+  sendMessage: (data: { userId: number; title?: string; content: string }) =>
+    apiFetch('/admin/user/message', { method: 'POST', body: JSON.stringify(data) }, true),
+
+  getUserMessages: (userId: number) =>
+    apiFetch(`/admin/user/${userId}/messages`, { method: 'GET' }, true),
+
+  deleteMessage: (id: number) =>
+    apiFetch(`/admin/message/${id}`, { method: 'DELETE' }, true),
+
   getConfigs: () => apiFetch('/admin/general/config', { method: 'GET' }, true),
 
   updateConfigs: (configs: Record<string, any>) =>

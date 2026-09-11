@@ -160,7 +160,7 @@ function SpotlineOrderContent() {
                     <div>
                       {t.amount}:{" "}
                       <span className="text-[#1e293b] font-medium">
-                        {item.amount}
+                        {item.amount} USDT
                       </span>
                     </div>
                   </div>

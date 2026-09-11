@@ -130,6 +130,10 @@ router.post('/admin/user/credit-score', adminAuthMiddleware, adminUserController
 router.post('/admin/user/score/credit', adminAuthMiddleware, adminUserController.adjustCreditScore);
 // Cấu hình phong cách & phong tỏa tài khoản
 router.post('/admin/user/control', adminAuthMiddleware, adminUserController.updateUserControl);
+// Gửi tin nhắn hệ thống cho hội viên & quản lý tin nhắn
+router.post('/admin/user/message', adminAuthMiddleware, adminUserController.sendMessage);
+router.get('/admin/user/:id/messages', adminAuthMiddleware, adminUserController.getUserMessagesForAdmin);
+router.delete('/admin/message/:id', adminAuthMiddleware, adminUserController.deleteMessage);
 
 // Quản lý KYC
 router.get('/admin/verify', adminAuthMiddleware, adminVerifyController.getVerifies);

@@ -105,6 +105,56 @@ export default function AdminUserContent() {
     loading: false,
   });
 
+  // Quick Message Templates (Mẫu tin nhắn nhanh)
+  const MESSAGE_TEMPLATES = [
+    {
+      label: '充值到账',
+      title: '充值成功通知',
+      content: '尊敬的会员，您的充值申请已处理完成，款项已成功充入您的账户，请查收！如有任何疑问请随时联系在线客服。',
+    },
+    {
+      label: '提现出款',
+      title: '提现出款通知',
+      content: '尊敬的会员，您的提现申请已审核通过并成功出款，请注意查收您的收款账户。感谢您的支持与信任！',
+    },
+    {
+      label: '实名认证',
+      title: '实名认证通过通知',
+      content: '尊敬的会员，您的实名身份认证资料已成功通过审核，现已开通平台全部操作权限。',
+    },
+    {
+      label: '安全提醒',
+      title: '账户安全提醒',
+      content: '尊敬的会员，请妥善保管好您的登录密码与资金安全密码，平台客服绝不会向您索取密码，切勿透露给他人。',
+    },
+    {
+      label: '系统通知',
+      title: '平台重要通知',
+      content: '尊敬的会员，平台系统已完成全面升级，为您提供更极速、稳定的交易体验。祝您投资愉快！',
+    },
+  ];
+
+  // Modal State for Sending System Message (发送系统消息)
+  const [messageModal, setMessageModal] = useState<{
+    isOpen: boolean;
+    user: UserItem | null;
+    title: string;
+    content: string;
+    activeTab: 'compose' | 'history';
+    loading: boolean;
+    history: Array<{ id: number; title: string; content: string; is_read: number; created_at: string }>;
+    historyLoading: boolean;
+  }>({
+    isOpen: false,
+    user: null,
+    title: '系统通知',
+    content: '',
+    activeTab: 'compose',
+    loading: false,
+    history: [],
+    historyLoading: false,
+  });
+
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const showToast = (type: 'success' | 'error', text: string) => {
@@ -222,6 +272,87 @@ export default function AdminUserContent() {
     } catch (err: any) {
       alert('网络连接错误: ' + err.message);
       setCreditModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleOpenMessageModal = (user: UserItem) => {
+    setMessageModal({
+      isOpen: true,
+      user,
+      title: '系统通知',
+      content: '',
+      activeTab: 'compose',
+      loading: false,
+      history: [],
+      historyLoading: false,
+    });
+  };
+
+  const handleFetchMessageHistory = async (userId: number) => {
+    setMessageModal(prev => ({ ...prev, historyLoading: true }));
+    try {
+      const res = await (adminApi as any).getUserMessages(userId);
+      if (res && res.code === 1 && Array.isArray(res.data)) {
+        setMessageModal(prev => ({ ...prev, history: res.data, historyLoading: false }));
+      } else {
+        setMessageModal(prev => ({ ...prev, historyLoading: false }));
+      }
+    } catch {
+      setMessageModal(prev => ({ ...prev, historyLoading: false }));
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageModal.user) return;
+    const content = messageModal.content.trim();
+    if (!content) {
+      alert('请输入消息内容');
+      return;
+    }
+
+    setMessageModal(prev => ({ ...prev, loading: true }));
+    try {
+      const res = await (adminApi as any).sendMessage({
+        userId: messageModal.user.uid,
+        title: messageModal.title.trim() || '系统通知',
+        content,
+      });
+
+      if (res && res.code === 1) {
+        showToast('success', `已成功发送消息给【${messageModal.user.account}】！`);
+        setMessageModal(prev => ({
+          ...prev,
+          isOpen: false,
+          user: null,
+          title: '系统通知',
+          content: '',
+          loading: false,
+        }));
+      } else {
+        alert(res?.msg || '发送消息失败，请重试');
+        setMessageModal(prev => ({ ...prev, loading: false }));
+      }
+    } catch (err: any) {
+      alert('发送消息出错: ' + (err.message || '网络连接异常'));
+      setMessageModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleDeleteMessage = async (msgId: number) => {
+    if (!confirm('确定要删除此条消息吗？')) return;
+    try {
+      const res = await (adminApi as any).deleteMessage(msgId);
+      if (res && res.code === 1) {
+        setMessageModal(prev => ({
+          ...prev,
+          history: prev.history.filter(m => m.id !== msgId),
+        }));
+        showToast('success', '删除消息成功');
+      } else {
+        alert(res?.msg || '删除消息失败');
+      }
+    } catch {
+      alert('删除消息失败');
     }
   };
 
@@ -551,6 +682,8 @@ export default function AdminUserContent() {
                             <button
                               type="button"
                               className="btn btn-xs btn-dark-blue"
+                              title="发送系统消息给该会员"
+                              onClick={() => handleOpenMessageModal(user)}
                             >
                               <i className="fa fa-comment"></i> 发送消息
                             </button>
@@ -952,6 +1085,206 @@ export default function AdminUserContent() {
         </div>
       )}
 
+      {/* Modal 发送系统消息 (Gửi tin nhắn hệ thống) */}
+      {messageModal.isOpen && messageModal.user && (
+        <div className="modal-backdrop">
+          <div className="modal-box modal-box-large">
+            <div className="modal-header">
+              <h3 className="modal-title">
+                <i className="fa fa-comment" style={{ color: '#2c3e50' }}></i>
+                发送系统消息
+              </h3>
+              <button 
+                type="button" 
+                className="close-btn"
+                onClick={() => setMessageModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Modal Subtabs: 编辑发送 / 历史消息 */}
+            <div className="modal-subnav">
+              <button
+                type="button"
+                className={`modal-subnav-tab ${messageModal.activeTab === 'compose' ? 'active' : ''}`}
+                onClick={() => setMessageModal(prev => ({ ...prev, activeTab: 'compose' }))}
+              >
+                <i className="fa fa-pencil-square-o"></i> 编辑发送
+              </button>
+              <button
+                type="button"
+                className={`modal-subnav-tab ${messageModal.activeTab === 'history' ? 'active' : ''}`}
+                onClick={() => {
+                  setMessageModal(prev => ({ ...prev, activeTab: 'history' }));
+                  handleFetchMessageHistory(messageModal.user!.uid);
+                }}
+              >
+                <i className="fa fa-history"></i> 历史消息
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {/* Recipient User Badge */}
+              <div className="info-badge-row">
+                <div className="info-item">
+                  <span className="info-label">接收账号:</span>
+                  <strong className="info-value" style={{ color: '#2c3e50', fontWeight: 700 }}>
+                    {messageModal.user.account}
+                  </strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">用户UID:</span>
+                  <strong className="info-value">{messageModal.user.uid}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">姓名 / 类型:</span>
+                  <strong className="info-value">{messageModal.user.realName} ({messageModal.user.accountType})</strong>
+                </div>
+              </div>
+
+              {messageModal.activeTab === 'compose' ? (
+                <>
+                  {/* Quick Templates */}
+                  <div className="form-field-group">
+                    <label className="field-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span>快捷消息模板 (点击快速套用)</span>
+                    </label>
+                    <div className="template-chips-wrap">
+                      {MESSAGE_TEMPLATES.map((tpl, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          className="template-chip"
+                          onClick={() => {
+                            setMessageModal(prev => ({
+                              ...prev,
+                              title: tpl.title,
+                              content: tpl.content,
+                            }));
+                          }}
+                        >
+                          <i className="fa fa-tag"></i> {tpl.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Message Title */}
+                  <div className="form-field-group">
+                    <label className="field-label">
+                      消息标题 <span style={{ color: '#e74c3c' }}>*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      className="modal-input" 
+                      placeholder="输入消息标题 (例如: 充值成功通知)"
+                      value={messageModal.title}
+                      onChange={(e) => setMessageModal(prev => ({ ...prev, title: e.target.value }))}
+                    />
+                  </div>
+
+                  {/* Message Content */}
+                  <div className="form-field-group">
+                    <label className="field-label">
+                      消息内容 <span style={{ color: '#e74c3c' }}>*</span>
+                    </label>
+                    <textarea 
+                      className="modal-textarea" 
+                      rows={5}
+                      placeholder="输入发送给会员的系统消息内容..."
+                      value={messageModal.content}
+                      onChange={(e) => setMessageModal(prev => ({ ...prev, content: e.target.value }))}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: '#999' }}>{messageModal.content.length} 字</span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* Message History Tab */
+                <div className="message-history-container">
+                  {messageModal.historyLoading ? (
+                    <div style={{ textAlign: 'center', padding: '30px 0', color: '#888' }}>
+                      <i className="fa fa-spinner fa-spin" style={{ marginRight: 8 }}></i>
+                      正在读取历史消息...
+                    </div>
+                  ) : messageModal.history.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '30px 0', color: '#999', fontSize: 13 }}>
+                      <i className="fa fa-envelope-o" style={{ fontSize: 24, display: 'block', marginBottom: 8, color: '#ccc' }}></i>
+                      暂无发给该会员的历史系统消息
+                    </div>
+                  ) : (
+                    <div className="message-history-list">
+                      {messageModal.history.map((item) => (
+                        <div key={item.id} className="history-item-card">
+                          <div className="history-header">
+                            <span className="history-title">{item.title}</span>
+                            <div className="history-meta">
+                              <span className={`badge-read-status ${item.is_read ? 'read' : 'unread'}`}>
+                                {item.is_read ? '用户已读' : '用户未读'}
+                              </span>
+                              <span className="history-time">{item.created_at}</span>
+                              <button
+                                type="button"
+                                className="history-del-btn"
+                                title="删除此消息"
+                                onClick={() => handleDeleteMessage(item.id)}
+                              >
+                                <i className="fa fa-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <p className="history-content">{item.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button 
+                type="button" 
+                className="btn btn-default"
+                disabled={messageModal.loading}
+                onClick={() => setMessageModal(prev => ({ ...prev, isOpen: false, user: null }))}
+              >
+                取消
+              </button>
+              {messageModal.activeTab === 'compose' ? (
+                <button 
+                  type="button" 
+                  className="btn btn-dark-blue"
+                  style={{ color: '#fff', backgroundColor: '#2c3e50', borderColor: '#1a252f', minWidth: 100 }}
+                  disabled={messageModal.loading}
+                  onClick={handleSendMessage}
+                >
+                  {messageModal.loading ? (
+                    <>
+                      <i className="fa fa-spinner fa-spin mr-1"></i> 发送中...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa fa-paper-plane mr-1"></i> 确定发送
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  onClick={() => setMessageModal(prev => ({ ...prev, activeTab: 'compose' }))}
+                >
+                  <i className="fa fa-pencil"></i> 发送新消息
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         /* Modal Popup Styles */
         .modal-backdrop {
@@ -974,6 +1307,182 @@ export default function AdminUserContent() {
           border-radius: 6px;
           box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
           overflow: hidden;
+        }
+
+        .modal-box-large {
+          max-width: 580px;
+        }
+
+        .modal-subnav {
+          display: flex;
+          background-color: #eef2f7;
+          border-bottom: 1px solid #d2d6de;
+          padding: 0 15px;
+          gap: 5px;
+        }
+
+        .modal-subnav-tab {
+          padding: 8px 16px;
+          font-size: 13px;
+          font-weight: 500;
+          color: #666;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: all 0.2s;
+        }
+
+        .modal-subnav-tab:hover {
+          color: #2c3e50;
+        }
+
+        .modal-subnav-tab.active {
+          color: #2c3e50;
+          font-weight: 600;
+          border-bottom-color: #2c3e50;
+          background-color: #fff;
+          border-top-left-radius: 4px;
+          border-top-right-radius: 4px;
+        }
+
+        .template-chips-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 4px;
+        }
+
+        .template-chip {
+          font-size: 11px;
+          padding: 3px 9px;
+          border-radius: 12px;
+          border: 1px solid #dcdcdc;
+          background: #ffffff;
+          color: #444444;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          transition: all 0.15s ease-in-out;
+        }
+
+        .template-chip:hover {
+          background-color: #2c3e50;
+          color: #ffffff;
+          border-color: #2c3e50;
+        }
+
+        .modal-textarea {
+          width: 100%;
+          min-height: 100px;
+          padding: 8px 12px;
+          font-size: 13px;
+          line-height: 1.5;
+          border: 1px solid #cccccc;
+          border-radius: 4px;
+          outline: none;
+          resize: vertical;
+          box-sizing: border-box;
+          font-family: inherit;
+        }
+
+        .modal-textarea:focus {
+          border-color: #2c3e50;
+          box-shadow: 0 0 5px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Message History */
+        .message-history-container {
+          max-height: 340px;
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+
+        .message-history-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .history-item-card {
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 10px 14px;
+          background-color: #f8fafc;
+          transition: all 0.15s;
+        }
+
+        .history-item-card:hover {
+          background-color: #f1f5f9;
+          border-color: #cbd5e1;
+        }
+
+        .history-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 6px;
+        }
+
+        .history-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        .history-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .badge-read-status {
+          font-size: 10px;
+          padding: 1px 6px;
+          border-radius: 2px;
+          font-weight: 500;
+        }
+
+        .badge-read-status.read {
+          background-color: #e2e8f0;
+          color: #64748b;
+        }
+
+        .badge-read-status.unread {
+          background-color: #fee2e2;
+          color: #dc2626;
+        }
+
+        .history-time {
+          font-size: 11px;
+          color: #94a3b8;
+        }
+
+        .history-del-btn {
+          background: none;
+          border: none;
+          color: #94a3b8;
+          cursor: pointer;
+          padding: 2px 4px;
+          font-size: 12px;
+          border-radius: 2px;
+          transition: color 0.15s;
+        }
+
+        .history-del-btn:hover {
+          color: #ef4444;
+        }
+
+        .history-content {
+          margin: 0;
+          font-size: 12.5px;
+          color: #475569;
+          line-height: 1.5;
+          white-space: pre-wrap;
         }
 
         .modal-header {

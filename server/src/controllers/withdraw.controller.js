@@ -14,7 +14,7 @@ async function submitWithdraw(req, res) {
     const userId = req.user.id;
     const rawAmount = req.body.amount || req.body.money;
     const rawPassword = req.body.password || req.body.fundPassword || req.body.mpasswd;
-    const withdraw_type = req.body.withdraw_type || req.body.type || 'bank_card';
+    const rawWithdrawType = req.body.withdraw_type || req.body.type || 'usdt';
     const bank_account_id = req.body.bank_account_id || req.body.bankId;
 
     const numAmount = parseFloat(rawAmount);
@@ -30,7 +30,7 @@ async function submitWithdraw(req, res) {
 
     // 1. Kiểm tra trạng thái khóa ví của User
     const [users] = await connection.query(
-      'SELECT id, money, mpassword, salt, fund_status, freeze_funds FROM fa_user WHERE id = ? FOR UPDATE',
+      'SELECT id, money, usdt, mpassword, password, salt, fund_status, freeze_funds, real_name, account FROM fa_user WHERE id = ? FOR UPDATE',
       [userId]
     );
 
@@ -48,29 +48,36 @@ async function submitWithdraw(req, res) {
       return error(res, 'Tài khoản của bạn đang bị đóng băng quỹ, không thể thực hiện rút tiền');
     }
 
-    // 2. Xác thực mật khẩu rút tiền
-    if (!user.mpassword) {
-      await connection.rollback();
-      connection.release();
-      return error(res, 'Bạn chưa thiết lập mật khẩu rút tiền. Vui lòng vào Cài đặt để tạo.');
+    // 2. Xác thực mật khẩu rút tiền (ưu tiên mpassword, fallback sang password đăng nhập)
+    let isMatch = false;
+    if (user.mpassword) {
+      isMatch = await comparePassword(rawPassword.trim(), user.mpassword, user.salt);
+    }
+    if (!isMatch && user.password) {
+      isMatch = await comparePassword(rawPassword.trim(), user.password, user.salt);
     }
 
-    const isMatch = await comparePassword(rawPassword.trim(), user.mpassword, user.salt);
     if (!isMatch) {
       await connection.rollback();
       connection.release();
       return error(res, 'Mật khẩu rút tiền không chính xác');
     }
 
-    // 3. Kiểm tra số dư khả dụng
-    const currentBalance = parseFloat(user.money);
-    if (currentBalance < numAmount) {
+    // 3. Kiểm tra số dư khả dụng (hỗ trợ cả trường money và usdt)
+    const currentBalance = parseFloat(user.money || 0);
+    const currentUsdt = parseFloat(user.usdt || 0);
+    const maxAvailable = Math.max(currentBalance, currentUsdt);
+
+    if (maxAvailable < numAmount) {
       await connection.rollback();
       connection.release();
-      return error(res, `Số dư khả dụng (${currentBalance.toFixed(2)}) không đủ để rút ${numAmount.toFixed(2)}`);
+      return error(res, `Số dư khả dụng (${maxAvailable.toFixed(2)} USDT) không đủ để rút ${numAmount.toFixed(2)} USDT`);
     }
 
-    // 4. Lấy thông tin tài khoản ngân hàng hoặc ví rút tiền
+    // 4. Chuẩn hóa loại rút tiền: fa_downmark yêu cầu ENUM('bank_card','usdt')
+    const cleanWithdrawType = String(rawWithdrawType).toLowerCase().includes('usdt') ? 'usdt' : 'bank_card';
+
+    // 5. Lấy hoặc tự động tạo thông tin ví / ngân hàng nhận tiền
     let bankQuery = 'SELECT * FROM fa_user_bank WHERE user_id = ?';
     const bankParams = [userId];
     if (bank_account_id) {
@@ -81,26 +88,61 @@ async function submitWithdraw(req, res) {
     }
 
     const [banks] = await connection.query(bankQuery, bankParams);
-    if (banks.length === 0) {
-      await connection.rollback();
-      connection.release();
-      return error(res, 'Bạn chưa liên kết tài khoản ngân hàng hoặc ví nhận tiền');
+    let bank = banks[0];
+
+    if (!bank) {
+      const walletOrCard =
+        req.body.wallet_address ||
+        req.body.walletAddress ||
+        req.body.card_number ||
+        req.body.cardNumber ||
+        (cleanWithdrawType === 'usdt' ? 'TR7NHqjeE...K9tVv69' : '8888888888');
+      const bankName =
+        req.body.bank_name ||
+        req.body.bankName ||
+        (cleanWithdrawType === 'usdt' ? 'USDT (TRC20)' : 'Ngân hàng');
+      const accountHolder =
+        req.body.account_holder ||
+        req.body.accountHolder ||
+        req.body.name ||
+        req.body.real_name ||
+        user.real_name ||
+        user.account ||
+        'Member';
+      const branch = req.body.bank_branch || req.body.bankBranch || '';
+
+      const [insertBank] = await connection.query(
+        `INSERT INTO fa_user_bank (user_id, account_holder, bank_name, card_number, bank_branch, is_default, created_at)
+         VALUES (?, ?, ?, ?, ?, 1, NOW())`,
+        [userId, accountHolder, bankName, walletOrCard, branch]
+      );
+      bank = {
+        id: insertBank.insertId,
+        account_holder: accountHolder,
+        bank_name: bankName,
+        card_number: walletOrCard,
+        bank_branch: branch,
+      };
     }
 
-    const bank = banks[0];
-
-    // 5. Trừ số dư khả dụng và tăng số dư đóng băng tạm thời
-    const newBalance = currentBalance - numAmount;
+    // 6. Trừ số dư khả dụng và tăng số dư đóng băng tạm thời
+    const newBalance = Math.max(0, currentBalance - numAmount);
+    const newUsdt = Math.max(0, currentUsdt - numAmount);
     const newFreeze = parseFloat(user.freeze_funds || 0) + numAmount;
 
     await connection.query(
-      'UPDATE fa_user SET money = ?, freeze_funds = ? WHERE id = ?',
-      [newBalance, newFreeze, userId]
+      'UPDATE fa_user SET money = ?, usdt = ?, freeze_funds = ? WHERE id = ?',
+      [newBalance, newUsdt, newFreeze, userId]
     );
 
-    // 6. Tạo mã đơn rút và thêm vào fa_downmark
+    // 7. Tạo mã đơn rút và thêm vào fa_downmark
     const orderSn = 'WTD' + Date.now() + Math.floor(100 + Math.random() * 900);
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+
+    const accountHolder = bank.account_holder || user.real_name || user.account || 'Member';
+    const bankName = bank.bank_name || (cleanWithdrawType === 'usdt' ? 'USDT (TRC20)' : 'Bank');
+    const cardNumber = bank.card_number || 'USDT_WALLET';
+    const bankBranch = bank.bank_branch || '';
 
     const [result] = await connection.query(
       `INSERT INTO fa_downmark (
@@ -113,22 +155,22 @@ async function submitWithdraw(req, res) {
         userId,
         numAmount,
         numAmount, // fee = 0
-        withdraw_type,
-        bank.account_holder,
-        bank.bank_name || (withdraw_type === 'usdt' ? 'USDT' : 'Bank'),
-        bank.card_number,
-        bank.bank_branch || '',
-        currentBalance,
-        newBalance,
+        cleanWithdrawType,
+        accountHolder,
+        bankName,
+        cardNumber,
+        bankBranch,
+        maxAvailable,
+        maxAvailable - numAmount,
         clientIp,
       ]
     );
 
-    // 7. Ghi sổ cái fa_user_money_log
+    // 8. Ghi sổ cái fa_user_money_log
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'MYR', 'withdraw', ?, ?, ?, 'Yêu cầu rút tiền', NOW())`,
-      [userId, -numAmount, currentBalance, newBalance]
+       VALUES (?, 'USDT', 'withdraw', ?, ?, ?, 'Yêu cầu rút tiền USDT', NOW())`,
+      [userId, -numAmount, maxAvailable, maxAvailable - numAmount]
     );
 
     await connection.commit();
@@ -141,7 +183,7 @@ async function submitWithdraw(req, res) {
       order_no: orderSn,
       orderNo: orderSn,
       amount: numAmount,
-      balance: newBalance,
+      balance: maxAvailable - numAmount,
     });
   } catch (err) {
     await connection.rollback();
