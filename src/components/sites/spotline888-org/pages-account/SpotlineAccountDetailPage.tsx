@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { ACCOUNT_TRANSLATIONS } from "./accountI18n";
-import { authApi } from "@/lib/api";
+import { bankApi } from "@/lib/api";
 
 function SpotlineAccountDetailInner() {
   const router = useRouter();
@@ -45,7 +45,7 @@ function SpotlineAccountDetailInner() {
     }
     try {
       localStorage.setItem("saved_usdt_wallet", walletAddr.trim());
-      await authApi.bindBank({
+      await bankApi.bindBank({
         bankName: payType === "usdt-erc20" ? "USDT (ERC20)" : "USDT (TRC20)",
         bankCard: walletAddr.trim(),
         type: "usdt",
