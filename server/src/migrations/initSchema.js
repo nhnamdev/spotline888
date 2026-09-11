@@ -497,10 +497,10 @@ async function initSchema() {
     if (existingLoans.length === 0) {
       await connection.query(`
         INSERT INTO fa_loan_config (id, name, days, daily_rate, min_amount, max_amount, weigh, status) VALUES 
-        (1, 'Gói vay nhanh 5 ngày, hạn mức 2.000 - 50.000', 5, 0.0008, 2000.00, 50000.00, 1, 1),
-        (2, 'Gói vay nhanh 7 ngày, hạn mức 20.000 - 100.000', 7, 0.0010, 20000.00, 100000.00, 1, 1),
-        (3, 'Gói vay tiêu dùng 15 ngày, hạn mức 200.000 - 500.000', 15, 0.0015, 200000.00, 500000.00, 2, 1),
-        (4, 'Gói vay doanh nghiệp 30 ngày, hạn mức 500.000 - 1.000.000', 30, 0.0020, 500000.00, 1000000.00, 4, 1)
+        (1, '5天快贷，支持用户存款到达2000元以上贷款。', 5, 0.0008, 2000.00, 50000.00, 1, 1),
+        (2, '7天快贷，支持用户存款到达20000元以上贷款。', 7, 0.0010, 20000.00, 100000.00, 1, 1),
+        (3, '15天消费快贷，支持用户存款到达200000元以上贷款。', 15, 0.0015, 200000.00, 500000.00, 2, 1),
+        (4, '30天企业快贷，支持用户存款到达500000元以上贷款。', 30, 0.0020, 500000.00, 1000000.00, 4, 1)
       `);
       console.log('💰 [Seed] Đã tạo các gói vay tín chấp fa_loan_config');
     }
@@ -511,7 +511,7 @@ async function initSchema() {
       const adminPassHash = await hashPassword('admin888');
       await connection.query(`
         INSERT INTO fa_admin (username, nickname, password, status, memo)
-        VALUES (?, ?, ?, 'normal', 'Tài khoản Super Admin khởi tạo mặc định')
+        VALUES (?, ?, ?, 'normal', '系统超级管理员默认初始化')
       `, ['admin', 'Spotline Admin', adminPassHash]);
       console.log('👑 [Seed] Đã tạo tài khoản admin mặc định: admin / admin888');
     }

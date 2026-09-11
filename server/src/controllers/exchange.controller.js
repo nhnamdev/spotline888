@@ -111,7 +111,7 @@ async function swapCurrency(req, res) {
         direction === 'myrToUsdt' ? -numAmount : toAmount,
         currentMoney,
         newMoney,
-        `Quy đổi ${fromAmount} ${fromCurrency} sang ${toAmount} ${toCurrency} (Tỷ giá: ${rate})`,
+        `闪兑 ${fromAmount} ${fromCurrency} 兑换 ${toAmount} ${toCurrency} (汇率: ${rate})`,
       ]
     );
 

@@ -113,7 +113,7 @@ async function transferYuebao(req, res) {
     // 2. Ghi sổ cái fa_user_money_log
     const logType = direction === 'in' ? 'yuebao_in' : 'yuebao_out';
     const logDiff = direction === 'in' ? -numAmount : numAmount;
-    const logMemo = direction === 'in' ? 'Chuyển tiền vào quỹ Yu\'e Bao' : 'Chuyển tiền từ quỹ Yu\'e Bao về ví chính';
+    const logMemo = direction === 'in' ? '转入余额宝' : '余额宝转出';
 
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)

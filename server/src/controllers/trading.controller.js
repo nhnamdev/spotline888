@@ -155,7 +155,7 @@ async function createOrder(req, res) {
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
        VALUES (?, 'MYR', 'trade_buy', ?, ?, ?, ?, NOW())`,
-      [userId, -numAmount, currentBalance, newBalance, `Đặt lệnh ${ostyle === 'buy_up' ? 'Mua lên' : 'Mua xuống'} ${symbol}`]
+      [userId, -numAmount, currentBalance, newBalance, `下单${ostyle === 'buy_up' ? '买涨' : '买跌'} ${symbol}`]
     );
 
     // 5. Lưu lệnh vào fa_order
@@ -297,7 +297,7 @@ async function settleExpiredOrders() {
         await connection.query(
           `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
            VALUES (?, 'MYR', 'trade_win', ?, ?, ?, ?, ?, NOW())`,
-          [ord.user_id, totalReturn, currentMoney, newMoney, `Thắng cược ${ord.product_title} (+${winProfit.toFixed(2)})`, ord.id]
+          [ord.user_id, totalReturn, currentMoney, newMoney, `订单结算盈利 ${ord.product_title} (+${winProfit.toFixed(2)})`, ord.id]
         );
       }
 

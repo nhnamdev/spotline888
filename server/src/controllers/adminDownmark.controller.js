@@ -138,7 +138,7 @@ async function checkDownmark(req, res) {
       // Cập nhật đơn rút
       await connection.query(
         `UPDATE fa_downmark SET status = 'approved', check_admin_id = ?, check_time = NOW(), note = ? WHERE id = ?`,
-        [req.admin.id, note || 'Duyệt thành công', id]
+        [req.admin.id, note || '审核通过', id]
       );
     } else {
       // 2. Từ chối: Hoàn lại tiền vào số dư khả dụng và giảm đóng băng
@@ -154,13 +154,13 @@ async function checkDownmark(req, res) {
       await connection.query(
         `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
          VALUES (?, 'USDT', 'withdraw_refund', ?, ?, ?, ?, ?, NOW())`,
-        [mark.user_id, withdrawAmount, currentBalance, refundedBalance, `Hoàn tiền rút thất bại (${note || 'Từ chối'})`, id]
+        [mark.user_id, withdrawAmount, currentBalance, refundedBalance, `提现失败退款 (${note || '拒绝'})`, id]
       );
 
       // Cập nhật đơn rút
       await connection.query(
         `UPDATE fa_downmark SET status = 'rejected', check_admin_id = ?, check_time = NOW(), note = ? WHERE id = ?`,
-        [req.admin.id, note || 'Yêu cầu rút tiền bị từ chối', id]
+        [req.admin.id, note || '提现申请已拒绝', id]
       );
     }
 

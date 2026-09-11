@@ -169,7 +169,7 @@ async function submitWithdraw(req, res) {
     // 8. Ghi sổ cái fa_user_money_log
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'USDT', 'withdraw', ?, ?, ?, 'Yêu cầu rút tiền USDT', NOW())`,
+       VALUES (?, 'USDT', 'withdraw', ?, ?, ?, '申请提现 USDT', NOW())`,
       [userId, -numAmount, maxAvailable, maxAvailable - numAmount]
     );
 

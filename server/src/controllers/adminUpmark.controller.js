@@ -131,7 +131,7 @@ async function checkUpmark(req, res) {
       await connection.query(
         `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
          VALUES (?, 'MYR', 'recharge', ?, ?, ?, ?, ?, NOW())`,
-        [mark.user_id, addMoney, beforeBalance, afterBalance, `Nạp tiền thành công (Mã đơn: ${mark.order_sn})`, mark.id]
+        [mark.user_id, addMoney, beforeBalance, afterBalance, `充值成功 (订单号: ${mark.order_sn})`, mark.id]
       );
 
       // 3. Cập nhật đơn nạp

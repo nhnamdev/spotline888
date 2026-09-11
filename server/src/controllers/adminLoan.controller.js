@@ -106,7 +106,7 @@ async function actionLoanRecord(req, res) {
       await connection.query(
         `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
          VALUES (?, 'MYR', 'loan_disburse', ?, ?, ?, ?, ?, NOW())`,
-        [rec.user_id, disburseAmount, currentMoney, newMoney, `Giải ngân khoản vay thành công (+${disburseAmount.toFixed(2)})`, rec.id]
+        [rec.user_id, disburseAmount, currentMoney, newMoney, `借款发放成功 (+${disburseAmount.toFixed(2)})`, rec.id]
       );
 
       // Cập nhật hồ sơ vay sang trạng thái 1 (đang vay)

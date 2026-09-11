@@ -164,7 +164,7 @@ async function adjustScore(req, res) {
     );
 
     // Ghi sổ cái fa_user_money_log
-    const actionMemo = memo || (type === 'add' ? `Admin cộng tiền: +${numAmount}` : `Admin trừ tiền: -${numAmount}`);
+    const actionMemo = memo || (type === 'add' ? `管理员加款: +${numAmount}` : `管理员扣款: -${numAmount}`);
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
        VALUES (?, 'MYR', 'admin_adjust', ?, ?, ?, ?, NOW())`,
@@ -174,7 +174,7 @@ async function adjustScore(req, res) {
     // Ghi log quản trị
     await connection.query(
       `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
-       VALUES (?, ?, '/api/admin/user/score', 'Điều chỉnh số dư hội viên', ?, ?, NOW())`,
+       VALUES (?, ?, '/api/admin/user/score', '调整会员余额', ?, ?, NOW())`,
       [
         req.admin?.id || 1,
         req.admin?.username || 'admin',
@@ -259,10 +259,10 @@ async function adjustCreditScore(req, res) {
     );
 
     // Ghi log quản trị
-    const actionMemo = memo || `Điều chỉnh điểm tín nhiệm (${rawType}): ${currentScore} -> ${newScore}`;
+    const actionMemo = memo || `调整信誉分 (${rawType}): ${currentScore} -> ${newScore}`;
     await connection.query(
       `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
-       VALUES (?, ?, '/api/admin/user/credit-score', 'Điều chỉnh điểm tín nhiệm hội viên', ?, ?, NOW())`,
+       VALUES (?, ?, '/api/admin/user/credit-score', '调整会员信誉分', ?, ?, NOW())`,
       [
         req.admin?.id || 1,
         req.admin?.username || 'admin',
@@ -381,7 +381,7 @@ async function sendMessage(req, res) {
     // Ghi log quản trị
     await pool.query(
       `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
-       VALUES (?, ?, '/api/admin/user/message', 'Gửi tin nhắn hệ thống cho hội viên', ?, ?, NOW())`,
+       VALUES (?, ?, '/api/admin/user/message', '向会员发送系统消息', ?, ?, NOW())`,
       [
         req.admin?.id || 1,
         req.admin?.username || 'admin',
