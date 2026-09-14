@@ -74,8 +74,6 @@ async function register(req, res) {
     const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
     const myInviteCode = 'YH' + Math.floor(100 + Math.random() * 900) + randomSuffix;
 
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-
     // 5. Thêm vào database
     const [insertResult] = await pool.query(
       `INSERT INTO fa_user (
@@ -160,7 +158,6 @@ async function login(req, res) {
     }
 
     // Cập nhật thông tin đăng nhập
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
     await pool.query(
       `UPDATE fa_user SET last_login_time = NOW(), last_login_ip = ? WHERE id = ?`,
       [clientIp, user.id]
