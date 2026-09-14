@@ -107,6 +107,14 @@ function SpotlineWithdrawContent() {
 
   const currentBoundAccount = getBoundAccount();
 
+  // Hàm ẩn số thẻ ngân hàng: chỉ hiển thị 2 số đầu và 2 số cuối (ví dụ: 68***93)
+  const maskCardNumber = (card?: string) => {
+    if (!card) return "---";
+    const clean = String(card).trim();
+    if (clean.length <= 4) return clean;
+    return `${clean.slice(0, 2)}***${clean.slice(-2)}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -354,7 +362,7 @@ function SpotlineWithdrawContent() {
                       {t.cardNumber}
                     </span>
                     <span className="text-[13px] font-bold text-[#111827] break-all font-mono">
-                      {currentBoundAccount.card_number || "---"}
+                      {maskCardNumber(currentBoundAccount.card_number)}
                     </span>
                   </div>
                   <div>
