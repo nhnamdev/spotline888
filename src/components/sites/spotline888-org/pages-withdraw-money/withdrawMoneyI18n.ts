@@ -30,6 +30,9 @@ export interface WithdrawTranslations {
   cancel: string;
   invalidAmount: string;
   invalidPassword: string;
+  notBound: string;
+  bindNow: string;
+  unboundPrompt: string;
 }
 
 export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> = {
@@ -61,6 +64,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "取消",
     invalidAmount: "请输入有效的出金金额",
     invalidPassword: "请输入正确的出金密码",
+    notBound: "未绑定出金账户",
+    bindNow: "去绑定",
+    unboundPrompt: "请先绑定出金账户后再发起提现",
   },
   "vi-VN": {
     title: "Rút tiền",
@@ -90,6 +96,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Hủy",
     invalidAmount: "Vui lòng nhập số tiền rút hợp lệ",
     invalidPassword: "Vui lòng nhập mật khẩu rút tiền chính xác",
+    notBound: "Chưa liên kết tài khoản",
+    bindNow: "Liên kết ngay",
+    unboundPrompt: "Vui lòng liên kết tài khoản trước khi rút tiền",
   },
   "en-US": {
     title: "Withdraw",
@@ -119,6 +128,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Cancel",
     invalidAmount: "Please enter a valid withdrawal amount",
     invalidPassword: "Please enter valid withdrawal password",
+    notBound: "No account bound",
+    bindNow: "Bind Now",
+    unboundPrompt: "Please bind a withdrawal account before withdrawing",
   },
   "hk-TW": {
     title: "出金",
@@ -148,6 +160,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "取消",
     invalidAmount: "請輸入有效的出金金額",
     invalidPassword: "請輸入正確的出金密碼",
+    notBound: "未綁定出金賬戶",
+    bindNow: "去綁定",
+    unboundPrompt: "請先綁定出金賬戶後再發起提現",
   },
   "id-ID": {
     title: "Penarikan",
@@ -177,6 +192,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Batal",
     invalidAmount: "Silakan masukkan jumlah penarikan yang valid",
     invalidPassword: "Silakan masukkan kata sandi penarikan yang benar",
+    notBound: "Belum terikat akun penarikan",
+    bindNow: "Tautkan Sekarang",
+    unboundPrompt: "Harap tautkan akun penarikan sebelum menarik dana",
   },
   "ms-MY": {
     title: "Pengeluaran",
@@ -206,6 +224,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Batal",
     invalidAmount: "Sila masukkan jumlah pengeluaran yang sah",
     invalidPassword: "Sila masukkan kata laluan pengeluaran yang betul",
+    notBound: "Belum paut akaun pengeluaran",
+    bindNow: "Paut Sekarang",
+    unboundPrompt: "Sila pautkan akaun pengeluaran sebelum membuat pengeluaran",
   },
   "ja-JP": {
     title: "出金",
@@ -235,6 +256,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "キャンセル",
     invalidAmount: "有効な出金金額を入力してください",
     invalidPassword: "正しい出金パスワードを入力してください",
+    notBound: "出金口座が未連携です",
+    bindNow: "今すぐ連携",
+    unboundPrompt: "出金する前に出金口座を連携してください",
   },
   "th-TH": {
     title: "ถอนเงิน",
@@ -264,6 +288,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "ยกเลิก",
     invalidAmount: "กรุณาระบุจำนวนเงินที่ถูกต้อง",
     invalidPassword: "กรุณาระบุรหัสผ่านการถอนเงินที่ถูกต้อง",
+    notBound: "ยังไม่ได้ผูกบัญชีถอนเงิน",
+    bindNow: "ผูกตอนนี้",
+    unboundPrompt: "กรุณาผูกบัญชีถอนเงินก่อนทำการถอนเงิน",
   },
   "ko-KR": {
     title: "출금",
@@ -293,6 +320,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "취소",
     invalidAmount: "올바른 출금 금액을 입력해주세요",
     invalidPassword: "올바른 출금 비밀번호를 입력해주세요",
+    notBound: "출금 계좌 미연결",
+    bindNow: "지금 연결하기",
+    unboundPrompt: "출금 전에 출금 계좌를 먼저 연결해주세요",
   },
   "fr-FR": {
     title: "Retrait",
@@ -322,6 +352,9 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Annuler",
     invalidAmount: "Veuillez entrer un montant de retrait valide",
     invalidPassword: "Veuillez entrer le mot de passe de retrait valide",
+    notBound: "Aucun compte de retrait lié",
+    bindNow: "Lier maintenant",
+    unboundPrompt: "Veuillez lier un compte de retrait avant de retirer",
   },
   "de-DE": {
     title: "Auszahlung",
@@ -351,5 +384,8 @@ export const WITHDRAW_TRANSLATIONS: Record<LanguageCode, WithdrawTranslations> =
     cancel: "Abbrechen",
     invalidAmount: "Bitte einen gültigen Auszahlungsbetrag eingeben",
     invalidPassword: "Bitte das korrekte Auszahlungspasswort eingeben",
+    notBound: "Kein Auszahlungskonto verknüpft",
+    bindNow: "Jetzt verknüpfen",
+    unboundPrompt: "Bitte verknüpfen Sie ein Auszahlungskonto vor der Auszahlung",
   },
 };

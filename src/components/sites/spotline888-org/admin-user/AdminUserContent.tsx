@@ -15,6 +15,11 @@ interface UserItem {
   money: string;
   usdtBalance: string;
   creditScore?: number;
+  status?: number;
+  fundStatus?: number;
+  regIp?: string;
+  kongStyle?: number;
+  remark?: string;
 }
 
 export default function AdminUserContent() {
@@ -245,6 +250,11 @@ export default function AdminUserContent() {
           money: parseFloat(u.money || 0).toFixed(2),
           usdtBalance: parseFloat(u.usdt || 0).toFixed(2),
           creditScore: u.credit_score ?? 100,
+          status: u.status !== undefined ? Number(u.status) : 1,
+          fundStatus: u.fund_status !== undefined ? Number(u.fund_status) : 0,
+          regIp: u.reg_ip || u.last_login_ip || '',
+          kongStyle: u.kong_style !== undefined ? Number(u.kong_style) : 0,
+          remark: u.remark || '',
         }));
         setUsers(mapped);
         setTotal(res.data.total || mapped.length);
@@ -598,6 +608,122 @@ export default function AdminUserContent() {
     }
   };
 
+  // 1. 冻结资金 / 解冻资金
+  const handleFreezeFunds = async (user: UserItem) => {
+    const isFrozen = user.fundStatus === 1;
+    const actionText = isFrozen ? "解冻资金" : "冻结资金";
+    const confirmMsg = isFrozen
+      ? `确定要解冻会员 [${user.account}] 的资金吗？解冻后会员可正常提交出金申请。`
+      : `确定要冻结会员 [${user.account}] 的资金吗？冻结后该会员将无法提交出金申请。`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      const nextStatus = isFrozen ? 0 : 1;
+      const res = await adminApi.updateUserControl({
+        userId: user.uid,
+        fund_status: nextStatus,
+      });
+      if (res && res.code === 1) {
+        showToast('success', `已成功${actionText} (会员: ${user.account})`);
+        setUsers(prev => prev.map(u => u.uid === user.uid ? { ...u, fundStatus: nextStatus } : u));
+      } else {
+        showToast('error', res?.msg || `${actionText}失败`);
+      }
+    } catch (err: any) {
+      showToast('error', err?.message || `${actionText}出错`);
+    }
+  };
+
+  // 2. 设置黑名单 / 移出黑名单
+  const handleToggleBlacklist = async (user: UserItem) => {
+    const isBlack = user.kongStyle === 2 || (user.remark && user.remark.includes('[黑名单]'));
+    const actionText = isBlack ? "移出黑名单" : "设置黑名单";
+    const confirmMsg = isBlack
+      ? `确定要将会员 [${user.account}] 移出黑名单吗？`
+      : `确定要将会员 [${user.account}] 加入黑名单吗？将同时限制出金并将风控设置为必输。`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      const nextKong = isBlack ? 0 : 2;
+      const nextFund = isBlack ? 0 : 1;
+      const newRemark = isBlack
+        ? (user.remark || '').replace('[黑名单]', '').trim()
+        : ((user.remark ? user.remark + ' ' : '') + '[黑名单]').trim();
+
+      const res = await adminApi.updateUserControl({
+        userId: user.uid,
+        fund_status: nextFund,
+        kong_style: nextKong,
+        remark: newRemark,
+      });
+      if (res && res.code === 1) {
+        showToast('success', `已成功${actionText} (会员: ${user.account})`);
+        setUsers(prev => prev.map(u => u.uid === user.uid ? {
+          ...u,
+          fundStatus: nextFund,
+          kongStyle: nextKong,
+          remark: newRemark,
+          profession: newRemark || '普通会员',
+        } : u));
+      } else {
+        showToast('error', res?.msg || `${actionText}失败`);
+      }
+    } catch (err: any) {
+      showToast('error', err?.message || `${actionText}出错`);
+    }
+  };
+
+  // 3. 冻结账号 / 解冻账号 (Status)
+  const handleToggleAccountStatus = async (user: UserItem) => {
+    const isActive = user.status === 1;
+    const actionText = isActive ? "冻结账号" : "解冻账号";
+    const confirmMsg = isActive
+      ? `确定要冻结会员 [${user.account}] 吗？冻结后该会员将无法登录系统。`
+      : `确定要解冻/启用会员 [${user.account}] 吗？恢复后该会员可正常登录。`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      const nextStatus = isActive ? 0 : 1;
+      const res = await adminApi.updateUserControl({
+        userId: user.uid,
+        status: nextStatus,
+      });
+      if (res && res.code === 1) {
+        showToast('success', `已成功${actionText} (会员: ${user.account})`);
+        setUsers(prev => prev.map(u => u.uid === user.uid ? { ...u, status: nextStatus } : u));
+      } else {
+        showToast('error', res?.msg || `${actionText}失败`);
+      }
+    } catch (err: any) {
+      showToast('error', err?.message || `${actionText}出错`);
+    }
+  };
+
+  // 4. 拉黑IP
+  const handleBlacklistIp = async (user: UserItem) => {
+    const defaultIp = user.regIp && user.regIp !== '-' ? user.regIp : '';
+    const inputIp = window.prompt(
+      `请输入要拉黑的IP地址（会员 [${user.account}] 的注册IP: ${defaultIp || '未知'}）：`,
+      defaultIp
+    );
+    if (!inputIp || !inputIp.trim()) return;
+
+    try {
+      const res = await adminApi.blacklistIp({
+        ip: inputIp.trim(),
+        userId: user.uid,
+        remark: `拉黑会员 [${user.account}] IP`,
+      });
+      if (res && res.code === 1) {
+        showToast('success', `已将IP ${inputIp.trim()} 加入黑名单并冻结该会员`);
+        setUsers(prev => prev.map(u => u.uid === user.uid ? { ...u, status: 0, fundStatus: 1 } : u));
+      } else {
+        showToast('error', res?.msg || '拉黑IP失败');
+      }
+    } catch (err: any) {
+      showToast('error', err?.message || '拉黑IP出错');
+    }
+  };
 
   return (
     <div className="user-page-wrapper">
@@ -948,9 +1074,11 @@ export default function AdminUserContent() {
                             </button>
                             <button
                               type="button"
-                              className="btn btn-xs btn-warning"
+                              className={`btn btn-xs ${user.fundStatus === 1 ? 'btn-default' : 'btn-warning'}`}
+                              title={user.fundStatus === 1 ? "解冻资金" : "冻结资金"}
+                              onClick={() => handleFreezeFunds(user)}
                             >
-                              <i className="fa fa-lock"></i> 冻结资金
+                              <i className={`fa ${user.fundStatus === 1 ? 'fa-unlock' : 'fa-lock'}`}></i> {user.fundStatus === 1 ? '解冻资金' : '冻结资金'}
                             </button>
                             <button
                               type="button"
@@ -975,19 +1103,25 @@ export default function AdminUserContent() {
                             </button>
                             <button
                               type="button"
-                              className="btn btn-xs btn-danger"
+                              className={`btn btn-xs ${user.kongStyle === 2 || (user.remark && user.remark.includes('[黑名单]')) ? 'btn-default' : 'btn-danger'}`}
+                              title={user.kongStyle === 2 || (user.remark && user.remark.includes('[黑名单]')) ? "移出黑名单" : "设置黑名单"}
+                              onClick={() => handleToggleBlacklist(user)}
                             >
-                              <i className="fa fa-user"></i> 设置黑名单
+                              <i className="fa fa-user"></i> {user.kongStyle === 2 || (user.remark && user.remark.includes('[黑名单]')) ? '移出黑名单' : '设置黑名单'}
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn btn-xs ${user.status === 0 ? 'btn-success' : 'btn-danger'}`}
+                              title={user.status === 0 ? "解冻账号" : "冻结账号"}
+                              onClick={() => handleToggleAccountStatus(user)}
+                            >
+                              <i className={`fa ${user.status === 0 ? 'fa-check' : 'fa-ban'}`}></i> {user.status === 0 ? '解冻' : '冻结'}
                             </button>
                             <button
                               type="button"
                               className="btn btn-xs btn-danger"
-                            >
-                              <i className="fa fa-user"></i> 冻结
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-xs btn-danger"
+                              title="拉黑IP并封禁"
+                              onClick={() => handleBlacklistIp(user)}
                             >
                               <i className="fa fa-ban"></i> 拉黑IP
                             </button>

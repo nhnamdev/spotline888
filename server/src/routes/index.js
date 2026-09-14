@@ -132,6 +132,9 @@ router.post('/admin/user/credit-score', adminAuthMiddleware, adminUserController
 router.post('/admin/user/score/credit', adminAuthMiddleware, adminUserController.adjustCreditScore);
 // Cấu hình phong cách & phong tỏa tài khoản
 router.post('/admin/user/control', adminAuthMiddleware, adminUserController.updateUserControl);
+// Chặn IP và danh sách đen
+router.post('/admin/user/blacklist-ip', adminAuthMiddleware, adminUserController.blacklistIp);
+router.get('/admin/user/blacklist-ip', adminAuthMiddleware, adminUserController.getBlacklistIps);
 // Gửi tin nhắn hệ thống cho hội viên & quản lý tin nhắn
 router.post('/admin/user/message', adminAuthMiddleware, adminUserController.sendMessage);
 router.get('/admin/user/:id/messages', adminAuthMiddleware, adminUserController.getUserMessagesForAdmin);

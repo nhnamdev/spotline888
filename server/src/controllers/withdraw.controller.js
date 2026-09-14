@@ -84,6 +84,11 @@ async function submitWithdraw(req, res) {
       bankQuery += ' AND id = ?';
       bankParams.push(bank_account_id);
     } else {
+      if (cleanWithdrawType === 'usdt') {
+        bankQuery += " AND type IN ('usdt', 'usdt_trc20', 'usdt_erc20')";
+      } else {
+        bankQuery += " AND type = 'bank'";
+      }
       bankQuery += ' ORDER BY is_default DESC, id DESC LIMIT 1';
     }
 
@@ -95,12 +100,19 @@ async function submitWithdraw(req, res) {
         req.body.wallet_address ||
         req.body.walletAddress ||
         req.body.card_number ||
-        req.body.cardNumber ||
-        (cleanWithdrawType === 'usdt' ? 'TR7NHqjeE...K9tVv69' : '8888888888');
+        req.body.cardNumber;
+
+      if (!walletOrCard || !String(walletOrCard).trim()) {
+        await connection.rollback();
+        connection.release();
+        return error(res, 'Vui lòng liên kết tài khoản ngân hàng hoặc địa chỉ ví trước khi rút tiền');
+      }
+
+      const cleanWalletOrCard = String(walletOrCard).trim();
       const bankName =
         req.body.bank_name ||
         req.body.bankName ||
-        (cleanWithdrawType === 'usdt' ? 'USDT (TRC20)' : 'Ngân hàng');
+        (cleanWithdrawType === 'usdt' ? 'USDT' : 'Ngân hàng');
       const accountHolder =
         req.body.account_holder ||
         req.body.accountHolder ||
@@ -112,15 +124,16 @@ async function submitWithdraw(req, res) {
       const branch = req.body.bank_branch || req.body.bankBranch || '';
 
       const [insertBank] = await connection.query(
-        `INSERT INTO fa_user_bank (user_id, account_holder, bank_name, card_number, bank_branch, is_default, created_at)
-         VALUES (?, ?, ?, ?, ?, 1, NOW())`,
-        [userId, accountHolder, bankName, walletOrCard, branch]
+        `INSERT INTO fa_user_bank (user_id, type, account_holder, bank_name, card_number, bank_branch, is_default, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, 1, NOW())`,
+        [userId, cleanWithdrawType === 'usdt' ? 'usdt_trc20' : 'bank', accountHolder, bankName, cleanWalletOrCard, branch]
       );
       bank = {
         id: insertBank.insertId,
+        type: cleanWithdrawType === 'usdt' ? 'usdt_trc20' : 'bank',
         account_holder: accountHolder,
         bank_name: bankName,
-        card_number: walletOrCard,
+        card_number: cleanWalletOrCard,
         bank_branch: branch,
       };
     }

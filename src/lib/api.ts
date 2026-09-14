@@ -102,8 +102,10 @@ export const bankApi = {
     bankName?: string;
     bankBranch?: string;
     bankCard?: string;
+    cardNumber?: string;
     accountHolder?: string;
-    type?: 'bank' | 'usdt';
+    nationality?: string;
+    type?: 'bank' | 'usdt' | 'usdt_trc20' | 'usdt_erc20';
   }) => apiFetch('/user/bank', { method: 'POST', body: JSON.stringify(data) }),
 };
 
@@ -292,6 +294,12 @@ export const adminApi = {
     level?: number;
     remark?: string;
   }) => apiFetch('/admin/user/control', { method: 'POST', body: JSON.stringify(data) }, true),
+
+  blacklistIp: (data: { ip: string; userId?: number; remark?: string }) =>
+    apiFetch('/admin/user/blacklist-ip', { method: 'POST', body: JSON.stringify(data) }, true),
+
+  getBlacklistIps: () =>
+    apiFetch('/admin/user/blacklist-ip', { method: 'GET' }, true),
 
   // Gửi và quản lý tin nhắn hệ thống
   sendMessage: (data: { userId: number; title?: string; content: string }) =>

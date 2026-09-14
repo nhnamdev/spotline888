@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronDown, CheckCircle2, Loader2, CreditCard, Wallet, ExternalLink } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { WITHDRAW_TRANSLATIONS } from "./withdrawMoneyI18n";
-import { authApi, withdrawApi } from "@/lib/api";
+import { authApi, bankApi, withdrawApi } from "@/lib/api";
 
 function SpotlineWithdrawContent() {
   const router = useRouter();
@@ -19,11 +19,12 @@ function SpotlineWithdrawContent() {
   const [loading, setLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [availableBalance, setAvailableBalance] = useState(2429.0);
-  const [walletAddress, setWalletAddress] = useState<string>("");
+  const [availableBalance, setAvailableBalance] = useState(0.0);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [loadingBanks, setLoadingBanks] = useState(true);
 
   useEffect(() => {
-    // 1. Tải cache local nếu có
+    // 1. Tải cache local số dư nếu có
     try {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
@@ -32,10 +33,6 @@ function SpotlineWithdrawContent() {
         if (!isNaN(bal) && bal > 0) {
           setAvailableBalance(bal);
         }
-      }
-      const savedWallet = localStorage.getItem("saved_usdt_wallet");
-      if (savedWallet) {
-        setWalletAddress(savedWallet);
       }
     } catch {}
 
@@ -49,22 +46,78 @@ function SpotlineWithdrawContent() {
             setAvailableBalance(bal);
           }
         }
-      } catch {}
+      } catch (err) {
+        console.error("Lỗi lấy thông tin số dư:", err);
+      }
     }
     loadLiveProfile();
+
+    // 3. Tải danh sách tài khoản ngân hàng / ví USDT đã liên kết
+    async function loadBanks() {
+      try {
+        setLoadingBanks(true);
+        const res = await bankApi.getBanks();
+        if (res.code === 1 && Array.isArray(res.data)) {
+          setBankAccounts(res.data);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy danh sách tài khoản:", err);
+      } finally {
+        setLoadingBanks(false);
+      }
+    }
+    loadBanks();
   }, []);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2000);
+    setTimeout(() => setToastMsg(null), 2500);
   };
 
   const handleAll = () => {
     setAmount(availableBalance.toFixed(2));
   };
 
+  // Xác định tài khoản đã liên kết tương ứng với loại rút tiền hiện tại
+  const getBoundAccount = () => {
+    if (withdrawType === "bank_card") {
+      return bankAccounts.find((b: any) => b.type === "bank") || null;
+    }
+    if (withdrawType === "usdt-trc20") {
+      return (
+        bankAccounts.find(
+          (b: any) =>
+            b.type === "usdt_trc20" ||
+            (b.type === "usdt" && String(b.bank_name || "").toLowerCase().includes("trc20")) ||
+            (b.type === "usdt" && !String(b.bank_name || "").toLowerCase().includes("erc20"))
+        ) || null
+      );
+    }
+    if (withdrawType === "usdt-erc20") {
+      return (
+        bankAccounts.find(
+          (b: any) =>
+            b.type === "usdt_erc20" ||
+            (b.type === "usdt" && String(b.bank_name || "").toLowerCase().includes("erc20"))
+        ) || null
+      );
+    }
+    return null;
+  };
+
+  const currentBoundAccount = getBoundAccount();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!currentBoundAccount) {
+      showToast(t.unboundPrompt);
+      setTimeout(() => {
+        router.push(`/pages/account/account-detail?pay_type=${withdrawType}`);
+      }, 1200);
+      return;
+    }
+
     const num = parseFloat(amount);
     if (isNaN(num) || num <= 0 || num > availableBalance) {
       showToast(t.invalidAmount);
@@ -80,18 +133,17 @@ function SpotlineWithdrawContent() {
       const res = await withdrawApi.submitWithdraw({
         money: num,
         password: password.trim(),
-        withdraw_type: "usdt",
-        wallet_address:
-          walletAddress ||
-          (withdrawType === "usdt-trc20"
-            ? "TR7NHqjeE...K9tVv69"
-            : "0xdAC17F...44Cd28"),
+        bankId: currentBoundAccount.id,
+        withdraw_type: withdrawType === "bank_card" ? "bank_card" : "usdt",
+        wallet_address: currentBoundAccount.card_number,
         bank_name:
-          withdrawType === "usdt-trc20"
+          currentBoundAccount.bank_name ||
+          (withdrawType === "usdt-trc20"
             ? "USDT (TRC20)"
             : withdrawType === "usdt-erc20"
             ? "USDT (ERC20)"
-            : "Bank",
+            : "Bank"),
+        account_holder: currentBoundAccount.account_holder,
       } as any);
 
       if (res.code === 1) {
@@ -269,7 +321,11 @@ function SpotlineWithdrawContent() {
               </span>
               <button
                 type="button"
-                onClick={() => router.push("/pages/account/account")}
+                onClick={() =>
+                  router.push(
+                    `/pages/account/account-detail?pay_type=${withdrawType}`
+                  )
+                }
                 className="text-[12px] text-[#2563eb] font-medium flex items-center gap-1 hover:underline cursor-pointer bg-transparent border-0 p-0"
               >
                 <span>{t.bindWalletPrompt}</span>
@@ -277,51 +333,82 @@ function SpotlineWithdrawContent() {
               </button>
             </div>
 
-            {withdrawType === "bank_card" ? (
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <span className="text-[11.5px] text-[#9ca3af] block mb-1">
-                    {t.name}
-                  </span>
-                  <span className="text-[13px] font-bold text-[#111827] break-words">
-                    粉***
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[11.5px] text-[#9ca3af] block mb-1">
-                    {t.cardNumber}
-                  </span>
-                  <span className="text-[13px] font-bold text-[#111827] break-all">
-                    发多少***********发多少
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[11.5px] text-[#9ca3af] block mb-1">
-                    {t.bankName}
-                  </span>
-                  <span className="text-[13px] font-bold text-[#111827] break-words">
-                    的粉
-                  </span>
-                </div>
+            {loadingBanks ? (
+              <div className="flex items-center justify-center py-4 text-[#9ca3af] gap-2 text-[13px]">
+                <Loader2 className="w-4 h-4 animate-spin text-[#3b82f6]" />
+                <span>加载中...</span>
               </div>
+            ) : currentBoundAccount ? (
+              withdrawType === "bank_card" ? (
+                <div className="grid grid-cols-3 gap-2 bg-[#f8fafc] border border-gray-100 rounded-[10px] p-3">
+                  <div>
+                    <span className="text-[11.5px] text-[#9ca3af] block mb-1">
+                      {t.name}
+                    </span>
+                    <span className="text-[13px] font-bold text-[#111827] break-words">
+                      {currentBoundAccount.account_holder || "---"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[11.5px] text-[#9ca3af] block mb-1">
+                      {t.cardNumber}
+                    </span>
+                    <span className="text-[13px] font-bold text-[#111827] break-all font-mono">
+                      {currentBoundAccount.card_number || "---"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[11.5px] text-[#9ca3af] block mb-1">
+                      {t.bankName}
+                    </span>
+                    <span className="text-[13px] font-bold text-[#111827] break-words">
+                      {currentBoundAccount.bank_name || "---"}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2.5 bg-[#f8fafc] border border-gray-200/80 rounded-[10px] p-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                    <Wallet className="w-4 h-4 text-[#2563eb]" />
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="text-[11.5px] text-[#9ca3af]">
+                      {withdrawType === "usdt-trc20"
+                        ? `${t.walletAddress} (TRC20)`
+                        : `${t.walletAddress} (ERC20)`}
+                    </span>
+                    <span className="text-[13px] font-semibold text-[#1e293b] truncate font-mono">
+                      {currentBoundAccount.card_number}
+                    </span>
+                  </div>
+                </div>
+              )
             ) : (
-              <div className="flex items-center gap-2.5 bg-[#f8fafc] border border-gray-200/80 rounded-[10px] p-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                  <Wallet className="w-4 h-4 text-[#2563eb]" />
+              <div className="flex items-center justify-between p-3.5 bg-[#fef2f2] border border-[#fecaca] rounded-[10px] gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                    {withdrawType === "bank_card" ? (
+                      <CreditCard className="w-4 h-4 text-[#ef4444]" />
+                    ) : (
+                      <Wallet className="w-4 h-4 text-[#ef4444]" />
+                    )}
+                  </div>
+                  <div className="text-[13px] text-[#991b1b] font-medium truncate">
+                    {t.notBound}
+                  </div>
                 </div>
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[11.5px] text-[#9ca3af]">
-                    {withdrawType === "usdt-trc20"
-                      ? `${t.walletAddress} (TRC20)`
-                      : `${t.walletAddress} (ERC20)`}
-                  </span>
-                  <span className="text-[13px] font-semibold text-[#1e293b] truncate font-mono">
-                    {walletAddress ||
-                      (withdrawType === "usdt-trc20"
-                        ? "TR7NHqjeE...K9tVv69"
-                        : "0xdAC17F...44Cd28")}
-                  </span>
-                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(
+                      `/pages/account/account-detail?pay_type=${withdrawType}`
+                    )
+                  }
+                  className="h-8 px-3.5 bg-[#ef4444] hover:bg-[#dc2626] text-white text-[12px] font-semibold rounded-[8px] flex items-center gap-1 cursor-pointer transition-all active:scale-95 border-0 shrink-0"
+                >
+                  <span>{t.bindNow}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
               </div>
             )}
           </div>

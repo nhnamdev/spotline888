@@ -3,12 +3,30 @@ const { pool } = require('../config/db');
 const { success, error } = require('../utils/response');
 const { hashPassword, comparePassword } = require('../utils/hash');
 
+async function checkIpBlacklist(clientIp) {
+  try {
+    const [configs] = await pool.query("SELECT value FROM fa_config WHERE name = 'black_ips' LIMIT 1");
+    if (configs.length > 0 && configs[0].value) {
+      const list = JSON.parse(configs[0].value);
+      if (Array.isArray(list) && list.some(b => b && clientIp.includes(b))) {
+        return true;
+      }
+    }
+  } catch {}
+  return false;
+}
+
 /**
  * Đăng ký tài khoản hội viên mới
  * Route: POST /api/login/register
  */
 async function register(req, res) {
   try {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+    if (await checkIpBlacklist(clientIp)) {
+      return error(res, 'Địa chỉ IP của bạn đã bị đưa vào danh sách đen của hệ thống');
+    }
+
     const rawAccount = req.body.account || req.body.username;
     const rawPasswd = req.body.passwd || req.body.password;
     const rawMpasswd = req.body.mpasswd || req.body.fundPassword || rawPasswd;
@@ -108,6 +126,11 @@ async function login(req, res) {
     const { username, password, account } = req.body;
     const loginAccount = (username || account || '').trim();
     const loginPassword = (password || '').trim();
+
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+    if (await checkIpBlacklist(clientIp)) {
+      return error(res, 'Địa chỉ IP của bạn đã bị đưa vào danh sách đen của hệ thống');
+    }
 
     if (!loginAccount || !loginPassword) {
       return error(res, 'Vui lòng nhập tài khoản và mật khẩu');

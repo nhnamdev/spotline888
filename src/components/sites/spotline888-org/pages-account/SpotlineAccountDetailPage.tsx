@@ -22,20 +22,92 @@ function SpotlineAccountDetailInner() {
     ? t.usdtErc20
     : t.usdtTrc20;
 
-  // State for wallet
+  // State for bank and wallet
+  const [holderName, setHolderName] = useState("");
+  const [nationality, setNationality] = useState("Vietnam");
+  const [bankBranch, setBankBranch] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
   const [walletAddr, setWalletAddr] = useState("");
+  const [saving, setSaving] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("saved_usdt_wallet");
-      if (saved) setWalletAddr(saved);
-    } catch {}
-  }, []);
+    async function fetchAccount() {
+      try {
+        const res = await bankApi.getBanks();
+        if (res.code === 1 && Array.isArray(res.data)) {
+          if (isBank) {
+            const bankItem = res.data.find((b: any) => b.type === "bank");
+            if (bankItem) {
+              setHolderName(bankItem.account_holder || "");
+              setNationality(bankItem.nationality || "Vietnam");
+              setBankBranch(bankItem.bank_branch || "");
+              setBankName(bankItem.bank_name || "");
+              setCardNumber(bankItem.card_number || "");
+            }
+          } else {
+            const targetType = payType === "usdt-erc20" ? "usdt_erc20" : "usdt_trc20";
+            const walletItem = res.data.find(
+              (b: any) =>
+                b.type === targetType ||
+                (b.type === "usdt" && String(b.bank_name).toLowerCase().includes(payType === "usdt-erc20" ? "erc20" : "trc20"))
+            );
+            if (walletItem) {
+              setWalletAddr(walletItem.card_number || "");
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Lỗi lấy thông tin tài khoản:", err);
+      }
+    }
+    fetchAccount();
+  }, [isBank, payType]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 2000);
+  };
+
+  const handleSaveBank = async () => {
+    if (!holderName.trim()) {
+      showToast(t.name);
+      return;
+    }
+    if (!bankName.trim()) {
+      showToast(t.bankName);
+      return;
+    }
+    if (!cardNumber.trim()) {
+      showToast(t.cardNumber);
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const res = await bankApi.bindBank({
+        accountHolder: holderName.trim(),
+        nationality: nationality.trim(),
+        bankBranch: bankBranch.trim(),
+        bankName: bankName.trim(),
+        bankCard: cardNumber.trim(),
+        type: "bank",
+      });
+
+      if (res.code === 1) {
+        showToast(t.saveSuccess);
+        setTimeout(() => {
+          router.back();
+        }, 800);
+      } else {
+        showToast(res.msg || "Liên kết tài khoản thất bại");
+      }
+    } catch (err: any) {
+      showToast(err?.message || "Lỗi lưu tài khoản");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSaveWallet = async () => {
@@ -44,17 +116,27 @@ function SpotlineAccountDetailInner() {
       return;
     }
     try {
+      setSaving(true);
       localStorage.setItem("saved_usdt_wallet", walletAddr.trim());
-      await bankApi.bindBank({
+      const res = await bankApi.bindBank({
         bankName: payType === "usdt-erc20" ? "USDT (ERC20)" : "USDT (TRC20)",
         bankCard: walletAddr.trim(),
-        type: "usdt",
+        type: payType === "usdt-erc20" ? "usdt_erc20" : "usdt_trc20",
       });
-    } catch {}
-    showToast(t.saveSuccess);
-    setTimeout(() => {
-      router.back();
-    }, 800);
+
+      if (res.code === 1) {
+        showToast(t.saveSuccess);
+        setTimeout(() => {
+          router.back();
+        }, 800);
+      } else {
+        showToast(res.msg || "Lưu địa chỉ ví thất bại");
+      }
+    } catch (err: any) {
+      showToast(err?.message || "Lỗi lưu địa chỉ ví");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -91,9 +173,13 @@ function SpotlineAccountDetailInner() {
                   <span className="text-[#ef4444] mr-0.5">*</span>
                   {t.name}
                 </label>
-                <div className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium">
-                  粉***
-                </div>
+                <input
+                  type="text"
+                  value={holderName}
+                  onChange={(e) => setHolderName(e.target.value)}
+                  placeholder={t.name}
+                  className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium focus:outline-none focus:border-[#2563eb]"
+                />
               </div>
 
               {/* Nationality */}
@@ -102,9 +188,13 @@ function SpotlineAccountDetailInner() {
                   <span className="text-[#ef4444] mr-0.5">*</span>
                   {t.nationality}
                 </label>
-                <div className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium">
-                  的
-                </div>
+                <input
+                  type="text"
+                  value={nationality}
+                  onChange={(e) => setNationality(e.target.value)}
+                  placeholder={t.nationality}
+                  className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium focus:outline-none focus:border-[#2563eb]"
+                />
               </div>
 
               {/* Bank Address */}
@@ -113,9 +203,13 @@ function SpotlineAccountDetailInner() {
                   <span className="text-[#ef4444] mr-0.5">*</span>
                   {t.bankAddress}
                 </label>
-                <div className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium">
-                  的的
-                </div>
+                <input
+                  type="text"
+                  value={bankBranch}
+                  onChange={(e) => setBankBranch(e.target.value)}
+                  placeholder={t.bankAddress}
+                  className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium focus:outline-none focus:border-[#2563eb]"
+                />
               </div>
 
               {/* Bank Name */}
@@ -124,9 +218,13 @@ function SpotlineAccountDetailInner() {
                   <span className="text-[#ef4444] mr-0.5">*</span>
                   {t.bankName}
                 </label>
-                <div className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium">
-                  的粉
-                </div>
+                <input
+                  type="text"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  placeholder={t.bankName}
+                  className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium focus:outline-none focus:border-[#2563eb]"
+                />
               </div>
 
               {/* Card Number */}
@@ -135,10 +233,23 @@ function SpotlineAccountDetailInner() {
                   <span className="text-[#ef4444] mr-0.5">*</span>
                   {t.cardNumber}
                 </label>
-                <div className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-medium italic">
-                  发多少*********** 发多少
-                </div>
+                <input
+                  type="text"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  placeholder={t.cardNumber}
+                  className="w-full bg-[#f8fafc] border border-gray-200/80 rounded-[10px] px-3.5 py-2.5 text-[14px] text-[#1e293b] font-mono font-medium focus:outline-none focus:border-[#2563eb]"
+                />
               </div>
+
+              <button
+                type="button"
+                disabled={saving}
+                onClick={handleSaveBank}
+                className="w-full py-3 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[15px] font-semibold transition-all mt-2 cursor-pointer border-0 shadow-md active:scale-[0.98] disabled:opacity-50"
+              >
+                {saving ? "..." : t.btnSave}
+              </button>
             </>
           ) : (
             <>
@@ -159,10 +270,11 @@ function SpotlineAccountDetailInner() {
 
               <button
                 type="button"
+                disabled={saving}
                 onClick={handleSaveWallet}
-                className="w-full py-3 rounded-full bg-[#cbd5e1] hover:bg-[#2563eb] text-white text-[15px] font-semibold transition-colors mt-2 cursor-pointer border-0"
+                className="w-full py-3 rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-[15px] font-semibold transition-all mt-2 cursor-pointer border-0 shadow-md active:scale-[0.98] disabled:opacity-50"
               >
-                {t.btnSave}
+                {saving ? "..." : t.btnSave}
               </button>
             </>
           )}

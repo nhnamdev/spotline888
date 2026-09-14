@@ -609,6 +609,98 @@ async function updateUserDetail(req, res) {
   }
 }
 
+/**
+ * Thêm địa chỉ IP vào danh sách đen và khóa tài khoản người dùng
+ * Route: POST /api/admin/user/blacklist-ip
+ */
+async function blacklistIp(req, res) {
+  try {
+    const rawIp = req.body.ip || req.body.reg_ip || req.body.regIp;
+    const userId = req.body.userId || req.body.id || req.body.uid;
+    const remark = req.body.remark || 'Admin blacklisted IP';
+
+    if (!rawIp || !String(rawIp).trim()) {
+      return error(res, 'Vui lòng cung cấp địa chỉ IP cần chặn');
+    }
+
+    const cleanIp = String(rawIp).trim();
+
+    // 1. Đọc danh sách black_ips hiện tại trong fa_config
+    const [configs] = await pool.query("SELECT value FROM fa_config WHERE name = 'black_ips' LIMIT 1");
+    let ipList = [];
+    if (configs.length > 0 && configs[0].value) {
+      try {
+        ipList = JSON.parse(configs[0].value);
+        if (!Array.isArray(ipList)) ipList = [];
+      } catch {
+        ipList = String(configs[0].value).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
+    if (!ipList.includes(cleanIp)) {
+      ipList.push(cleanIp);
+    }
+
+    if (configs.length > 0) {
+      await pool.query("UPDATE fa_config SET value = ? WHERE name = 'black_ips'", [JSON.stringify(ipList)]);
+    } else {
+      await pool.query(
+        "INSERT INTO fa_config (name, `group`, title, tip, type, value) VALUES ('black_ips', 'basic', '黑名单IP列表', '黑名单IP', 'array', ?)",
+        [JSON.stringify(ipList)]
+      );
+    }
+
+    // 2. Nếu có userId, khóa tài khoản hội viên này (status = 0, fund_status = 1)
+    if (userId) {
+      await pool.query(
+        "UPDATE fa_user SET status = 0, fund_status = 1 WHERE id = ?",
+        [userId]
+      );
+    }
+
+    // 3. Ghi log admin
+    await pool.query(
+      `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
+       VALUES (?, ?, '/api/admin/user/blacklist-ip', '拉黑IP及封禁账号', ?, ?, NOW())`,
+      [
+        req.admin?.id || 1,
+        req.admin?.username || 'admin',
+        JSON.stringify({ ip: cleanIp, userId, remark }),
+        req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+      ]
+    );
+
+    return success(res, `Đã thêm IP ${cleanIp} vào danh sách đen`, {
+      ip: cleanIp,
+      ipList,
+    });
+  } catch (err) {
+    return error(res, 'Lỗi thao tác chặn IP: ' + err.message);
+  }
+}
+
+/**
+ * Lấy danh sách IP bị chặn
+ * Route: GET /api/admin/user/blacklist-ip
+ */
+async function getBlacklistIps(req, res) {
+  try {
+    const [configs] = await pool.query("SELECT value FROM fa_config WHERE name = 'black_ips' LIMIT 1");
+    let ipList = [];
+    if (configs.length > 0 && configs[0].value) {
+      try {
+        ipList = JSON.parse(configs[0].value);
+        if (!Array.isArray(ipList)) ipList = [];
+      } catch {
+        ipList = String(configs[0].value).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    return success(res, 'Lấy danh sách IP đen thành công', ipList);
+  } catch (err) {
+    return error(res, 'Lỗi lấy danh sách IP đen: ' + err.message);
+  }
+}
+
 module.exports = {
   getUsers,
   getUserDetail,
@@ -620,4 +712,6 @@ module.exports = {
   deleteMessage,
   saveUserBank,
   updateUserDetail,
+  blacklistIp,
+  getBlacklistIps,
 };
