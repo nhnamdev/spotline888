@@ -101,7 +101,7 @@ async function getUserDetail(req, res) {
 }
 
 /**
- * Nạp / Trừ điểm trực tiếp cho hội viên (上下分 - Điều chỉnh số dư)
+ * Nạp / Trừ / Thiết lập trực tiếp số dư cho hội viên (上下分 - Điều chỉnh số dư)
  * Route: POST /api/admin/user/score
  * Route: POST /api/admin/user/balance
  */
@@ -113,8 +113,7 @@ async function adjustScore(req, res) {
     const rawUserId = req.body.userId ?? req.body.id ?? req.body.uid;
     const rawAmount = req.body.amount ?? req.body.money;
     const rawType = String(req.body.type || 'add').toLowerCase();
-    const isSub = rawType === 'sub' || rawType === '-' || rawType === 'dec' || rawType === 'reduce';
-    const type = isSub ? 'sub' : 'add';
+    const currency = (req.body.currency && String(req.body.currency).toUpperCase() === 'USDT') ? 'USDT' : 'USD';
     const memo = req.body.memo || req.body.remark || '';
 
     if (!rawUserId) {
@@ -122,10 +121,31 @@ async function adjustScore(req, res) {
       return error(res, 'Vui lòng cung cấp ID hội viên');
     }
 
-    const numAmount = Math.abs(parseFloat(rawAmount));
-    if (isNaN(numAmount) || numAmount <= 0) {
+    let type = 'add';
+    if (rawType === 'set' || rawType === 'edit' || rawType === '=') {
+      type = 'set';
+    } else if (rawType === 'sub' || rawType === '-' || rawType === 'dec' || rawType === 'reduce') {
+      type = 'sub';
+    } else {
+      type = 'add';
+    }
+
+    const numAmount = parseFloat(rawAmount);
+    if (isNaN(numAmount)) {
       connection.release();
-      return error(res, 'Số tiền điều chỉnh không hợp lệ (phải lớn hơn 0)');
+      return error(res, 'Số tiền điều chỉnh không hợp lệ');
+    }
+
+    if (type === 'set') {
+      if (numAmount < 0) {
+        connection.release();
+        return error(res, 'Số dư thiết lập không hợp lệ (phải lớn hơn hoặc bằng 0)');
+      }
+    } else {
+      if (numAmount <= 0) {
+        connection.release();
+        return error(res, 'Số tiền điều chỉnh không hợp lệ (phải lớn hơn 0)');
+      }
     }
 
     // Khóa dòng user để chống race condition
@@ -140,45 +160,58 @@ async function adjustScore(req, res) {
       return error(res, 'Hội viên không tồn tại');
     }
 
-    const currentMoney = parseFloat(users[0].money) || 0;
+    const balanceCol = currency === 'USDT' ? 'usdt' : 'money';
+    const currentMoney = parseFloat(users[0][balanceCol]) || 0;
     let newMoney = currentMoney;
     let diffMoney = 0;
 
-    if (type === 'add') {
+    if (type === 'set') {
+      newMoney = parseFloat(numAmount.toFixed(2));
+      diffMoney = parseFloat((newMoney - currentMoney).toFixed(2));
+    } else if (type === 'add') {
       newMoney = parseFloat((currentMoney + numAmount).toFixed(2));
-      diffMoney = numAmount;
+      diffMoney = parseFloat(numAmount.toFixed(2));
     } else {
       if (currentMoney < numAmount) {
         await connection.rollback();
         connection.release();
-        return error(res, `Số dư hiện tại (${currentMoney.toFixed(2)}) không đủ để trừ ${numAmount.toFixed(2)}`);
+        return error(res, `Số dư hiện tại (${currentMoney.toFixed(2)} ${currency}) không đủ để trừ ${numAmount.toFixed(2)} ${currency}`);
       }
       newMoney = parseFloat((currentMoney - numAmount).toFixed(2));
-      diffMoney = -numAmount;
+      diffMoney = -parseFloat(numAmount.toFixed(2));
     }
 
     // Cập nhật số dư fa_user
     await connection.query(
-      'UPDATE fa_user SET money = ? WHERE id = ?',
+      `UPDATE fa_user SET ${balanceCol} = ? WHERE id = ?`,
       [newMoney, rawUserId]
     );
 
     // Ghi sổ cái fa_user_money_log
-    const actionMemo = memo || (type === 'add' ? `充值入金: +${numAmount}` : `扣除资金: -${numAmount}`);
+    let defaultMemo = '';
+    if (type === 'set') {
+      defaultMemo = `管理员直接修改设定余额: ${currentMoney} -> ${newMoney} (变动: ${diffMoney >= 0 ? '+' : ''}${diffMoney} ${currency})`;
+    } else if (type === 'add') {
+      defaultMemo = `充值入金: +${numAmount} ${currency}`;
+    } else {
+      defaultMemo = `扣除资金: -${numAmount} ${currency}`;
+    }
+    const actionMemo = memo || defaultMemo;
+
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'USD', 'admin_adjust', ?, ?, ?, ?, NOW())`,
-      [rawUserId, diffMoney, currentMoney, newMoney, actionMemo]
+       VALUES (?, ?, 'admin_adjust', ?, ?, ?, ?, NOW())`,
+      [rawUserId, currency, diffMoney, currentMoney, newMoney, actionMemo]
     );
 
     // Ghi log quản trị
     await connection.query(
       `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
-       VALUES (?, ?, '/api/admin/user/score', '调整会员余额', ?, ?, NOW())`,
+       VALUES (?, ?, '/api/admin/user/balance', '调整会员余额', ?, ?, NOW())`,
       [
         req.admin?.id || 1,
         req.admin?.username || 'admin',
-        JSON.stringify({ userId: rawUserId, type, diffMoney, before: currentMoney, after: newMoney, memo: actionMemo }),
+        JSON.stringify({ userId: rawUserId, type, currency, diffMoney, before: currentMoney, after: newMoney, memo: actionMemo }),
         req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
       ]
     );
@@ -186,10 +219,12 @@ async function adjustScore(req, res) {
     await connection.commit();
     connection.release();
 
-    return success(res, 'Điều chỉnh số dư thành công', {
+    return success(res, type === 'set' ? 'Thiết lập số dư thành công' : 'Điều chỉnh số dư thành công', {
       user_id: Number(rawUserId),
       type,
+      currency,
       amount: numAmount,
+      diff: diffMoney,
       before_balance: currentMoney,
       after_balance: newMoney,
     });

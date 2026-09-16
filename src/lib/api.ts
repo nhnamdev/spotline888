@@ -278,7 +278,7 @@ export const adminApi = {
   controlOrder: (orderId: number, controlResult: 'win' | 'lose') =>
     apiFetch('/admin/order/control', { method: 'POST', body: JSON.stringify({ orderId, controlResult }) }, true),
 
-  adjustBalance: (data: { userId: number; amount: number; type?: 'add' | 'sub'; memo?: string }) =>
+  adjustBalance: (data: { userId: number; amount: number; type?: 'add' | 'sub' | 'set'; currency?: 'USD' | 'USDT'; memo?: string }) =>
     apiFetch('/admin/user/balance', { method: 'POST', body: JSON.stringify(data) }, true),
 
   adjustCreditScore: (data: { userId: number; score: number; type?: 'add' | 'sub' | 'set'; memo?: string }) =>

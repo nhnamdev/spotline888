@@ -76,11 +76,12 @@ export default function AdminUserContent() {
     fetchUsers("");
   };
 
-  // Modal State for Balance Adjustment (分数 / 上下分)
+  // Modal State for Balance Adjustment (分数 / 上下分 / 直接设定)
   const [balanceModal, setBalanceModal] = useState<{
     isOpen: boolean;
     user: UserItem | null;
-    type: 'add' | 'sub';
+    type: 'add' | 'sub' | 'set';
+    currency: 'USD' | 'USDT';
     amount: string;
     memo: string;
     loading: boolean;
@@ -88,6 +89,7 @@ export default function AdminUserContent() {
     isOpen: false,
     user: null,
     type: 'add',
+    currency: 'USD',
     amount: '',
     memo: '',
     loading: false,
@@ -273,9 +275,16 @@ export default function AdminUserContent() {
   const handleConfirmBalance = async () => {
     if (!balanceModal.user) return;
     const numAmount = parseFloat(balanceModal.amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      alert('请输入有效的金额 (> 0)');
-      return;
+    if (balanceModal.type === 'set') {
+      if (isNaN(numAmount) || numAmount < 0) {
+        alert('请输入有效的设定余额 (>= 0)');
+        return;
+      }
+    } else {
+      if (isNaN(numAmount) || numAmount <= 0) {
+        alert('请输入有效的金额 (> 0)');
+        return;
+      }
     }
 
     setBalanceModal(prev => ({ ...prev, loading: true }));
@@ -284,21 +293,58 @@ export default function AdminUserContent() {
         userId: balanceModal.user.uid,
         amount: numAmount,
         type: balanceModal.type,
-        memo: balanceModal.memo || (balanceModal.type === 'add' ? `管理员加款: +${numAmount}` : `管理员扣款: -${numAmount}`),
+        currency: balanceModal.currency,
+        memo: balanceModal.memo || (
+          balanceModal.type === 'set'
+            ? `管理员直接修改设定余额: ${numAmount} ${balanceModal.currency}`
+            : (balanceModal.type === 'add'
+                ? `管理员加款: +${numAmount} ${balanceModal.currency}`
+                : `管理员扣款: -${numAmount} ${balanceModal.currency}`)
+        ),
       });
 
       if (res && res.code === 1) {
+        const currentBalance = parseFloat(
+          balanceModal.currency === 'USDT'
+            ? balanceModal.user.usdtBalance
+            : balanceModal.user.money
+        ) || 0;
+
         const newBalance = res.data?.after_balance !== undefined 
           ? parseFloat(res.data.after_balance).toFixed(2) 
           : (
-            balanceModal.type === 'add' 
-              ? (parseFloat(balanceModal.user.money) + numAmount).toFixed(2)
-              : (parseFloat(balanceModal.user.money) - numAmount).toFixed(2)
+            balanceModal.type === 'set'
+              ? numAmount.toFixed(2)
+              : balanceModal.type === 'add' 
+                ? (currentBalance + numAmount).toFixed(2)
+                : (currentBalance - numAmount).toFixed(2)
           );
 
-        setUsers(prev => prev.map(u => u.uid === balanceModal.user!.uid ? { ...u, money: newBalance } : u));
-        setBalanceModal({ isOpen: false, user: null, type: 'add', amount: '', memo: '', loading: false });
-        showToast('success', `调整余额成功！当前余额: ${newBalance} $`);
+        setUsers(prev => prev.map(u => {
+          if (u.uid !== balanceModal.user!.uid) return u;
+          return balanceModal.currency === 'USDT'
+            ? { ...u, usdtBalance: newBalance }
+            : { ...u, money: newBalance };
+        }));
+
+        setDetailModal(prev => {
+          if (!prev.isOpen || !prev.userItem || prev.userItem.uid !== balanceModal.user!.uid) return prev;
+          return {
+            ...prev,
+            userDetail: prev.userDetail ? {
+              ...prev.userDetail,
+              [balanceModal.currency === 'USDT' ? 'usdt' : 'money']: newBalance,
+            } : prev.userDetail,
+            userItem: {
+              ...prev.userItem,
+              [balanceModal.currency === 'USDT' ? 'usdtBalance' : 'money']: newBalance,
+            },
+          };
+        });
+
+        const actionText = balanceModal.type === 'set' ? '设定余额' : (balanceModal.type === 'add' ? '加款' : '扣款');
+        showToast('success', `${actionText}成功！当前${balanceModal.currency}余额: ${newBalance}`);
+        setBalanceModal({ isOpen: false, user: null, type: 'add', currency: 'USD', amount: '', memo: '', loading: false });
       } else {
         alert(res?.msg || '调整余额失败');
         setBalanceModal(prev => ({ ...prev, loading: false }));
@@ -1065,6 +1111,7 @@ export default function AdminUserContent() {
                                 isOpen: true,
                                 user,
                                 type: 'add',
+                                currency: 'USD',
                                 amount: '',
                                 memo: '',
                                 loading: false,
@@ -1240,14 +1287,14 @@ export default function AdminUserContent() {
         </div>
       )}
 
-      {/* Modal 会员余额调整 (上下分) */}
+      {/* Modal 会员余额调整 (上下分 / 直接修改) */}
       {balanceModal.isOpen && balanceModal.user && (
         <div className="modal-backdrop">
           <div className="modal-box">
             <div className="modal-header">
               <h3 className="modal-title">
                 <i className="fa fa-shopping-cart" style={{ color: '#f39c12' }}></i>
-                会员余额调整 (上下分)
+                会员余额调整 (上下分 / 直接修改)
               </h3>
               <button 
                 type="button" 
@@ -1268,8 +1315,38 @@ export default function AdminUserContent() {
                   <strong className="info-value">{balanceModal.user.uid}</strong>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">当前余额:</span>
+                  <span className="info-label">现金余额:</span>
                   <strong className="info-value" style={{ color: '#18bc9c' }}>$ {balanceModal.user.money}</strong>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">USDT余额:</span>
+                  <strong className="info-value" style={{ color: '#2980b9' }}>{balanceModal.user.usdtBalance} USDT</strong>
+                </div>
+              </div>
+
+              <div className="form-field-group">
+                <label className="field-label">操作币种账户 <span style={{ color: '#e74c3c' }}>*</span></label>
+                <div className="radio-button-group">
+                  <label className={`radio-pill ${balanceModal.currency === 'USD' ? 'active add' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="balanceCurrency" 
+                      value="USD" 
+                      checked={balanceModal.currency === 'USD'} 
+                      onChange={() => setBalanceModal(prev => ({ ...prev, currency: 'USD' }))}
+                    />
+                    <i className="fa fa-dollar"></i> 现金账户 (USD $)
+                  </label>
+                  <label className={`radio-pill ${balanceModal.currency === 'USDT' ? 'active sub' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="balanceCurrency" 
+                      value="USDT" 
+                      checked={balanceModal.currency === 'USDT'} 
+                      onChange={() => setBalanceModal(prev => ({ ...prev, currency: 'USDT' }))}
+                    />
+                    <i className="fa fa-bitcoin"></i> 数字资产 (USDT)
+                  </label>
                 </div>
               </div>
 
@@ -1296,16 +1373,65 @@ export default function AdminUserContent() {
                     />
                     <i className="fa fa-minus-circle"></i> 扣款 (-)
                   </label>
+                  <label 
+                    className={`radio-pill ${balanceModal.type === 'set' ? 'active' : ''}`}
+                    style={balanceModal.type === 'set' ? { borderColor: '#3498db', backgroundColor: '#ebf5fb', color: '#2980b9' } : {}}
+                  >
+                    <input 
+                      type="radio" 
+                      name="balanceType" 
+                      value="set" 
+                      checked={balanceModal.type === 'set'} 
+                      onChange={() => setBalanceModal(prev => ({ ...prev, type: 'set' }))}
+                    />
+                    <i className="fa fa-pencil"></i> 直接设定余额 (=)
+                  </label>
                 </div>
               </div>
 
+              {/* Dynamic Live Calculation preview when setting balance directly */}
+              {balanceModal.type === 'set' && (() => {
+                const currentVal = parseFloat(balanceModal.currency === 'USDT' ? balanceModal.user.usdtBalance : balanceModal.user.money) || 0;
+                const inputVal = parseFloat(balanceModal.amount);
+                const hasInput = !isNaN(inputVal) && inputVal >= 0;
+                const diffVal = hasInput ? parseFloat((inputVal - currentVal).toFixed(2)) : 0;
+                return (
+                  <div style={{
+                    background: '#f8fafc',
+                    border: '1px dashed #cbd5e1',
+                    borderRadius: '6px',
+                    padding: '10px 14px',
+                    marginBottom: '14px',
+                    fontSize: '13px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ color: '#64748b' }}>当前{balanceModal.currency}余额:</span>
+                      <strong>{currentVal.toFixed(2)} {balanceModal.currency}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ color: '#64748b' }}>修改后目标新余额:</span>
+                      <strong style={{ color: '#2563eb' }}>{hasInput ? inputVal.toFixed(2) : '--'} {balanceModal.currency}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e2e8f0', paddingTop: '4px' }}>
+                      <span style={{ color: '#64748b' }}>系统变动差额:</span>
+                      <strong style={{ color: diffVal > 0 ? '#16a34a' : (diffVal < 0 ? '#dc2626' : '#64748b') }}>
+                        {hasInput ? `${diffVal >= 0 ? '+' : ''}${diffVal.toFixed(2)} ${balanceModal.currency}` : '--'}
+                      </strong>
+                    </div>
+                  </div>
+                );
+              })()}
+
               <div className="form-field-group">
-                <label className="field-label">调整金额 ($) <span style={{ color: '#e74c3c' }}>*</span></label>
+                <label className="field-label">
+                  {balanceModal.type === 'set' ? `设定目标新余额 (${balanceModal.currency})` : `调整金额 (${balanceModal.currency})`}{' '}
+                  <span style={{ color: '#e74c3c' }}>*</span>
+                </label>
                 <input 
                   type="number" 
                   className="modal-input" 
-                  placeholder="输入金额 (例如: 1000)"
-                  min="0.01"
+                  placeholder={balanceModal.type === 'set' ? `输入目标账户总额 (如: 5000)` : `输入调整金额 (例如: 1000)`}
+                  min={balanceModal.type === 'set' ? "0" : "0.01"}
                   step="any"
                   value={balanceModal.amount}
                   onChange={(e) => setBalanceModal(prev => ({ ...prev, amount: e.target.value }))}
@@ -1338,7 +1464,7 @@ export default function AdminUserContent() {
                 disabled={balanceModal.loading}
                 onClick={handleConfirmBalance}
               >
-                {balanceModal.loading ? '处理中...' : '确定调整'}
+                {balanceModal.loading ? '处理中...' : (balanceModal.type === 'set' ? '确定设定余额' : '确定调整')}
               </button>
             </div>
           </div>
@@ -1719,11 +1845,49 @@ export default function AdminUserContent() {
                     </div>
                     <div className="info-item">
                       <span className="info-label">现金余额:</span>
-                      <strong className="info-value" style={{ color: '#18bc9c' }}>$ {detailModal.userDetail?.money ?? detailModal.userItem.money}</strong>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <strong className="info-value" style={{ color: '#18bc9c' }}>$ {detailModal.userDetail?.money ?? detailModal.userItem.money}</strong>
+                        <button
+                          type="button"
+                          className="btn btn-xs btn-default"
+                          style={{ padding: '1px 6px', fontSize: '11px', height: 'auto', lineHeight: '1.4' }}
+                          title="直接修改现金余额"
+                          onClick={() => setBalanceModal({
+                            isOpen: true,
+                            user: detailModal.userItem,
+                            type: 'set',
+                            currency: 'USD',
+                            amount: String(detailModal.userDetail?.money ?? detailModal.userItem!.money),
+                            memo: '',
+                            loading: false,
+                          })}
+                        >
+                          <i className="fa fa-pencil"></i> 修改
+                        </button>
+                      </div>
                     </div>
                     <div className="info-item">
                       <span className="info-label">USDT余额:</span>
-                      <strong className="info-value" style={{ color: '#2980b9' }}>{detailModal.userDetail?.usdt ?? detailModal.userItem.usdtBalance} USDT</strong>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <strong className="info-value" style={{ color: '#2980b9' }}>{detailModal.userDetail?.usdt ?? detailModal.userItem.usdtBalance} USDT</strong>
+                        <button
+                          type="button"
+                          className="btn btn-xs btn-default"
+                          style={{ padding: '1px 6px', fontSize: '11px', height: 'auto', lineHeight: '1.4' }}
+                          title="直接修改USDT余额"
+                          onClick={() => setBalanceModal({
+                            isOpen: true,
+                            user: detailModal.userItem,
+                            type: 'set',
+                            currency: 'USDT',
+                            amount: String(detailModal.userDetail?.usdt ?? detailModal.userItem!.usdtBalance),
+                            memo: '',
+                            loading: false,
+                          })}
+                        >
+                          <i className="fa fa-pencil"></i> 修改
+                        </button>
+                      </div>
                     </div>
                     <div className="info-item">
                       <span className="info-label">冻结资金:</span>
