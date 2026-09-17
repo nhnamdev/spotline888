@@ -180,22 +180,24 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
     }
   }
 
-  // 5. 充值入金 / 管理员加款
-  const rechargeMatch = memo.match(/(?:充值入金|管理员加款|管理員加款|Recharge Deposit):?\s*\+?([0-9\.]+)?/i);
+  // 5. 充值入金 / 充值 (ẩn chữ quản trị viên / sửa số dư, hiển thị thành Nạp tiền)
+  const rechargeMatch = memo.match(/(?:充值入金|管理员加款|管理員加款|管理员直接修改设定余额|管理員直接修改設定餘額|修改设定余额|修改設定餘額|设定余额|設定餘額|充值|Recharge Deposit):?\s*\+?([0-9\.]+)?(?:\s*([A-Za-z]+))?/i);
   if (rechargeMatch) {
     const amt = rechargeMatch[1] ? `: +${rechargeMatch[1]}` : "";
+    const curr = rechargeMatch[2] ? ` ${rechargeMatch[2]}` : "";
+    const suffix = amt ? `${amt}${curr}` : "";
     switch (lang) {
-      case "en-US": return `Recharge Deposit${amt}`;
-      case "vi-VN": return `Nạp tiền vào tài khoản${amt}`;
-      case "hk-TW": return `充值入金${amt}`;
-      case "ja-JP": return `チャージ入金${amt}`;
-      case "ko-KR": return `충전 입금${amt}`;
-      case "id-ID": return `Isi Ulang Deposit${amt}`;
-      case "ms-MY": return `Deposit Tambah Nilai${amt}`;
-      case "th-TH": return `ฝากเงินเข้าบัญชี${amt}`;
-      case "fr-FR": return `Dépôt de recharge${amt}`;
-      case "de-DE": return `Auflade-Einzahlung${amt}`;
-      default: return `充值入金${amt}`;
+      case "en-US": return `Recharge Deposit${suffix}`;
+      case "vi-VN": return `Nạp tiền vào tài khoản${suffix}`;
+      case "hk-TW": return `充值入金${suffix}`;
+      case "ja-JP": return `チャージ入金${suffix}`;
+      case "ko-KR": return `충전 입금${suffix}`;
+      case "id-ID": return `Isi Ulang Deposit${suffix}`;
+      case "ms-MY": return `Deposit Tambah Nilai${suffix}`;
+      case "th-TH": return `ฝากเงินเข้าบัญชี${suffix}`;
+      case "fr-FR": return `Dépôt de recharge${suffix}`;
+      case "de-DE": return `Auflade-Einzahlung${suffix}`;
+      default: return `充值入金${suffix}`;
     }
   }
 

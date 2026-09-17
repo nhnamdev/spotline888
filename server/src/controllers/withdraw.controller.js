@@ -236,7 +236,7 @@ async function getMoneyLogs(req, res) {
     const [rows] = await pool.query(
       `SELECT id, currency, type, money, before_balance, after_balance, memo, created_at 
        FROM fa_user_money_log 
-       WHERE user_id = ? 
+       WHERE user_id = ? AND CAST(money AS DECIMAL(15,2)) != 0
        ORDER BY id DESC 
        LIMIT 50`,
       [userId]

@@ -15,6 +15,37 @@ interface RecordItem {
   amount: string;
 }
 
+/**
+ * Định dạng thời gian theo múi giờ Vương Quốc Anh (Europe/London: GMT / BST)
+ * Định dạng: YYYY-MM-DD HH:mm:ss
+ */
+function formatToUKTime(dateStr: string | Date | null | undefined): string {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return String(dateStr);
+
+  try {
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/London",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(d);
+    const map: Record<string, string> = {};
+    for (const p of parts) {
+      map[p.type] = p.value;
+    }
+    return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
+  } catch {
+    return new Date(dateStr).toISOString().slice(0, 19).replace("T", " ");
+  }
+}
+
 function SpotlineMoneyRecordContent() {
   const router = useRouter();
   const { currentLang } = useI18n();
@@ -32,13 +63,19 @@ function SpotlineMoneyRecordContent() {
       if (res.code === 1 && res.data) {
         const rows = res.data.rows || res.data;
         if (Array.isArray(rows)) {
-          const mapped: RecordItem[] = rows.map((r: any) => ({
-            id: r.id,
-            rawMemo: r.memo || '',
-            type: r.type,
-            time: r.created_at ? new Date(r.created_at).toISOString().slice(0, 19).replace('T', ' ') : '-',
-            amount: `${parseFloat(r.money || '0') >= 0 ? '+' : ''}${parseFloat(r.money || '0').toFixed(2)}`,
-          }));
+          const mapped: RecordItem[] = rows
+            .filter((r: any) => {
+              // Bỏ qua các bản ghi có số tiền biến động = 0 (+0.00)
+              const val = parseFloat(r.money || '0');
+              return !isNaN(val) && Math.abs(val) > 0.0001;
+            })
+            .map((r: any) => ({
+              id: r.id,
+              rawMemo: r.memo || '',
+              type: r.type,
+              time: formatToUKTime(r.created_at),
+              amount: `${parseFloat(r.money || '0') >= 0 ? '+' : ''}${parseFloat(r.money || '0').toFixed(2)}`,
+            }));
           setRecords(mapped);
         }
       }
@@ -81,8 +118,13 @@ function SpotlineMoneyRecordContent() {
           ) : (
             <>
               {records.map((item) => {
-                const displayTitle = formatFundRecordMemo(item.rawMemo, currentLang) || 
-                  (item.type === 'recharge' ? 'Recharge' : 'Withdrawal');
+                let displayTitle = formatFundRecordMemo(item.rawMemo, currentLang);
+                if (!displayTitle || displayTitle.includes('管理员') || displayTitle.includes('设定余额') || displayTitle.includes('直接修改')) {
+                  const num = parseFloat(item.amount || '0');
+                  displayTitle = num >= 0 
+                    ? formatFundRecordMemo('充值入金', currentLang) 
+                    : (item.type === 'withdraw' ? 'Withdrawal' : 'Recharge');
+                }
                 return (
                   <div
                     key={item.id}

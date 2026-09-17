@@ -295,11 +295,11 @@ export default function AdminUserContent() {
         type: balanceModal.type,
         currency: balanceModal.currency,
         memo: balanceModal.memo || (
-          balanceModal.type === 'set'
-            ? `管理员直接修改设定余额: ${numAmount} ${balanceModal.currency}`
-            : (balanceModal.type === 'add'
-                ? `管理员加款: +${numAmount} ${balanceModal.currency}`
-                : `管理员扣款: -${numAmount} ${balanceModal.currency}`)
+          balanceModal.type === 'add'
+            ? `充值入金: +${numAmount} ${balanceModal.currency}`
+            : (balanceModal.type === 'sub'
+                ? `扣除资金: -${numAmount} ${balanceModal.currency}`
+                : '')
         ),
       });
 

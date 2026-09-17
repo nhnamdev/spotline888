@@ -187,22 +187,24 @@ async function adjustScore(req, res) {
       [newMoney, rawUserId]
     );
 
-    // Ghi sổ cái fa_user_money_log
-    let defaultMemo = '';
-    if (type === 'set') {
-      defaultMemo = `管理员直接修改设定余额: ${currentMoney} -> ${newMoney} (变动: ${diffMoney >= 0 ? '+' : ''}${diffMoney} ${currency})`;
-    } else if (type === 'add') {
-      defaultMemo = `充值入金: +${numAmount} ${currency}`;
-    } else {
-      defaultMemo = `扣除资金: -${numAmount} ${currency}`;
-    }
-    const actionMemo = memo || defaultMemo;
+    // Ghi sổ cái fa_user_money_log (khi tăng số dư ghi nhận là 'recharge' / 充值入金, ẩn chữ admin)
+    if (diffMoney !== 0) {
+      const logType = diffMoney > 0 ? 'recharge' : 'deduct';
+      const defaultMemo = diffMoney > 0 
+        ? `充值入金: +${diffMoney} ${currency}`
+        : `扣除资金: -${Math.abs(diffMoney)} ${currency}`;
 
-    await connection.query(
-      `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, ?, 'admin_adjust', ?, ?, ?, ?, NOW())`,
-      [rawUserId, currency, diffMoney, currentMoney, newMoney, actionMemo]
-    );
+      let actionMemo = memo;
+      if (!actionMemo || actionMemo.includes('管理员') || actionMemo.includes('设定余额') || actionMemo.includes('直接修改')) {
+        actionMemo = defaultMemo;
+      }
+
+      await connection.query(
+        `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+        [rawUserId, currency, logType, diffMoney, currentMoney, newMoney, actionMemo]
+      );
+    }
 
     // Ghi log quản trị
     await connection.query(
