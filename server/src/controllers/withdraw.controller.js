@@ -236,7 +236,12 @@ async function getMoneyLogs(req, res) {
     const [rows] = await pool.query(
       `SELECT id, currency, type, money, before_balance, after_balance, memo, created_at 
        FROM fa_user_money_log 
-       WHERE user_id = ? AND CAST(money AS DECIMAL(15,2)) != 0
+       WHERE user_id = ? 
+         AND CAST(money AS DECIMAL(15,2)) != 0
+         AND type NOT IN ('admin_adjust', 'adjust')
+         AND memo NOT LIKE '%管理员%' 
+         AND memo NOT LIKE '%设定余额%' 
+         AND memo NOT LIKE '%直接修改%'
        ORDER BY id DESC 
        LIMIT 50`,
       [userId]

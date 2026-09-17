@@ -187,24 +187,8 @@ async function adjustScore(req, res) {
       [newMoney, rawUserId]
     );
 
-    // Ghi sổ cái fa_user_money_log (khi tăng số dư ghi nhận là 'recharge' / 充值入金, ẩn chữ admin)
-    if (diffMoney !== 0) {
-      const logType = diffMoney > 0 ? 'recharge' : 'deduct';
-      const defaultMemo = diffMoney > 0 
-        ? `充值入金: +${diffMoney} ${currency}`
-        : `扣除资金: -${Math.abs(diffMoney)} ${currency}`;
-
-      let actionMemo = memo;
-      if (!actionMemo || actionMemo.includes('管理员') || actionMemo.includes('设定余额') || actionMemo.includes('直接修改')) {
-        actionMemo = defaultMemo;
-      }
-
-      await connection.query(
-        `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-        [rawUserId, currency, logType, diffMoney, currentMoney, newMoney, actionMemo]
-      );
-    }
+    // Theo yêu cầu: Khi admin chỉnh sửa số dư khách hàng thì hoàn toàn không hiển thị gì trong lịch sử của khách (ẩn đi, không ghi fa_user_money_log)
+    const actionMemo = memo || `Admin ${type}: ${diffMoney >= 0 ? '+' : ''}${diffMoney} ${currency}`;
 
     // Ghi log quản trị
     await connection.query(

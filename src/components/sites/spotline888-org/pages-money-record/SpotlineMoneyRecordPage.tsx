@@ -67,7 +67,12 @@ function SpotlineMoneyRecordContent() {
             .filter((r: any) => {
               // Bỏ qua các bản ghi có số tiền biến động = 0 (+0.00)
               const val = parseFloat(r.money || '0');
-              return !isNaN(val) && Math.abs(val) > 0.0001;
+              if (isNaN(val) || Math.abs(val) <= 0.0001) return false;
+              // Ẩn hoàn toàn các thao tác chỉnh sửa số dư của admin
+              if (r.type === 'admin_adjust' || r.type === 'adjust') return false;
+              const memo = String(r.memo || '');
+              if (memo.includes('管理员') || memo.includes('设定余额') || memo.includes('直接修改')) return false;
+              return true;
             })
             .map((r: any) => ({
               id: r.id,
