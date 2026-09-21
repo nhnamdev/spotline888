@@ -1,25 +1,20 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import Link from "next/link";
 import { useI18n } from "./registerI18n";
-import { getR2Url } from "@/lib/r2";
+import { FortradeLogo } from "@/components/ui/FortradeLogo";
 
 export const RegisterLogo: React.FC = () => {
   const { t } = useI18n();
 
   return (
     <div>
-      {/* SPOT Logo */}
+      {/* Fortrade Logo */}
       <div className="px-5 pt-2">
-        <Image
-          src={getR2Url("/sites/spotline888-org/pages-login-login/logo.png")}
-          alt="SPOT"
-          width={80}
-          height={28}
-          className="w-[80px] h-[28px] object-contain"
-          priority
-        />
+        <Link href="/#/pages/index/index" className="inline-block" aria-label="Fortrade">
+          <FortradeLogo width={100} height={28} textColor="#111827" />
+        </Link>
       </div>
 
       {/* Page Title */}

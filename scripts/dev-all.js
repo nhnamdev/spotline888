@@ -44,7 +44,7 @@ process.on('exit', cleanup);
 
 // 1. Khởi động Backend Express (cổng 5000)
 console.log('⚙️  [1/2] Đang khởi động Backend Server (Port 5000)...');
-serverProcess = spawn('node', [path.join(rootDir, 'server/src/server.js')], {
+serverProcess = spawn('node', ['server/src/server.js'], {
   cwd: rootDir,
   stdio: 'inherit',
   shell: isWindows,

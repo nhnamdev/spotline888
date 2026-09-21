@@ -2,7 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { getR2Url } from "@/lib/r2";
+import { FortradeLogo } from "@/components/ui/FortradeLogo";
 
 interface IndexHeaderProps {
   onOpenLang: () => void;
@@ -12,16 +14,9 @@ export const IndexHeader: React.FC<IndexHeaderProps> = ({ onOpenLang }) => {
   return (
     <header className="px-4 pt-1.5 pb-1 flex items-center justify-between h-10 select-none">
       {/* Brand Logo */}
-      <div className="w-[75px] h-[30px] flex items-center">
-        <Image
-          src={getR2Url("/sites/spotline888-org/pages-login-login/logo.png")}
-          alt="SPOT"
-          width={75}
-          height={30}
-          className="w-full h-full object-contain"
-          priority
-        />
-      </div>
+      <Link href="/#/pages/index/index" className="flex items-center" aria-label="Fortrade">
+        <FortradeLogo width={92} height={26} textColor="#111827" />
+      </Link>
 
       {/* Circular Language Button */}
       <button

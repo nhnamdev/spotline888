@@ -19,6 +19,7 @@ export interface IndexTranslations {
   noticeTitle: string;
   noticeTime: string;
   noticeContent: string;
+  close: string;
 }
 
 export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
@@ -39,9 +40,10 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "余额宝",
     tabMine: "我的",
     noticeTitle: "公司使命：提供安全且易于使用的数字资产服务",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent:
       "我们是一家专注于线上数字资产服务的平台，致力于让东南亚用户更轻松地访问和管理他们的加密资产。我们的目标是让加密货币交易变得便捷、快速，并让所有用户都能轻松参与。温馨提醒：如果您是高净值收入人群，需要进行大额（175,000,000 IDR）投资，请优先联系客服办理开通本公司的国际VIP通道，避免影响您的投资体验。一次办理，终身享用。",
+    close: "关闭",
   },
   "vi-VN": {
     withdraw: "Rút tiền",
@@ -60,9 +62,10 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Quỹ tài chính",
     tabMine: "Cá nhân",
     noticeTitle: "Sứ mệnh: Cung cấp dịch vụ tài sản kỹ thuật số an toàn, tiện lợi",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent:
       "Chúng tôi là nền tảng chuyên về dịch vụ tài sản kỹ thuật số trực tuyến, cam kết giúp người dùng Đông Nam Á tiếp cận và quản lý tài sản mã hóa dễ dàng hơn. Mục tiêu của chúng tôi là làm cho giao dịch tiền mã hóa trở nên thuận tiện, nhanh chóng và mọi người dùng đều có thể dễ dàng tham gia. Lưu ý: Nếu quý khách là nhà đầu tư có thu nhập cao cần đầu tư số tiền lớn (175,000,000 IDR), vui lòng ưu tiên liên hệ bộ phận CSKH để mở cổng VIP quốc tế của công ty, tránh ảnh hưởng đến trải nghiệm đầu tư. Đăng ký một lần, sử dụng trọn đời.",
+    close: "Đóng",
   },
   "en-US": {
     withdraw: "Withdraw",
@@ -81,9 +84,10 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Yuebao",
     tabMine: "Mine",
     noticeTitle: "Company Mission: Safe and easy-to-use digital asset service",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent:
       "We are a platform focusing on online digital asset services, dedicated to making crypto asset access and management easier for users in Southeast Asia. Our goal is to make cryptocurrency trading convenient, fast, and accessible to everyone. Reminder: If you are investing large amounts (175,000,000 IDR), please contact customer service to activate our international VIP channel.",
+    close: "Close",
   },
   "hk-TW": {
     withdraw: "出金",
@@ -102,8 +106,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "餘額寶",
     tabMine: "我的",
     noticeTitle: "公司使命：提供安全且易於使用的數字資產服務",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "致力於打造便捷、透明、人人可參與的數字貨幣交易環境，提供安全穩定的全球資產流動通道與多重身份驗證保障。",
+    close: "關閉",
   },
   "id-ID": {
     withdraw: "Penarikan",
@@ -122,8 +127,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Yu'ebao",
     tabMine: "Pusat Pribadi",
     noticeTitle: "Misi Perusahaan: Layanan aset digital yang aman dan mudah",
-    noticeTime: "2024-02-08 10:47:59",
-    noticeContent: "Membantu pengguna mengakses dan mengelola aset kripto secara aman, cepat, dan efisien dengan arsitektur cloud terpercaya.",
+    noticeTime: "2022-09-09 10:30",
+    noticeContent: "Membantu pengguna mengakses dan mengelola aset kripto secara aman, cepat, dan efisien với arsitektur cloud terpercaya.",
+    close: "Tutup",
   },
   "ms-MY": {
     withdraw: "Pengeluaran",
@@ -142,8 +148,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Yuebao",
     tabMine: "Profil Saya",
     noticeTitle: "Misi: Menyediakan perkhidmatan aset digital yang selamat dan mudah",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "Menyediakan platform perdagangan aset digital yang telus dan boleh dipercayai di seluruh Asia Tenggara.",
+    close: "Tutup",
   },
   "ja-JP": {
     withdraw: "出金",
@@ -162,8 +169,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "余額宝",
     tabMine: "マイ",
     noticeTitle: "企業理念：安全で使いやすいデジタル資産サービスを提供",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "便利で透明性が高く、誰もが参加できる暗号資産取引環境の構築に専心しています。",
+    close: "閉じる",
   },
   "th-TH": {
     withdraw: "ถอนเงิน",
@@ -182,8 +190,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "กระเป๋าเงิน",
     tabMine: "ศูนย์ส่วนตัว",
     noticeTitle: "พันธกิจ: ให้บริการสินทรัพย์ดิจิทัลที่ปลอดภัยและใช้งานง่าย",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "มุ่งมั่นที่จะสร้างสภาพแวดล้อมการซื้อขายสินทรัพย์ดิจิทัลที่สะดวก โปร่งใส และปลอดภัยสำหรับทุกคน",
+    close: "ปิด",
   },
   "ko-KR": {
     withdraw: "출금",
@@ -202,8 +211,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "위어바오",
     tabMine: "개인 센터",
     noticeTitle: "기업 사명: 안전하고 사용하기 쉬운 디지털 자산 서비스 제공",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "누구나 참여할 수 있는 편리하고 투명한 디지털 자산 거래 환경을 제공합니다.",
+    close: "닫기",
   },
   "fr-FR": {
     withdraw: "Retrait",
@@ -222,8 +232,9 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Solde",
     tabMine: "Personnel",
     noticeTitle: "Mission: Fournir des services d'actifs numériques sécurisés",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "Créer un environnement de négociation d'actifs numériques transparent et sécurisé pour tous.",
+    close: "Fermer",
   },
   "de-DE": {
     withdraw: "Abhebung",
@@ -242,7 +253,8 @@ export const INDEX_TRANSLATIONS: Record<LanguageCode, IndexTranslations> = {
     tabBalance: "Guthaben",
     tabMine: "Persönliches Zentrum",
     noticeTitle: "Unternehmensmission: Sichere digitale Asset-Dienstleistungen",
-    noticeTime: "2024-02-08 10:47:59",
+    noticeTime: "2022-09-09 10:30",
     noticeContent: "Bereitstellung einer sicheren, transparenten und zugänglichen Handelsumgebung für digitale Vermögenswerte.",
+    close: "Schließen",
   },
 };

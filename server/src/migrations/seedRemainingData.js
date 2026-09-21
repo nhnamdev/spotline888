@@ -179,7 +179,7 @@ async function seedRemainingData() {
     for (const n of notices) {
       await connection.query(`
         INSERT INTO fa_notice (id, type, title, url, short_content, content, \`rank\`, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, '2022-09-09 10:30:00')
         ON DUPLICATE KEY UPDATE
           type = VALUES(type),
           title = VALUES(title),
@@ -187,7 +187,8 @@ async function seedRemainingData() {
           short_content = VALUES(short_content),
           content = VALUES(content),
           \`rank\` = VALUES(\`rank\`),
-          status = VALUES(status)
+          status = VALUES(status),
+          created_at = VALUES(created_at)
       `, [n.id, n.type, n.title, n.url, n.short_content, n.content, n.rank, n.status]);
     }
     console.log(`   -> Đã hoàn thành seed ${notices.length} thông báo vào fa_notice`);

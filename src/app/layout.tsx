@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Website Clone",
-  description: "Pixel-perfect website clone",
+  title: "Fortrade",
+  description: "Fortrade Online Trading Platform",
 };
 
 export default function RootLayout({

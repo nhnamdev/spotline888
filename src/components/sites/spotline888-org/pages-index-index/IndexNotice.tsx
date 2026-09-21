@@ -36,16 +36,24 @@ export const IndexNotice: React.FC<IndexNoticeProps> = ({ t }) => {
     loadNotice();
   }, []);
 
+  const formatDisplayTime = (rawTime?: string) => {
+    if (!rawTime) return t.noticeTime || "2022-09-09 10:30";
+    try {
+      const d = new Date(rawTime);
+      if (isNaN(d.getTime())) return t.noticeTime || "2022-09-09 10:30";
+      const year = d.getFullYear() > 2022 ? 2022 : d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
+    } catch {
+      return t.noticeTime || "2022-09-09 10:30";
+    }
+  };
+
   const displayTitle = dbNotice?.title || t.noticeTitle;
-  const displayTime = dbNotice?.created_at
-    ? new Date(dbNotice.created_at).toLocaleString("vi-VN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : t.noticeTime;
+  const displayTime = formatDisplayTime(dbNotice?.created_at || t.noticeTime);
   const displayContent = dbNotice?.content || t.noticeContent;
 
   return (
@@ -96,14 +104,14 @@ export const IndexNotice: React.FC<IndexNoticeProps> = ({ t }) => {
               {displayTime}
             </div>
             <div
-              className="text-[13.5px] text-[#334155] leading-[1.7] text-justify font-normal"
+              className="text-[13.5px] text-[#334155] leading-[1.65] text-left break-words font-normal"
               dangerouslySetInnerHTML={{ __html: displayContent }}
             />
             <button
               onClick={() => setShowModal(false)}
-              className="mt-5 w-full py-2.5 rounded-[10px] bg-[#1e40af] text-white text-[13.5px] font-medium active:scale-[0.98] transition-transform"
+              className="mt-5 w-full py-2.5 rounded-[10px] bg-[#1e40af] text-white text-[13.5px] font-medium active:scale-[0.98] transition-transform hover:bg-[#1d4ed8]"
             >
-              Đóng
+              {t.close || "关闭"}
             </button>
           </div>
         </div>
