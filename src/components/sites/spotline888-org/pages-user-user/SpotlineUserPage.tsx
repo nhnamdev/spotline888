@@ -164,7 +164,7 @@ function SpotlineUserPageContent() {
         }
         return updated;
       });
-      showToast(t.copySuccess ? "Cập nhật ảnh đại diện thành công" : "Success");
+      showToast(currentLang === "vi-VN" ? "Cập nhật ảnh đại diện thành công" : "头像更新成功");
     };
     reader.readAsDataURL(file);
   };

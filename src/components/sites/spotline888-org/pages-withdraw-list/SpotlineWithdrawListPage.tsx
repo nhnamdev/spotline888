@@ -116,7 +116,7 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center -mt-10 py-16 text-gray-400">
             <Loader2 className="w-8 h-8 animate-spin text-[#3b82f6] mb-2" />
-            <span className="text-[13px]">Đang tải dữ liệu...</span>
+            <span className="text-[13px]">加载中...</span>
           </div>
         ) : records.length === 0 ? (
           /* Center Empty State */

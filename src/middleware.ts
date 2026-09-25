@@ -22,7 +22,8 @@ const LEGACY_ADMIN_REDIRECTS: Record<string, string> = {
   "/yuebao_order": "/admin/yuebao_order",
   "/category": "/admin/category",
   "/notice": "/admin/notice",
-  "/general": "/admin/general",
+  "/general/config": "/admin/general/config",
+  "/general": "/admin/general/config",
   "/product/product": "/admin/product",
   "/product/type": "/admin/product-type",
 };

@@ -68,12 +68,17 @@ export const LoginForm: React.FC = () => {
           localStorage.setItem("user_info", JSON.stringify(resData.data));
           localStorage.setItem("userInfo", JSON.stringify(resData.data));
         }
-        showToast(resData.msg || t.loginSuccess);
+        showToast(t.loginSuccess);
         setTimeout(() => {
           window.location.href = "/";
         }, 600);
       } else if (resData && resData.msg) {
-        showToast(resData.msg);
+        // Nếu server có mã lỗi tài khoản bị khóa
+        if (typeof resData.msg === "string" && (resData.msg.includes("khóa") || resData.msg.includes("锁定"))) {
+          showToast(currentLang === "vi-VN" ? "Tài khoản của bạn đã bị khóa" : "账号已被锁定，请联系客服");
+        } else {
+          showToast(t.loginFailed);
+        }
       } else {
         showToast(t.loginFailed);
       }

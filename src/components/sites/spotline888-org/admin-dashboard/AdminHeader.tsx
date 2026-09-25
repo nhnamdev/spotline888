@@ -242,7 +242,7 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
           {activeTab === "generalConfig" && (
             <div
               className="header-tab active"
-              onClick={() => router.push("/general/config")}
+              onClick={() => router.push("/admin/general/config")}
             >
               <i className="fa fa-cog fa-fw"></i>
               <span>网站配置</span>

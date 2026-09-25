@@ -114,7 +114,7 @@ export default function ClientAuthGuard({ children }: ClientAuthGuardProps) {
         <div className="flex flex-col items-center">
           <div className="w-10 h-10 border-3 border-[#3b82f6] border-t-transparent rounded-full animate-spin mb-3"></div>
           <div className="text-[13px] text-gray-500 font-medium">
-            正在安全加载 (Đang xác thực tài khoản)...
+            正在安全加载...
           </div>
         </div>
       </div>

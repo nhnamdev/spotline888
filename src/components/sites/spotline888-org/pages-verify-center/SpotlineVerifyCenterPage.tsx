@@ -102,17 +102,17 @@ function SpotlineVerifyCenterContent() {
         idCard: idCard.trim(),
         frontImg,
         backImg,
-        profession: profession.trim() || "Kinh doanh",
+        profession: profession.trim() || (currentLang === "vi-VN" ? "Kinh doanh" : "自由职业"),
       });
 
       if (res.code === 1) {
         setAlertMsg({ type: "success", text: t.submitSuccess });
         setIsAuth(1); // Chuyển sang trạng thái chờ duyệt
       } else {
-        setAlertMsg({ type: "error", text: res.msg || "Gửi hồ sơ thất bại" });
+        setAlertMsg({ type: "error", text: res.msg || (currentLang === "vi-VN" ? "Gửi hồ sơ thất bại" : "提交失败") });
       }
     } catch (err: any) {
-      setAlertMsg({ type: "error", text: err.message || "Lỗi gửi hồ sơ xác minh" });
+      setAlertMsg({ type: "error", text: err.message || (currentLang === "vi-VN" ? "Lỗi gửi hồ sơ xác minh" : "提交认证资料失败") });
     } finally {
       setSubmitting(false);
     }
@@ -149,7 +149,7 @@ function SpotlineVerifyCenterContent() {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center py-20 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mb-3" />
-            <span className="text-sm">Đang tải dữ liệu hồ sơ...</span>
+            <span className="text-sm">{currentLang === "vi-VN" ? "Đang tải dữ liệu hồ sơ..." : "加载中..."}</span>
           </div>
         ) : isAuth === 1 ? (
           /* TRẠNG THÁI 1: CHỜ XÉT DUYỆT */
@@ -157,7 +157,7 @@ function SpotlineVerifyCenterContent() {
             <div className="w-28 h-28 relative mb-6 drop-shadow-md">
               <Image
                 src={getR2Url("/sites/spotline888-org/pages-verify/verify_clock.png")}
-                alt="Đang chờ duyệt"
+                alt={t.statusReviewing || "审核中"}
                 fill
                 className="object-contain animate-pulse"
               />
@@ -175,8 +175,10 @@ function SpotlineVerifyCenterContent() {
                 <span className="font-semibold text-slate-800">{idCard}</span>
               </div>
               <div className="flex justify-between text-sm py-1">
-                <span className="text-slate-500">Trạng thái:</span>
-                <span className="font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full text-xs">Chờ phê duyệt</span>
+                <span className="text-slate-500">{currentLang === "vi-VN" ? "Trạng thái:" : "状态:"}</span>
+                <span className="font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full text-xs">
+                  {currentLang === "vi-VN" ? "Chờ phê duyệt" : "待审核"}
+                </span>
               </div>
             </div>
           </div>
@@ -201,8 +203,10 @@ function SpotlineVerifyCenterContent() {
                 </span>
               </div>
               <div className="flex justify-between text-sm py-1">
-                <span className="text-slate-500">Bảo mật cấp độ:</span>
-                <span className="font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full text-xs">Cấp cao nhất</span>
+                <span className="text-slate-500">{currentLang === "vi-VN" ? "Bảo mật cấp độ:" : "安全等级:"}</span>
+                <span className="font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full text-xs">
+                  {currentLang === "vi-VN" ? "Cấp cao nhất" : "最高级"}
+                </span>
               </div>
             </div>
           </div>
@@ -215,7 +219,7 @@ function SpotlineVerifyCenterContent() {
                 <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-rose-900 mb-1">{t.statusRejected}</h4>
-                  <p className="text-rose-700 leading-snug">{t.reason} <strong>{errorReason || "Hình ảnh mờ hoặc thông tin không trùng khớp"}</strong></p>
+                  <p className="text-rose-700 leading-snug">{t.reason} <strong>{errorReason || (currentLang === "vi-VN" ? "Hình ảnh mờ hoặc thông tin không trùng khớp" : "图片模糊或信息不符")}</strong></p>
                   <p className="text-xs text-rose-500 mt-1">{t.descRejected}</p>
                 </div>
               </div>
@@ -236,7 +240,9 @@ function SpotlineVerifyCenterContent() {
 
             {/* Khối nhập thông tin cá nhân */}
             <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">Thông tin cơ bản</h3>
+              <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">
+                {currentLang === "vi-VN" ? "Thông tin cơ bản" : "基本信息"}
+              </h3>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">{t.fullName} <span className="text-rose-500">*</span></label>
@@ -276,8 +282,12 @@ function SpotlineVerifyCenterContent() {
 
             {/* Khối upload ảnh giấy tờ lên Cloudflare R2 */}
             <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 space-y-4">
-              <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">Tải lên giấy tờ định danh (CCCD / Hộ chiếu)</h3>
-              <p className="text-xs text-slate-400">Vui lòng chụp ảnh rõ nét, không bị lóa sáng, không bị mất góc.</p>
+              <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">
+                {currentLang === "vi-VN" ? "Tải lên giấy tờ định danh (CCCD / Hộ chiếu)" : "上传身份证明文件（身份证/护照）"}
+              </h3>
+              <p className="text-xs text-slate-400">
+                {currentLang === "vi-VN" ? "Vui lòng chụp ảnh rõ nét, không bị lóa sáng, không bị mất góc." : "请确保照片清晰，无反光，无缺角。"}
+              </p>
 
               {/* Mặt trước */}
               <div>
@@ -302,12 +312,12 @@ function SpotlineVerifyCenterContent() {
                     <>
                       <Image
                         src={getR2Url(frontImg)}
-                        alt="Mặt trước CCCD"
+                        alt={t.frontCard}
                         fill
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-1.5">
-                        <Upload className="w-4 h-4" /> Đổi ảnh khác
+                        <Upload className="w-4 h-4" /> {currentLang === "vi-VN" ? "Đổi ảnh khác" : "更换图片"}
                       </div>
                     </>
                   ) : (
@@ -316,7 +326,9 @@ function SpotlineVerifyCenterContent() {
                         <Upload className="w-5 h-5" />
                       </div>
                       <span className="text-xs font-medium text-slate-600">{t.uploadHint}</span>
-                      <span className="text-[11px] text-slate-400">Mặt trước có ảnh chân dung và số thẻ</span>
+                      <span className="text-[11px] text-slate-400">
+                        {currentLang === "vi-VN" ? "Mặt trước có ảnh chân dung và số thẻ" : "人像面，确保信息清晰"}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -345,12 +357,12 @@ function SpotlineVerifyCenterContent() {
                     <>
                       <Image
                         src={getR2Url(backImg)}
-                        alt="Mặt sau CCCD"
+                        alt={t.backCard}
                         fill
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-1.5">
-                        <Upload className="w-4 h-4" /> Đổi ảnh khác
+                        <Upload className="w-4 h-4" /> {currentLang === "vi-VN" ? "Đổi ảnh khác" : "更换图片"}
                       </div>
                     </>
                   ) : (
@@ -359,7 +371,9 @@ function SpotlineVerifyCenterContent() {
                         <Upload className="w-5 h-5" />
                       </div>
                       <span className="text-xs font-medium text-slate-600">{t.uploadHint}</span>
-                      <span className="text-[11px] text-slate-400">Mặt sau có đặc điểm nhận dạng & dấu vân tay</span>
+                      <span className="text-[11px] text-slate-400">
+                        {currentLang === "vi-VN" ? "Mặt sau có đặc điểm nhận dạng & dấu vân tay" : "国徽面，确保信息清晰"}
+                      </span>
                     </div>
                   )}
                 </div>

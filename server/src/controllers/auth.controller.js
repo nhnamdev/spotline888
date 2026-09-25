@@ -34,10 +34,10 @@ async function register(req, res) {
     const invitecode = req.body.invitecode || req.body.inviteCode;
 
     if (!rawAccount || !rawAccount.trim()) {
-      return error(res, 'Vui lòng nhập tên tài khoản');
+      return error(res, '请输入账号');
     }
     if (!rawPasswd || !rawPasswd.trim()) {
-      return error(res, 'Vui lòng nhập mật khẩu đăng nhập');
+      return error(res, '请输入登录密码');
     }
 
     const cleanAccount = rawAccount.trim();
@@ -51,7 +51,7 @@ async function register(req, res) {
       [cleanAccount]
     );
     if (existing.length > 0) {
-      return error(res, 'Tên tài khoản này đã được sử dụng');
+      return error(res, '该账号已被注册');
     }
 
     // 2. Kiểm tra mã giới thiệu (nếu có)
@@ -108,10 +108,10 @@ async function register(req, res) {
       token,
     };
 
-    return success(res, 'Đăng ký tài khoản thành công', userPayload);
+    return success(res, '注册成功', userPayload);
   } catch (err) {
     console.error('Lỗi đăng ký hội viên:', err);
-    return error(res, 'Đăng ký thất bại: ' + err.message);
+    return error(res, '注册失败: ' + err.message);
   }
 }
 
@@ -127,11 +127,11 @@ async function login(req, res) {
 
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
     if (await checkIpBlacklist(clientIp)) {
-      return error(res, 'Địa chỉ IP của bạn đã bị đưa vào danh sách đen của hệ thống');
+      return error(res, '您的IP已被系统列入黑名单');
     }
 
     if (!loginAccount || !loginPassword) {
-      return error(res, 'Vui lòng nhập tài khoản và mật khẩu');
+      return error(res, '请输入账号和密码');
     }
 
     // Tìm tài khoản theo account hoặc phone
@@ -141,20 +141,20 @@ async function login(req, res) {
     );
 
     if (users.length === 0) {
-      return error(res, 'Tài khoản hoặc mật khẩu không chính xác');
+      return error(res, '账号或密码错误');
     }
 
     const user = users[0];
 
     // Kiểm tra trạng thái tài khoản
     if (user.status !== 1) {
-      return error(res, 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ CSKH.');
+      return error(res, '账号已被锁定，请联系客服');
     }
 
     // Kiểm tra mật khẩu
     const isMatch = await comparePassword(loginPassword, user.password, user.salt);
     if (!isMatch) {
-      return error(res, 'Tài khoản hoặc mật khẩu không chính xác');
+      return error(res, '账号或密码错误');
     }
 
     // Cập nhật thông tin đăng nhập
@@ -188,10 +188,10 @@ async function login(req, res) {
       token,
     };
 
-    return success(res, 'Đăng nhập thành công', userPayload);
+    return success(res, '登录成功', userPayload);
   } catch (err) {
     console.error('Lỗi đăng nhập hội viên:', err);
-    return error(res, 'Đăng nhập thất bại: ' + err.message);
+    return error(res, '登录失败: ' + err.message);
   }
 }
 
@@ -202,7 +202,7 @@ async function login(req, res) {
 async function getProfile(req, res) {
   try {
     const user = req.user;
-    return success(res, 'Lấy thông tin thành công', user);
+    return success(res, '获取信息成功', user);
   } catch (err) {
     return error(res, err.message);
   }
@@ -220,7 +220,7 @@ async function changePassword(req, res) {
     const type = req.body.type || 'login';
 
     if (!newPassword || newPassword.trim().length < 6) {
-      return error(res, 'Mật khẩu mới phải có ít nhất 6 ký tự');
+      return error(res, '新密码长度至少为6位');
     }
 
     const isPayment = type === 'payment' || type === 'fund' || type === 'withdraw' || type === 'mpassword';
@@ -228,7 +228,7 @@ async function changePassword(req, res) {
 
     const [rows] = await pool.query(`SELECT ${field}, salt FROM fa_user WHERE id = ?`, [userId]);
     if (rows.length === 0) {
-      return error(res, 'Hội viên không tồn tại');
+      return error(res, '用户不存在');
     }
 
     const currentHash = rows[0][field];
@@ -237,16 +237,16 @@ async function changePassword(req, res) {
     if (currentHash) {
       const isMatch = await comparePassword(oldPassword, currentHash, salt);
       if (!isMatch) {
-        return error(res, 'Mật khẩu cũ không chính xác');
+        return error(res, '原密码错误');
       }
     }
 
     const newHashed = await hashPassword(newPassword.trim());
     await pool.query(`UPDATE fa_user SET ${field} = ? WHERE id = ?`, [newHashed, userId]);
 
-    return success(res, isPayment ? 'Đổi mật khẩu rút tiền thành công' : 'Đổi mật khẩu đăng nhập thành công');
+    return success(res, isPayment ? '提款密码修改成功' : '登录密码修改成功');
   } catch (err) {
-    return error(res, 'Đổi mật khẩu thất bại: ' + err.message);
+    return error(res, '修改密码失败: ' + err.message);
   }
 }
 

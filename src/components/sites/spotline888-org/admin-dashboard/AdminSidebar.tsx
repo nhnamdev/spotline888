@@ -455,14 +455,14 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <ul className="treeview-menu">
                 <li className={isGeneralConfigActive ? "active" : ""}>
                   <a
-                    href="/admin/general"
+                    href="/admin/general/config"
                     addtabs="6"
                     url="/coinht.php/general/config"
                     py="wzpz"
                     pinyin="wangzhanpeizhi"
                     onClick={(e) => {
                       e.preventDefault();
-                      router.push("/admin/general");
+                      router.push("/admin/general/config");
                     }}
                   >
                     <i className="fa fa-cog fa-fw"></i>

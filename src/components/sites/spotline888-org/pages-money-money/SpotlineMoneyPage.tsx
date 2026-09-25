@@ -848,7 +848,7 @@ function SpotlineMoneyPageContent() {
                   className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 px-2 py-1 rounded-lg border border-gray-200"
                 >
                   <Globe className="w-3.5 h-3.5" />
-                  <span>Đổi ngôn ngữ</span>
+                  <span>语言设置</span>
                 </button>
                 <button
                   onClick={() => setIsHelpOpen(false)}

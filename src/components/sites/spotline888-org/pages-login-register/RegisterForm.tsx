@@ -94,10 +94,10 @@ export const RegisterForm: React.FC = () => {
       } else if (resData && resData.msg) {
         showToast(resData.msg);
       } else {
-        showToast(t.networkError || "Đăng ký thất bại");
+        showToast(t.networkError || "网络异常，请重试");
       }
     } catch {
-      showToast(t.networkError || "Không thể kết nối đến máy chủ");
+      showToast(t.networkError || "网络异常，请重试");
     } finally {
       setLoading(false);
     }
