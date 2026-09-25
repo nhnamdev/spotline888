@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "./registerI18n";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { contentApi } from "@/lib/api";
 
 export const RegisterForm: React.FC = () => {
   const { t } = useI18n();
@@ -14,6 +15,7 @@ export const RegisterForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const [tradePassword, setTradePassword] = useState("");
   const [inviteCode, setInviteCode] = useState("");
+  const [inviteCodeEnable, setInviteCodeEnable] = useState<boolean>(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showTradePassword, setShowTradePassword] = useState(false);
@@ -21,12 +23,26 @@ export const RegisterForm: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  useEffect(() => {
+    async function checkInviteSetting() {
+      try {
+        const res = await contentApi.getPublicConfig();
+        if (res.code === 1 && res.data) {
+          setInviteCodeEnable(res.data.invite_code_enable === "1");
+        }
+      } catch {
+        // Mặc định false (tắt mã mời)
+      }
+    }
+    checkInviteSetting();
+  }, []);
+
   const isFormValid =
     phone.trim().length > 0 &&
     account.trim().length > 0 &&
     password.trim().length > 0 &&
     tradePassword.trim().length > 0 &&
-    inviteCode.trim().length > 0;
+    (!inviteCodeEnable || inviteCode.trim().length > 0);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -249,21 +265,23 @@ export const RegisterForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Field 5: Invite Code (开户码) */}
-        <div className="mb-3.5">
-          <label className="text-[12px] text-[#6b7280] font-semibold mb-1.5 pl-0.5 block">
-            {t.inviteCodeLabel}
-          </label>
-          <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[10px] px-3 h-[48px] flex items-center transition-all focus-within:border-[#3b82f6] focus-within:ring-2 focus-within:ring-[#3b82f6]/20 focus-within:bg-white">
-            <input
-              type="text"
-              value={inviteCode}
-              onChange={handleInviteCodeChange}
-              placeholder={t.inviteCodePlaceholder}
-              className="h-full text-[14px] text-[#111827] bg-transparent outline-none flex-1 placeholder:text-[#c4c9d4] placeholder:text-[13.5px]"
-            />
+        {/* Field 5: Invite Code (开户码) - 仅在后台开启邀请码时显示 */}
+        {inviteCodeEnable && (
+          <div className="mb-3.5">
+            <label className="text-[12px] text-[#6b7280] font-semibold mb-1.5 pl-0.5 block">
+              {t.inviteCodeLabel}
+            </label>
+            <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[10px] px-3 h-[48px] flex items-center transition-all focus-within:border-[#3b82f6] focus-within:ring-2 focus-within:ring-[#3b82f6]/20 focus-within:bg-white">
+              <input
+                type="text"
+                value={inviteCode}
+                onChange={handleInviteCodeChange}
+                placeholder={t.inviteCodePlaceholder}
+                className="h-full text-[14px] text-[#111827] bg-transparent outline-none flex-1 placeholder:text-[#c4c9d4] placeholder:text-[13.5px]"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Submit Button */}
         <button

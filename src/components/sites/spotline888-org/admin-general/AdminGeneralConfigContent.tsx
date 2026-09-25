@@ -563,6 +563,50 @@ export default function AdminGeneralConfigContent() {
                       </td>
                     </tr>
 
+                    {/* invite_code_enable */}
+                    <tr>
+                      <td>注册邀请码(开户码)</td>
+                      <td>
+                        <div className="row">
+                          <div className="col-sm-8 col-xs-12">
+                            <label className="radio-inline">
+                              <input
+                                type="radio"
+                                name="invite_code_enable"
+                                value="1"
+                                checked={basicForm.invite_code_enable === "1"}
+                                onChange={(e) =>
+                                  setBasicForm({
+                                    ...basicForm,
+                                    invite_code_enable: e.target.value,
+                                  })
+                                }
+                              />{" "}
+                              开启（必须填写开户码）
+                            </label>
+                            <label className="radio-inline">
+                              <input
+                                type="radio"
+                                name="invite_code_enable"
+                                value="0"
+                                checked={basicForm.invite_code_enable === "0"}
+                                onChange={(e) =>
+                                  setBasicForm({
+                                    ...basicForm,
+                                    invite_code_enable: e.target.value,
+                                  })
+                                }
+                              />{" "}
+                              关闭（无需填写开户码）
+                            </label>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <code>invite_code_enable</code>
+                      </td>
+                    </tr>
+
                     {/* web_name */}
                     <tr>
                       <td>网站名称</td>

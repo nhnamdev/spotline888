@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Headphones } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { CUSTOMER_SERVICE_TRANSLATIONS } from "./customerServiceI18n";
+import { contentApi } from "@/lib/api";
 
 function SpotlineCustomerServiceContent() {
   const router = useRouter();
@@ -14,8 +15,26 @@ function SpotlineCustomerServiceContent() {
     CUSTOMER_SERVICE_TRANSLATIONS[currentLang] ||
     CUSTOMER_SERVICE_TRANSLATIONS["zh-CN"];
 
+  const [kefuUrl, setKefuUrl] = useState("https://wa.me/6287844562370?name=&id=0");
+
+  useEffect(() => {
+    async function loadKefuUrl() {
+      try {
+        const res = await contentApi.getPublicConfig();
+        if (res.code === 1 && res.data?.kefu_url) {
+          setKefuUrl(res.data.kefu_url);
+        }
+      } catch {
+        // Fallback giữ nguyên mặc định
+      }
+    }
+    loadKefuUrl();
+  }, []);
+
   const handleOpenChat = () => {
-    window.open("https://wa.me/6287844562370?name=&id=0", "_blank", "noopener,noreferrer");
+    if (kefuUrl) {
+      window.open(kefuUrl, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (

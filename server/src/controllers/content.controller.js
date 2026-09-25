@@ -114,7 +114,7 @@ async function getPublicConfig(req, res) {
   try {
     const [rows] = await pool.query(
       `SELECT name, value FROM fa_config 
-       WHERE name IN ('name', 'web_name', 'currency_code', 'currency_short', 'kefu_url', 'usdt_cny_rate', 'web_icon', 'company_desc')`
+       WHERE name IN ('name', 'web_name', 'currency_code', 'currency_short', 'kefu_url', 'usdt_cny_rate', 'web_icon', 'company_desc', 'invite_code_enable')`
     );
 
     const config = {};
@@ -129,6 +129,7 @@ async function getPublicConfig(req, res) {
       kefu_url: config['kefu_url'] || 'https://wa.me/6287713795721',
       usdt_rate: parseFloat(config['usdt_cny_rate'] || '4.07'),
       company_desc: config['company_desc'] || '',
+      invite_code_enable: config['invite_code_enable'] || '0',
     });
   } catch (err) {
     return error(res, err.message);
