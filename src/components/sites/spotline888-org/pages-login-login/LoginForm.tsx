@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useI18n } from "./i18n";
 
 export const LoginForm: React.FC = () => {
-  const { t } = useI18n();
+  const { t, currentLang } = useI18n();
 
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
