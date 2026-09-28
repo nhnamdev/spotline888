@@ -63,6 +63,31 @@ async function getNotices(req, res) {
 async function getUserMessages(req, res) {
   try {
     const userId = req.user.id;
+
+    // Lấy cấu hình tin nhắn chào mừng từ fa_config
+    const [cfgRows] = await pool.query(
+      "SELECT name, value FROM fa_config WHERE name IN ('register_message_enable', 'register_message_content', 'web_name', 'name')"
+    );
+    const cfgMap = {};
+    cfgRows.forEach((r) => {
+      cfgMap[r.name] = r.value;
+    });
+
+    const siteName = cfgMap['web_name'] || cfgMap['name'] || 'Fortrade';
+    const isMsgEnabled = cfgMap['register_message_enable'] !== '0';
+    const welcomeTitle = `Welcome to ${siteName}`;
+    const welcomeContent = cfgMap['register_message_content'] || 
+      `Welcome to ${siteName}! Thank you for choosing our platform. If you have any questions, please feel free to contact online customer service.`;
+
+    // Cập nhật các tin nhắn cũ từ SPOT sang Fortrade
+    await pool.query(
+      `UPDATE fa_message 
+       SET title = REPLACE(title, 'SPOT', ?), 
+           content = REPLACE(content, 'SPOT', ?) 
+       WHERE user_id = ? AND (title LIKE '%SPOT%' OR content LIKE '%SPOT%')`,
+      [siteName, siteName, userId]
+    );
+
     const [rows] = await pool.query(
       `SELECT id, title, content, is_read, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as date 
        FROM fa_message 
@@ -71,14 +96,16 @@ async function getUserMessages(req, res) {
       [userId]
     );
 
-    // Nếu chưa có tin nhắn nào, tạo tin nhắn chào mừng mặc định
+    // Nếu chưa có tin nhắn nào và cấu hình cho phép, tạo tin nhắn chào mừng theo cấu hình Admin
     if (rows.length === 0) {
-      await pool.query(
-        `INSERT INTO fa_message (user_id, title, content, is_read, created_at) VALUES 
-         (?, 'Welcome to SPOT', 'Welcome to SPOT! Thank you for choosing our platform. If you have any questions, please feel free to contact online customer service.', 0, NOW()),
-         (?, 'Security Reminder', 'Security Reminder: Do not disclose your login password or withdrawal fund password to anyone.', 1, NOW())`,
-        [userId, userId]
-      );
+      if (isMsgEnabled) {
+        await pool.query(
+          `INSERT INTO fa_message (user_id, title, content, is_read, created_at) VALUES 
+           (?, ?, ?, 0, NOW()),
+           (?, 'Security Reminder', 'Security Reminder: Do not disclose your login password or withdrawal fund password to anyone.', 1, NOW())`,
+          [userId, welcomeTitle, welcomeContent, userId]
+        );
+      }
       const [seeded] = await pool.query(
         `SELECT id, title, content, is_read, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as date FROM fa_message WHERE user_id = ? ORDER BY id DESC`,
         [userId]
@@ -114,7 +141,11 @@ async function getPublicConfig(req, res) {
   try {
     const [rows] = await pool.query(
       `SELECT name, value FROM fa_config 
-       WHERE name IN ('name', 'web_name', 'currency_code', 'currency_short', 'kefu_url', 'usdt_cny_rate', 'web_icon', 'company_desc', 'invite_code_enable')`
+       WHERE name IN (
+         'name', 'web_name', 'currency_code', 'currency_short', 'currency_name',
+         'kefu_url', 'kefu_script', 'usdt_cny_rate', 'web_icon', 'company_desc',
+         'invite_code_enable', 'alert_notice', 'trade_time', 'version', 'quick_amounts'
+       )`
     );
 
     const config = {};
@@ -122,14 +153,22 @@ async function getPublicConfig(req, res) {
       config[r.name] = r.value;
     });
 
+    const activeKefuUrl = config['kefu_url'] || config['kefu_script'] || 'https://wa.me/447838456993';
+
     return success(res, 'Lấy cấu hình thành công', {
-      site_name: config['web_name'] || config['name'] || 'SPOTLINE888',
-      currency: config['currency_code'] || 'MYR',
-      currency_symbol: config['currency_short'] || 'RM',
-      kefu_url: config['kefu_url'] || 'https://wa.me/6287713795721',
+      site_name: config['web_name'] || config['name'] || 'Fortrade',
+      currency: config['currency_code'] || 'USD',
+      currency_symbol: config['currency_short'] || '$',
+      currency_name: config['currency_name'] || 'US Dollar',
+      kefu_url: activeKefuUrl,
+      kefu_script: config['kefu_script'] || activeKefuUrl,
       usdt_rate: parseFloat(config['usdt_cny_rate'] || '4.07'),
       company_desc: config['company_desc'] || '',
       invite_code_enable: config['invite_code_enable'] || '0',
+      alert_notice: config['alert_notice'] || '',
+      trade_time: config['trade_time'] || '00:00-24:00',
+      version: config['version'] || '1.0.65',
+      quick_amounts: config['quick_amounts'] || '100,500,1000,2000,5000,10000',
     });
   } catch (err) {
     return error(res, err.message);

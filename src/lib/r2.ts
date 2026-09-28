@@ -1,5 +1,5 @@
 /**
- * Tiện ích xử lý URL Cloudflare R2 cho toàn bộ hình ảnh trong dự án Spotline888
+ * Tiện ích xử lý URL Cloudflare R2 cho toàn bộ hình ảnh trong dự án Fortrade
  */
 
 const R2_BASE_URL = (

@@ -23,7 +23,7 @@ async function getRechargeChannels(req, res) {
         enabled: configMap['bank_status'] !== '0',
         bank_name: configMap['web_bank_name'] || 'Maybank Malaysia',
         bank_place: configMap['web_bank_place'] || 'Kuala Lumpur Branch',
-        bank_user: configMap['web_bank_user'] || 'SPOTLINE OFFICIAL LTD',
+        bank_user: configMap['web_bank_user'] || 'FORTRADE OFFICIAL LTD',
         bank_number: configMap['web_bank_number'] || '514271829102',
         tips: configMap['web_bank_tips'] || 'Vui lòng liên hệ CSKH hoặc kiểm tra kỹ số tài khoản trước khi nạp tiền.',
       },

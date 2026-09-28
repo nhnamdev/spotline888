@@ -577,11 +577,11 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                 <Image
                   src={getR2Url("/sites/spotline888-org/admin-dashboard/admin_avatar.jpg")}
                   className="user-image"
-                  alt="Spot"
+                  alt="Fortrade"
                   width={24}
                   height={24}
                 />
-                <span className="hidden-xs user-name">Spot</span>
+                <span className="hidden-xs user-name">Fortrade</span>
               </button>
 
               {isUserMenuOpen && (
@@ -590,12 +590,12 @@ export default function AdminHeader({ onToggleSidebar, activeTab = "dashboard" }
                     <Image
                       src={getR2Url("/sites/spotline888-org/admin-dashboard/admin_avatar.jpg")}
                       className="img-circle"
-                      alt="Spot"
+                      alt="Fortrade"
                       width={80}
                       height={80}
                     />
                     <p>
-                      Spot <small>2026-09-07 16:58:21</small>
+                      Fortrade <small>2026-09-07 16:58:21</small>
                     </p>
                   </li>
                   <li className="user-footer">

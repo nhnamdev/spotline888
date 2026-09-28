@@ -187,10 +187,35 @@ async function adjustScore(req, res) {
       [newMoney, rawUserId]
     );
 
-    // Theo yêu cầu: Khi admin chỉnh sửa số dư khách hàng thì hoàn toàn không hiển thị gì trong lịch sử của khách (ẩn đi, không ghi fa_user_money_log)
+    let upmarkId = null;
+    // Theo yêu cầu:
+    // 1. Khi Admin nạp tiền (type === 'add'): Ghi nhận vào fa_upmark (hiện ở "入金明细") và fa_user_money_log (hiện ở "资金记录")
+    // 2. Khi Admin sửa số dư (type === 'set') hoặc trừ tiền (type === 'sub'): Hoàn toàn không ghi log số dư của khách
+    if (type === 'add') {
+      const orderSn = `CZ${Date.now()}${Math.floor(100 + Math.random() * 900)}`;
+      const adminOperator = `${req.admin?.username || 'admin'}(ID:${req.admin?.id || 1})`;
+      const payType = currency === 'USDT' ? 'USDT充值' : '后台充值';
+      const logMemo = memo || (currency === 'USDT' ? `USDT充值入金: +${diffMoney}` : `充值入金: +${diffMoney}`);
+
+      // Ghi đơn nạp đã duyệt vào fa_upmark
+      const [upmarkResult] = await connection.query(
+        `INSERT INTO fa_upmark (order_sn, user_id, money, balance, pay_type, status, check_account, check_time, member_note, created_at)
+         VALUES (?, ?, ?, ?, ?, 'approved', ?, NOW(), ?, NOW())`,
+        [orderSn, rawUserId, diffMoney, newMoney, payType, adminOperator, logMemo]
+      );
+      upmarkId = upmarkResult.insertId;
+
+      // Ghi sổ cái biến động tài chính vào fa_user_money_log
+      await connection.query(
+        `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
+         VALUES (?, ?, 'recharge', ?, ?, ?, ?, ?, NOW())`,
+        [rawUserId, currency, diffMoney, currentMoney, newMoney, logMemo, upmarkId]
+      );
+    }
+
     const actionMemo = memo || `Admin ${type}: ${diffMoney >= 0 ? '+' : ''}${diffMoney} ${currency}`;
 
-    // Ghi log quản trị
+    // Ghi log quản trị nội bộ admin
     await connection.query(
       `INSERT INTO fa_admin_log (admin_id, username, url, title, content, ip, created_at)
        VALUES (?, ?, '/api/admin/user/balance', '调整会员余额', ?, ?, NOW())`,

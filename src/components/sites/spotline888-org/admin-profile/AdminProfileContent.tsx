@@ -21,7 +21,7 @@ export default function AdminProfileContent() {
   const [profile, setProfile] = useState({
     username: "admin",
     email: "admin@admin.com",
-    nickname: "Spot",
+    nickname: "Fortrade",
     avatar: getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
     password: "",
   });
@@ -84,7 +84,7 @@ export default function AdminProfileContent() {
     setProfile({
       username: "admin",
       email: "admin@admin.com",
-      nickname: "Spot",
+      nickname: "Fortrade",
       avatar: getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg"),
       password: "",
     });

@@ -15,7 +15,16 @@ function SpotlineCustomerServiceContent() {
     CUSTOMER_SERVICE_TRANSLATIONS[currentLang] ||
     CUSTOMER_SERVICE_TRANSLATIONS["zh-CN"];
 
-  const [kefuUrl, setKefuUrl] = useState("https://wa.me/6287844562370?name=&id=0");
+  const [kefuUrl, setKefuUrl] = useState("https://wa.me/447838456993");
+
+  const normalizeUrl = (rawUrl: string): string => {
+    if (!rawUrl || !rawUrl.trim()) return "https://wa.me/447838456993";
+    let u = rawUrl.trim();
+    if (!/^https?:\/\//i.test(u)) {
+      u = `https://${u}`;
+    }
+    return u;
+  };
 
   useEffect(() => {
     async function loadKefuUrl() {
@@ -32,8 +41,14 @@ function SpotlineCustomerServiceContent() {
   }, []);
 
   const handleOpenChat = () => {
-    if (kefuUrl) {
-      window.open(kefuUrl, "_blank", "noopener,noreferrer");
+    const targetUrl = normalizeUrl(kefuUrl);
+    try {
+      const win = window.open(targetUrl, "_blank", "noopener,noreferrer");
+      if (!win || win.closed || typeof win.closed === "undefined") {
+        window.location.href = targetUrl;
+      }
+    } catch {
+      window.location.href = targetUrl;
     }
   };
 
@@ -141,9 +156,15 @@ function SpotlineCustomerServiceContent() {
         </div>
 
         {/* Customer Support Channel Card */}
-        <div
-          onClick={handleOpenChat}
-          className="bg-white rounded-[14px] px-5 py-4.5 shadow-[0_4px_20px_rgba(15,23,42,0.06)] flex items-center justify-between cursor-pointer hover:shadow-md active:scale-98 transition-all"
+        <a
+          href={normalizeUrl(kefuUrl)}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault();
+            handleOpenChat();
+          }}
+          className="bg-white rounded-[14px] px-5 py-4.5 shadow-[0_4px_20px_rgba(15,23,42,0.06)] flex items-center justify-between cursor-pointer hover:shadow-md active:scale-98 transition-all no-underline text-inherit block"
         >
           <div className="flex items-center gap-3.5">
             {/* Headset Avatar Icon */}
@@ -160,7 +181,7 @@ function SpotlineCustomerServiceContent() {
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-[#9ca3af]" />
-        </div>
+        </a>
 
         {/* Notice Info Footer */}
         <div className="mt-8 text-center px-4">

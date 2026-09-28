@@ -3,7 +3,7 @@ import AdminDashboardPage from "@/components/sites/spotline888-org/admin-dashboa
 
 export const metadata: Metadata = {
   title: "Home - Dashboard",
-  description: "Spotline888 FastAdmin Control Panel",
+  description: "Fortrade FastAdmin Control Panel",
   icons: {
     icon: "/sites/spotline888-org/admin-dashboard/favicon.ico",
   },

@@ -3,7 +3,7 @@ import AdminLoginPage from "@/components/sites/spotline888-org/admin-login/Admin
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Spotline888 Admin Login",
+  description: "Fortrade Admin Login",
   icons: {
     icon: "/sites/spotline888-org/admin-login/favicon.ico",
   },

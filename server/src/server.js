@@ -9,7 +9,7 @@ const PORT = Number(process.env.PORT) || 5000;
 
 async function startServer() {
   try {
-    console.log('🚀 Đang khởi động Backend Server Spotline888...');
+    console.log('🚀 Đang khởi động Backend Server Fortrade...');
 
     // 1. Kiểm tra kết nối MySQL
     const isDbConnected = await testConnection();

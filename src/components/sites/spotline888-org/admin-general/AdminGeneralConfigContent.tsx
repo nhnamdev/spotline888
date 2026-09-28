@@ -22,12 +22,12 @@ export default function AdminGeneralConfigContent() {
     currency_name: "US Dollar",
     enabled_langs: "zh-CN",
     currency_icon: "",
-    name: "Spotline",
+    name: "Fortrade",
     invite_code_enable: "0",
     web_icon: getR2Url("/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png"),
     need_bind_account: "1",
     chat_setting: "alert_notice",
-    web_name: "Spotline",
+    web_name: "Fortrade",
     user_icon: getR2Url("/uploads/20251209/fa32c0b93665cd9e8cb8c9d97f24beba.png"),
     kefu_script: "https://wa.me/6287713795721",
     alert_notice: "",
@@ -49,7 +49,7 @@ export default function AdminGeneralConfigContent() {
     max_chongzhi: "1000000",
     web_bank_name: "Maybank Malaysia",
     web_bank_place: "Kuala Lumpur Branch",
-    web_bank_user: "SPOTLINE OFFICIAL LTD",
+    web_bank_user: "FORTRADE OFFICIAL LTD",
     web_bank_number: "514271829102",
     web_bank_tips:
       "Dear valued users: The self-service balance top-up channel is currently undergoing system maintenance and upgrades. If you need to top up your account balance, please contact our online customer service. Thank you for your understanding and we apologize for any inconvenience this may cause.",
@@ -86,7 +86,7 @@ export default function AdminGeneralConfigContent() {
   const [messageForm, setMessageForm] = useState<Record<string, any>>({
     register_message_enable: "1",
     register_message_content:
-      "Welcome to SPOT! Thank you for choosing our platform. If you experience any problems, please feel free to contact us. Thank you!",
+      "Welcome to Fortrade! Thank you for choosing our platform. If you experience any problems, please feel free to contact us. Thank you!",
   });
 
   const [azureForm, setAzureForm] = useState<Record<string, any>>({
@@ -128,6 +128,9 @@ export default function AdminGeneralConfigContent() {
           setBasicForm((prev) => ({ ...prev, ...map }));
           setRechargeForm((prev) => ({ ...prev, ...map }));
           setCashoutForm((prev) => ({ ...prev, ...map }));
+          setStockForm((prev) => ({ ...prev, ...map }));
+          setMessageForm((prev) => ({ ...prev, ...map }));
+          setAzureForm((prev) => ({ ...prev, ...map }));
           setOtherForm((prev) => ({ ...prev, ...map }));
         }
       } catch (err) {
@@ -148,16 +151,20 @@ export default function AdminGeneralConfigContent() {
     else if (activeTab === "cashout") payload = cashoutForm;
     else if (activeTab === "stock") payload = stockForm;
     else if (activeTab === "message") payload = messageForm;
+    else if (activeTab === "azure") payload = azureForm;
     else if (activeTab === "other") payload = otherForm;
 
     try {
       const res = await adminApi.updateConfigs(payload);
-      if (res.code === 1) {
+      if (res && res.code === 1) {
         setSavedAlert(true);
-        setTimeout(() => setSavedAlert(false), 3000);
+        setTimeout(() => setSavedAlert(false), 3500);
+      } else {
+        alert("保存失败: " + (res?.msg || "未知错误"));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("保存系统配置失败:", err);
+      alert("保存失败: " + (err.message || "网络错误"));
     } finally {
       setSaving(false);
     }

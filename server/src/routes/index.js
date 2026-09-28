@@ -38,6 +38,7 @@ const adminConfigController = require('../controllers/adminConfig.controller');
 const adminAuthManageController = require('../controllers/adminAuthManage.controller');
 const adminAttachmentController = require('../controllers/adminAttachment.controller');
 const adminNoticeController = require('../controllers/adminNotice.controller');
+const adminCategoryController = require('../controllers/adminCategory.controller');
 
 // =============================================================================
 // 1. PHÂN HỆ AUTH & USER PROFILE
@@ -209,12 +210,19 @@ router.get('/admin/notice', adminAuthMiddleware, adminNoticeController.getNotice
 router.post('/admin/notice', adminAuthMiddleware, adminNoticeController.saveNotice);
 router.delete('/admin/notice/:id', adminAuthMiddleware, adminNoticeController.deleteNotice);
 
+// Quản lý 图文 / 轮播图 (Category & Banner)
+router.get('/admin/category', adminAuthMiddleware, adminCategoryController.getCategories);
+router.post('/admin/category', adminAuthMiddleware, adminCategoryController.saveCategory);
+router.put('/admin/category/:id', adminAuthMiddleware, adminCategoryController.updateCategory);
+router.delete('/admin/category/:id', adminAuthMiddleware, adminCategoryController.deleteCategory);
+router.post('/admin/category/toggle-status', adminAuthMiddleware, adminCategoryController.toggleStatus);
+
 // Health check
 router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'Spotline888 Express Backend API',
+    service: 'Fortrade Express Backend API',
     endpoints_count: 36,
   });
 });

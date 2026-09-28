@@ -16,11 +16,11 @@ export interface AboutUsTranslation {
 export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   "zh-CN": {
     title: "关于我们",
-    p1Heading: "Spot Indonesia – 官方数字资产平台",
+    p1Heading: "Fortrade – 官方数字资产平台",
     p1Body:
-      "我们是 Spot Indonesia，一个致力于帮助东南亚用户以安全、快速、高效的方式访问和管理其加密资产的在线数字资产平台。",
+      "我们是 Fortrade，一个致力于帮助东南亚用户以安全、快速、高效的方式访问和管理其加密资产的在线数字资产平台。",
     vision: "我们的愿景是打造 便捷、透明、人人可参与 的数字货币交易环境。",
-    servicesHeading: "在 Spot，我们为用户提供一系列核心服务，包括：",
+    servicesHeading: "在 Fortrade，我们为用户提供一系列核心服务，包括：",
     service1: "加密货币即时交易（Spot Trading）",
     service2: "安全的数字资产钱包管理（Virtual Asset Wallet）",
     service3: "平台内代币兑换服务（Platform Token Exchange）",
@@ -29,11 +29,11 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "hk-TW": {
     title: "關於我們",
-    p1Heading: "Spot Indonesia – 官方數位資產平台",
+    p1Heading: "Fortrade – 官方數位資產平台",
     p1Body:
-      "我們是 Spot Indonesia，一個致力於幫助東南亞用戶以安全、快速、高效的方式訪問和管理其加密資產的線上數位資產平台。",
+      "我們是 Fortrade，一個致力於幫助東南亞用戶以安全、快速、高效的方式訪問和管理其加密資產的線上數位資產平台。",
     vision: "我們的願景是打造 便捷、透明、人人可參與 的數位貨幣交易環境。",
-    servicesHeading: "在 Spot，我們為用戶提供一系列核心服務，包括：",
+    servicesHeading: "在 Fortrade，我們為用戶提供一系列核心服務，包括：",
     service1: "加密貨幣即時交易（Spot Trading）",
     service2: "安全的數位資產錢包管理（Virtual Asset Wallet）",
     service3: "平台內代幣兌換服務（Platform Token Exchange）",
@@ -42,13 +42,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "en-US": {
     title: "About Us",
-    p1Heading: "Spot Indonesia – Official Digital Asset Platform",
+    p1Heading: "Fortrade – Official Digital Asset Platform",
     p1Body:
-      "We are Spot Indonesia, an online digital asset platform dedicated to helping Southeast Asian users access and manage their crypto assets securely, quickly, and efficiently.",
+      "We are Fortrade, an online digital asset platform dedicated to helping Southeast Asian users access and manage their crypto assets securely, quickly, and efficiently.",
     vision:
       "Our vision is to create a convenient, transparent, and accessible digital currency trading environment for everyone.",
     servicesHeading:
-      "At Spot, we provide users with a range of core services, including:",
+      "At Fortrade, we provide users with a range of core services, including:",
     service1: "Cryptocurrency Spot Trading (Spot Trading)",
     service2: "Secure Digital Asset Wallet Management (Virtual Asset Wallet)",
     service3: "Platform Token Exchange (Platform Token Exchange)",
@@ -58,13 +58,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "vi-VN": {
     title: "Về chúng tôi",
-    p1Heading: "Spot Indonesia – Nền tảng Tài sản Số Chính thức",
+    p1Heading: "Fortrade – Nền tảng Tài sản Số Chính thức",
     p1Body:
-      "Chúng tôi là Spot Indonesia, một nền tảng tài sản kỹ thuật số trực tuyến tận tâm hỗ trợ người dùng Đông Nam Á tiếp cận và quản lý tài sản tiền mã hóa an toàn, nhanh chóng và hiệu quả.",
+      "Chúng tôi là Fortrade, một nền tảng tài sản kỹ thuật số trực tuyến tận tâm hỗ trợ người dùng Đông Nam Á tiếp cận và quản lý tài sản tiền mã hóa an toàn, nhanh chóng và hiệu quả.",
     vision:
       "Tầm nhìn của chúng tôi là xây dựng môi trường giao dịch tiền điện tử tiện lợi, minh bạch và mọi người đều có thể tham gia.",
     servicesHeading:
-      "Tại Spot, chúng tôi cung cấp cho người dùng các dịch vụ cốt lõi bao gồm:",
+      "Tại Fortrade, chúng tôi cung cấp cho người dùng các dịch vụ cốt lõi bao gồm:",
     service1: "Giao dịch tiền mã hóa tức thì (Spot Trading)",
     service2: "Quản lý ví tài sản số an toàn (Virtual Asset Wallet)",
     service3: "Dịch vụ đổi token trong nền tảng (Platform Token Exchange)",
@@ -74,13 +74,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "id-ID": {
     title: "Tentang Kami",
-    p1Heading: "Spot Indonesia – Platform Aset Digital Resmi",
+    p1Heading: "Fortrade – Platform Aset Digital Resmi",
     p1Body:
-      "Kami adalah Spot Indonesia, platform aset digital online yang berdedikasi untuk membantu pengguna Asia Tenggara mengakses dan mengelola aset kripto mereka secara aman, cepat, dan efisien.",
+      "Kami adalah Fortrade, platform aset digital online yang berdedikasi untuk membantu pengguna Asia Tenggara mengakses dan mengelola aset kripto mereka secara aman, cepat, dan efisien.",
     vision:
       "Visi kami adalah menciptakan lingkungan perdagangan mata uang digital yang nyaman, transparan, dan dapat diakses oleh semua orang.",
     servicesHeading:
-      "Di Spot, kami menyediakan berbagai layanan inti bagi pengguna, meliputi:",
+      "Di Fortrade, kami menyediakan berbagai layanan inti bagi pengguna, meliputi:",
     service1: "Perdagangan Spot Kripto (Spot Trading)",
     service2: "Manajemen Dompet Aset Digital yang Aman (Virtual Asset Wallet)",
     service3: "Layanan Pertukaran Token Platform (Platform Token Exchange)",
@@ -90,13 +90,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "ms-MY": {
     title: "Tentang Kami",
-    p1Heading: "Spot Indonesia – Platform Aset Digital Rasmi",
+    p1Heading: "Fortrade – Platform Aset Digital Rasmi",
     p1Body:
-      "Kami adalah Spot Indonesia, platform aset digital dalam talian yang berdedikasi untuk membantu pengguna Asia Tenggara mengakses dan menguruskan aset kripto mereka secara selamat, pantas dan cekap.",
+      "Kami adalah Fortrade, platform aset digital dalam talian yang berdedikasi untuk membantu pengguna Asia Tenggara mengakses dan menguruskan aset kripto mereka secara selamat, pantas dan cekap.",
     vision:
       "Visi kami adalah untuk membina persekitaran perdagangan mata wang digital yang mudah, telus dan boleh diakses oleh semua orang.",
     servicesHeading:
-      "Di Spot, kami menyediakan rangkaian perkhidmatan teras kepada pengguna, termasuk:",
+      "Di Fortrade, kami menyediakan rangkaian perkhidmatan teras kepada pengguna, termasuk:",
     service1: "Perdagangan Spot Mata Wang Kripto (Spot Trading)",
     service2: "Pengurusan Dompet Aset Digital Selamat (Virtual Asset Wallet)",
     service3: "Perkhidmatan Pertukaran Token Platform (Platform Token Exchange)",
@@ -105,12 +105,12 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "ja-JP": {
     title: "私たちについて",
-    p1Heading: "Spot Indonesia – 公式デジタル資産プラットフォーム",
+    p1Heading: "Fortrade – 公式デジタル資産プラットフォーム",
     p1Body:
-      "私たちはSpot Indonesiaです。東南アジアのユーザーが暗号資産に安全、迅速、効率的にアクセスおよび管理できるよう支援するオンラインプラットフォームです。",
+      "私たちはFortradeです。東南アジアのユーザーが暗号資産に安全、迅速、効率的にアクセスおよび管理できるよう支援するオンラインプラットフォームです。",
     vision:
       "私たちのビジョンは、便利で透明性があり、誰もが参加できる暗号資産取引環境を構築することです。",
-    servicesHeading: "Spotでは、以下の主要サービスを提供しています：",
+    servicesHeading: "Fortradeでは、以下の主要サービスを提供しています：",
     service1: "暗号資産現物取引（Spot Trading）",
     service2: "安全なデジタル資産ウォレット管理（Virtual Asset Wallet）",
     service3: "プラットフォーム内トークン交換（Platform Token Exchange）",
@@ -119,13 +119,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "th-TH": {
     title: "เกี่ยวกับเรา",
-    p1Heading: "Spot Indonesia – แพลตฟอร์มสินทรัพย์ดิจิทัลอย่างเป็นทางการ",
+    p1Heading: "Fortrade – แพลตฟอร์มสินทรัพย์ดิจิทัลอย่างเป็นทางการ",
     p1Body:
-      "เราคือ Spot Indonesia แพลตฟอร์มสินทรัพย์ดิจิทัลออนไลน์ที่มุ่งมั่นช่วยให้ผู้ใช้ในเอเชียตะวันออกเฉียงใต้เข้าถึงและจัดการสินทรัพย์คริปโตได้อย่างปลอดภัย รวดเร็ว และมีประสิทธิภาพ",
+      "เราคือ Fortrade แพลตฟอร์มสินทรัพย์ดิจิทัลออนไลน์ที่มุ่งมั่นช่วยให้ผู้ใช้ในเอเชียตะวันออกเฉียงใต้เข้าถึงและจัดการสินทรัพย์คริปโตได้อย่างปลอดภัย รวดเร็ว และมีประสิทธิภาพ",
     vision:
       "วิสัยทัศน์ของเราคือการสร้างสภาพแวดล้อมการซื้อขายสกุลเงินดิจิทัลที่สะดวก โปร่งใส และทุกคนสามารถเข้าถึงได้",
     servicesHeading:
-      "ที่ Spot เราให้บริการหลักแก่ผู้ใช้ ได้แก่:",
+      "ที่ Fortrade เราให้บริการหลักแก่ผู้ใช้ ได้แก่:",
     service1: "การซื้อขายสปอตคริปโตเคอเรนซี (Spot Trading)",
     service2: "การจัดการกระเป๋าเงินสินทรัพย์ดิจิทัลที่ปลอดภัย (Virtual Asset Wallet)",
     service3: "บริการแลกเปลี่ยนโทเค็นบนแพลตฟอร์ม (Platform Token Exchange)",
@@ -134,12 +134,12 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "ko-KR": {
     title: "회사 소개",
-    p1Heading: "Spot Indonesia – 공식 디지털 자산 플랫폼",
+    p1Heading: "Fortrade – 공식 디지털 자산 플랫폼",
     p1Body:
-      "Spot Indonesia는 동남아시아 사용자가 암호화 자산에 안전하고 신속하며 효율적으로 접근하고 관리할 수 있도록 지원하는 온라인 디지털 자산 플랫폼입니다.",
+      "Fortrade는 동남아시아 사용자가 암호화 자산에 안전하고 신속하며 효율적으로 접근하고 관리할 수 있도록 지원하는 온라인 디지털 자산 플랫폼입니다.",
     vision:
       "우리의 비전은 편리하고 투명하며 누구나 참여할 수 있는 디지털 통화 거래 환경을 구축하는 것입니다.",
-    servicesHeading: "Spot은 다음과 같은 핵심 서비스를 제공합니다:",
+    servicesHeading: "Fortrade는 다음과 같은 핵심 서비스를 제공합니다:",
     service1: "암호화폐 즉시 거래 (Spot Trading)",
     service2: "안전한 디지털 자산 지갑 관리 (Virtual Asset Wallet)",
     service3: "플랫폼 내 토큰 교환 서비스 (Platform Token Exchange)",
@@ -148,13 +148,13 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "fr-FR": {
     title: "À propos de nous",
-    p1Heading: "Spot Indonesia – Plateforme officielle d'actifs numériques",
+    p1Heading: "Fortrade – Plateforme officielle d'actifs numériques",
     p1Body:
-      "Nous sommes Spot Indonesia, une plateforme en ligne dédiée à aider les utilisateurs d'Asie du Sud-Est à accéder et gérer leurs crypto-actifs en toute sécurité, rapidité et efficacité.",
+      "Nous sommes Fortrade, une plateforme en ligne dédiée à aider les utilisateurs d'Asie du Sud-Est à accéder et gérer leurs crypto-actifs en toute sécurité, rapidité et efficacité.",
     vision:
       "Notre vision est de créer un environnement de trading de devises numériques pratique, transparent et accessible à tous.",
     servicesHeading:
-      "Chez Spot, nous offrons une gamme de services clés comprenant :",
+      "Chez Fortrade, nous offrons une gamme de services clés comprenant :",
     service1: "Trading au comptant de crypto-monnaies (Spot Trading)",
     service2:
       "Gestion sécurisée de portefeuille d'actifs numériques (Virtual Asset Wallet)",
@@ -166,12 +166,12 @@ export const ABOUT_US_TRANSLATIONS: Record<LanguageCode, AboutUsTranslation> = {
   },
   "de-DE": {
     title: "Über uns",
-    p1Heading: "Spot Indonesia – Offizielle Plattform für digitale Vermögenswerte",
+    p1Heading: "Fortrade – Offizielle Plattform für digitale Vermögenswerte",
     p1Body:
-      "Wir sind Spot Indonesia, eine Online-Plattform für digitale Vermögenswerte, die Benutzern in Südostasien dabei hilft, ihre Krypto-Assets sicher, schnell und effizient zu verwalten.",
+      "Wir sind Fortrade, eine Online-Plattform für digitale Vermögenswerte, die Benutzern in Südostasien dabei hilft, ihre Krypto-Assets sicher, schnell und effizient zu verwalten.",
     vision:
       "Unsere Vision ist es, ein bequemes, transparentes und für jeden zugängliches Handelsumfeld zu schaffen.",
-    servicesHeading: "Bei Spot bieten wir eine Reihe von Kerndiensten an:",
+    servicesHeading: "Bei Fortrade bieten wir eine Reihe von Kerndiensten an:",
     service1: "Krypto-Spot-Handel (Spot Trading)",
     service2: "Sichere Wallet-Verwaltung digitaler Vermögenswerte (Virtual Asset Wallet)",
     service3: "Token-Tauschservice auf der Plattform (Platform Token Exchange)",

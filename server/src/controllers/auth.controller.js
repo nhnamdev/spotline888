@@ -87,6 +87,32 @@ async function register(req, res) {
 
     const newUserId = insertResult.insertId;
 
+    // 5.1 Tạo tin nhắn chào mừng mặc định từ fa_config nếu được bật
+    try {
+      const [cfgRows] = await pool.query(
+        "SELECT name, value FROM fa_config WHERE name IN ('register_message_enable', 'register_message_content', 'web_name', 'name')"
+      );
+      const cfgMap = {};
+      cfgRows.forEach((r) => {
+        cfgMap[r.name] = r.value;
+      });
+      const siteName = cfgMap['web_name'] || cfgMap['name'] || 'Fortrade';
+      const isMsgEnabled = cfgMap['register_message_enable'] !== '0';
+      const welcomeContent = cfgMap['register_message_content'] || 
+        `Welcome to ${siteName}! Thank you for choosing our platform. If you have any questions, please feel free to contact online customer service.`;
+
+      if (isMsgEnabled) {
+        await pool.query(
+          `INSERT INTO fa_message (user_id, title, content, is_read, created_at) VALUES 
+           (?, ?, ?, 0, NOW()),
+           (?, 'Security Reminder', 'Security Reminder: Do not disclose your login password or withdrawal fund password to anyone.', 1, NOW())`,
+          [newUserId, `Welcome to ${siteName}`, welcomeContent, newUserId]
+        );
+      }
+    } catch (msgErr) {
+      console.warn('Lỗi tạo tin nhắn chào mừng khi đăng ký:', msgErr.message);
+    }
+
     // 6. Sinh token JWT
     const token = jwt.sign(
       { id: newUserId, account: cleanAccount },

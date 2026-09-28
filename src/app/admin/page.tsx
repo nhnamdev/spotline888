@@ -3,7 +3,7 @@ import AdminDashboardPage from "@/components/sites/spotline888-org/admin-dashboa
 
 export const metadata: Metadata = {
   title: "控制台 - 管理后台",
-  description: "Spotline888 FastAdmin 管理后台",
+  description: "Fortrade FastAdmin 管理后台",
   icons: {
     icon: "/sites/spotline888-org/admin-dashboard/favicon.ico",
   },

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getR2Url } from "@/lib/r2";
-import { contentApi } from "@/lib/api";
+import { contentApi, adminApi, uploadApi } from "@/lib/api";
 
 export interface CategoryItem {
   id: number;
@@ -160,11 +160,13 @@ export default function AdminCategoryContent() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchBanners = async () => {
     try {
       setIsRefreshing(true);
-      const res = await contentApi.getBanners();
+      const res = await adminApi.getCategories(activeTab === 'all' ? '' : activeTab);
       if (res && res.code === 1 && Array.isArray(res.data) && res.data.length > 0) {
         const mapped: CategoryItem[] = res.data.map((item: any) => ({
           id: item.id,
@@ -174,14 +176,14 @@ export default function AdminCategoryContent() {
           nickname: '',
           flag: item.flag || '',
           image: getR2Url(item.image),
-          keywords: item.keywords || '',
+          keywords: item.keywords || item.url || '',
           description: item.description || '',
           diyname: '',
           createtime: item.created_at ? Math.floor(new Date(item.created_at).getTime() / 1000) : 0,
           updatetime: item.updated_at ? Math.floor(new Date(item.updated_at).getTime() / 1000) : 0,
           weigh: item.weigh || 0,
           status: item.status || 'normal',
-          type_text: '轮播图',
+          type_text: item.type === 'banner' ? '轮播图' : item.type,
           flag_text: '',
           spacer: '',
           haschild: 0,
@@ -195,9 +197,32 @@ export default function AdminCategoryContent() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      showToast("正在上传图片到 Cloudflare R2...");
+      const res = await uploadApi.uploadFile(file, "banner");
+      if (res.code === 1 && res.data) {
+        const uploadedUrl = res.data.url || res.data.path;
+        setFormState((prev) => ({ ...prev, image: uploadedUrl }));
+        showToast("图片上传成功");
+      } else {
+        showToast("上传失败: " + (res.msg || "未知错误"));
+      }
+    } catch (err: any) {
+      showToast("上传失败: " + (err.message || "网络错误"));
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   useEffect(() => {
     fetchBanners();
-  }, []);
+  }, [activeTab]);
 
   // Modal dialog state (Add / Edit)
   const [modalMode, setModalMode] = useState<"add" | "edit" | null>(null);
@@ -297,97 +322,93 @@ export default function AdminCategoryContent() {
   };
 
   // Save Add / Edit
-  const handleSaveForm = (e: React.FormEvent) => {
+  const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formState.name.trim()) {
       alert("栏目名称不能为空");
       return;
     }
 
-    if (modalMode === "add") {
-      const newId = Math.max(...categories.map((c) => c.id), 0) + 1;
-      const newItem: CategoryItem = {
-        id: newId,
+    try {
+      const payload = {
+        id: modalMode === "edit" && editingItem ? editingItem.id : undefined,
         pid: parseInt(formState.pid, 10) || 0,
         type: formState.type,
-        name: ` ${formState.name}`,
-        nickname: "",
-        flag: formState.flag.join(","),
-        image: formState.image || "/uploads/20251210/8a7d4cc4edbf1cdb3930b5ff016135f0.jpg",
-        keywords: formState.keywords,
-        description: formState.description,
-        diyname: "",
-        createtime: Math.floor(Date.now() / 1000),
-        updatetime: Math.floor(Date.now() / 1000),
+        name: formState.name.trim(),
+        image: formState.image,
+        url: formState.keywords || "",
         weigh: Number(formState.weigh) || 0,
         status: formState.status,
-        type_text: formState.type === "banner" ? "轮播图" : formState.type,
-        flag_text: formState.flag.join(","),
       };
-      setCategories([newItem, ...categories]);
-      showToast("添加成功");
-    } else if (modalMode === "edit" && editingItem) {
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.id === editingItem.id
-            ? {
-                ...c,
-                type: formState.type,
-                pid: parseInt(formState.pid, 10) || 0,
-                name: ` ${formState.name}`,
-                flag: formState.flag.join(","),
-                image: formState.image,
-                keywords: formState.keywords,
-                description: formState.description,
-                weigh: Number(formState.weigh) || 0,
-                status: formState.status,
-                type_text: formState.type === "banner" ? "轮播图" : formState.type,
-                updatetime: Math.floor(Date.now() / 1000),
-              }
-            : c
-        )
-      );
-      showToast("修改成功");
+
+      const res = await adminApi.saveCategory(payload);
+      if (res && res.code === 1) {
+        showToast(modalMode === "add" ? "添加成功" : "修改成功");
+        fetchBanners();
+      } else {
+        showToast("保存失败: " + (res?.msg || "未知错误"));
+      }
+    } catch (err: any) {
+      showToast("保存失败: " + (err.message || "网络错误"));
     }
 
     setModalMode(null);
   };
 
   // Delete
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteConfirmIds || deleteConfirmIds.length === 0) return;
-    setCategories((prev) => prev.filter((c) => !deleteConfirmIds.includes(c.id)));
+    try {
+      for (const id of deleteConfirmIds) {
+        await adminApi.deleteCategory(id);
+      }
+      showToast("删除成功");
+      fetchBanners();
+    } catch (err: any) {
+      showToast("删除失败: " + (err.message || "网络错误"));
+    }
     setSelectedIds((prev) => prev.filter((id) => !deleteConfirmIds.includes(id)));
     setDeleteConfirmIds(null);
-    showToast("删除成功");
   };
 
   // Status toggle from table
-  const handleToggleStatus = (id: number) => {
-    setCategories((prev) =>
-      prev.map((c) =>
-        c.id === id
-          ? {
-              ...c,
-              status: c.status === "normal" ? "hidden" : "normal",
-              updatetime: Math.floor(Date.now() / 1000),
-            }
-          : c
-      )
-    );
-    showToast("状态已更新");
+  const handleToggleStatus = async (id: number) => {
+    const item = categories.find((c) => c.id === id);
+    if (!item) return;
+    const newStatus = item.status === "normal" ? "hidden" : "normal";
+    try {
+      await adminApi.toggleCategoryStatus(id, newStatus);
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === id
+            ? {
+                ...c,
+                status: newStatus,
+                updatetime: Math.floor(Date.now() / 1000),
+              }
+            : c
+        )
+      );
+      showToast("状态已更新");
+    } catch (err: any) {
+      showToast("更新状态失败: " + (err.message || "网络错误"));
+    }
   };
 
   // Batch status change
-  const handleBatchStatus = (status: "normal" | "hidden") => {
+  const handleBatchStatus = async (status: "normal" | "hidden") => {
     if (selectedIds.length === 0) return;
-    setCategories((prev) =>
-      prev.map((c) =>
-        selectedIds.includes(c.id) ? { ...c, status } : c
-      )
-    );
-    setIsMoreOpen(false);
-    showToast(`已批量更新为 ${status === "normal" ? "正常" : "隐藏"}`);
+    try {
+      for (const id of selectedIds) {
+        await adminApi.toggleCategoryStatus(id, status);
+      }
+      showToast(`已批量更新为 ${status === "normal" ? "正常" : "隐藏"}`);
+      fetchBanners();
+    } catch (err: any) {
+      showToast("批量更新失败: " + (err.message || "网络错误"));
+    } finally {
+      setIsMoreOpen(false);
+    }
   };
 
   const isAllSelected =
@@ -832,34 +853,36 @@ export default function AdminCategoryContent() {
                           placeholder="/uploads/..."
                         />
                         <div className="input-group-addon no-border no-padding">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileUpload}
+                            accept="image/*"
+                            style={{ display: "none" }}
+                          />
                           <span>
                             <button
                               type="button"
                               className="btn btn-danger plupload"
-                              onClick={() => {
-                                const sample =
-                                  "/uploads/20251210/7d1a6e22287f5cfe705e5eaad36a0e06.jpg";
-                                setFormState({ ...formState, image: sample });
-                                showToast("已选择示例图片");
-                              }}
+                              disabled={isUploading}
+                              onClick={() => fileInputRef.current?.click()}
                             >
-                              <i className="fa fa-upload"></i> 上传
+                              <i className={isUploading ? "fa fa-spinner fa-spin" : "fa fa-upload"}></i>{" "}
+                              {isUploading ? "上传中..." : "上传照片"}
                             </button>
                           </span>
-                          <span>
-                            <button
-                              type="button"
-                              className="btn btn-primary fachoose"
-                              onClick={() => {
-                                const sample =
-                                  "/uploads/20250817/da2366df80bfc80ff3cb5d923373aa1f.jpg";
-                                setFormState({ ...formState, image: sample });
-                                showToast("已选择图片");
-                              }}
-                            >
-                              <i className="fa fa-list"></i> 选择
-                            </button>
-                          </span>
+                          {formState.image && (
+                            <span>
+                              <button
+                                type="button"
+                                className="btn btn-default"
+                                onClick={() => setPreviewImage(formState.image)}
+                                title="预览图片"
+                              >
+                                <i className="fa fa-eye"></i> 预览
+                              </button>
+                            </span>
+                          )}
                         </div>
                       </div>
                       {formState.image && (

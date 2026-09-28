@@ -135,7 +135,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
               <Image
                 src={getR2Url("/uploads/20251210/c3daf0015559501fb836681ca784c977.jpg")}
                 className="img-circle"
-                alt="Spot"
+                alt="Fortrade"
                 width={45}
                 height={45}
                 priority
@@ -143,7 +143,7 @@ export default function AdminSidebar({ isCollapsed, activePath }: AdminSidebarPr
             </a>
           </div>
           <div className="pull-left info">
-            <p>Spot</p>
+            <p>Fortrade</p>
             <span className="status-indicator">
               <i className="fa fa-circle text-success"></i> 在线
             </span>

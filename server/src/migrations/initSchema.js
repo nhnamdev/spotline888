@@ -512,7 +512,7 @@ async function initSchema() {
       await connection.query(`
         INSERT INTO fa_admin (username, nickname, password, status, memo)
         VALUES (?, ?, ?, 'normal', '系统超级管理员默认初始化')
-      `, ['admin', 'Spotline Admin', adminPassHash]);
+      `, ['admin', 'Fortrade Admin', adminPassHash]);
       console.log('👑 [Seed] Đã tạo tài khoản admin mặc định: admin / admin888');
     }
 

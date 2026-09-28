@@ -1,5 +1,5 @@
 /**
- * Spotline888 API Client
+ * Fortrade API Client
  * Cung cấp các hàm gọi API tập trung cho cả phân hệ User và Admin
  */
 
@@ -360,6 +360,13 @@ export const adminApi = {
   getAdminNotices: () => apiFetch('/admin/notice', { method: 'GET' }, true),
   saveAdminNotice: (data: any) => apiFetch('/admin/notice', { method: 'POST', body: JSON.stringify(data) }, true),
   deleteAdminNotice: (id: number) => apiFetch(`/admin/notice/${id}`, { method: 'DELETE' }, true),
+
+  // Quản lý 图文 / 轮播图 (Category & Banner)
+  getCategories: (type = 'banner') => apiFetch(`/admin/category?type=${type}`, { method: 'GET' }, true),
+  saveCategory: (data: any) => apiFetch('/admin/category', { method: 'POST', body: JSON.stringify(data) }, true),
+  updateCategory: (id: number, data: any) => apiFetch(`/admin/category/${id}`, { method: 'PUT', body: JSON.stringify(data) }, true),
+  deleteCategory: (id: number) => apiFetch(`/admin/category/${id}`, { method: 'DELETE' }, true),
+  toggleCategoryStatus: (id: number, status: string) => apiFetch('/admin/category/toggle-status', { method: 'POST', body: JSON.stringify({ id, status }) }, true),
 };
 
 // 8. Phân hệ Tải tệp lên Cloudflare R2
@@ -369,7 +376,7 @@ export const uploadApi = {
     formData.append('file', file);
     formData.append('type', type);
 
-    const token = typeof window !== 'undefined' ? (localStorage.getItem('token') || localStorage.getItem('admin_token')) : null;
+    const token = typeof window !== 'undefined' ? (localStorage.getItem('admin_token') || localStorage.getItem('token') || localStorage.getItem('user_token')) : null;
     const headers: Record<string, string> = {};
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
