@@ -140,6 +140,10 @@ function SpotlineUserPageContent() {
     parseFloat(userInfo.money || "0") + parseFloat(yuebaoData.all_money || "0")
   ).toFixed(2);
 
+  // Quy đổi USDT theo tỷ giá 1 USD ≈ 33.5฿
+  const totalAssetsUsdt = (parseFloat(totalAssets || "0") / 33.5).toFixed(2);
+  const availableUsdt = (parseFloat(userInfo.money || "0") / 33.5).toFixed(2);
+
   // Masked real name: first character + asterisks
   const maskedRealName = userInfo.real_name
     ? userInfo.real_name.substring(0, 1) +
@@ -373,7 +377,7 @@ function SpotlineUserPageContent() {
 
               {/* Bottom 3 Columns */}
               <div className="flex-content">
-                {/* Col 1: Yu'ebao Total */}
+                {/* Col 1: ≈ USDT (quy đổi từ Tổng tài sản theo tỷ giá 33.5) */}
                 <div
                   style={{
                     flex: 1,
@@ -382,10 +386,10 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size" style={{ whiteSpace: "nowrap" }}>
-                    {t.yuebaoTotal}(฿)
+                    ≈ USDT
                   </div>
                   <div className="big-size">
-                    ฿{yuebaoData.all_money || "0.00"}
+                    ${totalAssetsUsdt}
                   </div>
                 </div>
 
@@ -434,6 +438,9 @@ function SpotlineUserPageContent() {
               <div className="pice" style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
                 <span style={{ fontSize: "14px", fontWeight: "600", color: "#111827" }}>฿</span>
                 <span>{userInfo.money}</span>
+              </div>
+              <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px", fontWeight: "500", whiteSpace: "nowrap" }}>
+                ≈ {availableUsdt} USDT
               </div>
             </div>
 

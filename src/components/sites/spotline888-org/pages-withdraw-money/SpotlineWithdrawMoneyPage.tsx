@@ -12,8 +12,7 @@ function SpotlineWithdrawContent() {
   const { currentLang } = useI18n();
   const t = WITHDRAW_TRANSLATIONS[currentLang] || WITHDRAW_TRANSLATIONS["zh-CN"];
 
-  const [currency] = useState("USDT");
-  const [withdrawType, setWithdrawType] = useState<"usdt-trc20" | "usdt-erc20" | "bank_card">("usdt-trc20");
+  const [withdrawType, setWithdrawType] = useState<"bank_card" | "usdt-trc20">("bank_card");
   const [amount, setAmount] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -93,15 +92,6 @@ function SpotlineWithdrawContent() {
         ) || null
       );
     }
-    if (withdrawType === "usdt-erc20") {
-      return (
-        bankAccounts.find(
-          (b: any) =>
-            b.type === "usdt_erc20" ||
-            (b.type === "usdt" && String(b.bank_name || "").toLowerCase().includes("erc20"))
-        ) || null
-      );
-    }
     return null;
   };
 
@@ -148,8 +138,6 @@ function SpotlineWithdrawContent() {
           currentBoundAccount.bank_name ||
           (withdrawType === "usdt-trc20"
             ? "USDT (TRC20)"
-            : withdrawType === "usdt-erc20"
-            ? "USDT (ERC20)"
             : "Bank"),
         account_holder: currentBoundAccount.account_holder,
       } as any);
@@ -235,7 +223,9 @@ function SpotlineWithdrawContent() {
             </span>
             <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[10px] px-3.5 h-[46px] flex items-center justify-between">
               <span className="text-[15px] font-bold text-[#111827]">
-                {currency}
+                {withdrawType === "bank_card"
+                  ? (currentLang === "th-TH" ? "บาท (THB)" : currentLang === "vi-VN" ? "Baht Thái (THB)" : currentLang === "zh-CN" || currentLang === "hk-TW" ? "泰铢 (THB)" : "THB")
+                  : "USDT"}
               </span>
               <ChevronDown className="w-4 h-4 text-[#6b7280]" />
             </div>
@@ -247,55 +237,7 @@ function SpotlineWithdrawContent() {
               {t.selectType}
             </span>
             <div className="flex flex-wrap gap-2">
-              {/* Option 1: USDT-TRC20 */}
-              <button
-                type="button"
-                onClick={() => setWithdrawType("usdt-trc20")}
-                className={`inline-flex items-center gap-2 text-[13.5px] font-semibold px-3.5 py-2 rounded-[8px] border transition-all cursor-pointer ${
-                  withdrawType === "usdt-trc20"
-                    ? "border-[#3b82f6] bg-[#eff6ff] text-[#2563eb]"
-                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <div
-                  className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
-                    withdrawType === "usdt-trc20"
-                      ? "border-[#3b82f6]"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {withdrawType === "usdt-trc20" && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
-                  )}
-                </div>
-                <span>{t.usdtTrc20}</span>
-              </button>
-
-              {/* Option 2: USDT-ERC20 */}
-              <button
-                type="button"
-                onClick={() => setWithdrawType("usdt-erc20")}
-                className={`inline-flex items-center gap-2 text-[13.5px] font-semibold px-3.5 py-2 rounded-[8px] border transition-all cursor-pointer ${
-                  withdrawType === "usdt-erc20"
-                    ? "border-[#3b82f6] bg-[#eff6ff] text-[#2563eb]"
-                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <div
-                  className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
-                    withdrawType === "usdt-erc20"
-                      ? "border-[#3b82f6]"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {withdrawType === "usdt-erc20" && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
-                  )}
-                </div>
-                <span>{t.usdtErc20}</span>
-              </button>
-
-              {/* Option 3: Bank Card */}
+              {/* Option 1: Bank Card (đặt ở vị trí thứ 1 theo yêu cầu) */}
               <button
                 type="button"
                 onClick={() => setWithdrawType("bank_card")}
@@ -317,6 +259,30 @@ function SpotlineWithdrawContent() {
                   )}
                 </div>
                 <span>{t.bankCard}</span>
+              </button>
+
+              {/* Option 2: USDT-TRC20 */}
+              <button
+                type="button"
+                onClick={() => setWithdrawType("usdt-trc20")}
+                className={`inline-flex items-center gap-2 text-[13.5px] font-semibold px-3.5 py-2 rounded-[8px] border transition-all cursor-pointer ${
+                  withdrawType === "usdt-trc20"
+                    ? "border-[#3b82f6] bg-[#eff6ff] text-[#2563eb]"
+                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                <div
+                  className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
+                    withdrawType === "usdt-trc20"
+                      ? "border-[#3b82f6]"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {withdrawType === "usdt-trc20" && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+                  )}
+                </div>
+                <span>{t.usdtTrc20}</span>
               </button>
             </div>
           </div>
@@ -425,7 +391,9 @@ function SpotlineWithdrawContent() {
           <div className="bg-white rounded-[14px] p-4 shadow-[0_4px_20px_rgba(15,23,42,0.06)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[13px] text-[#4b5563] font-medium">
-                {t.withdrawAmount}
+                {withdrawType === "bank_card"
+                  ? (currentLang === "zh-CN" || currentLang === "hk-TW" ? "出金金额(泰铢)" : currentLang === "th-TH" ? "จำนวนเงินที่ถอน (฿)" : currentLang === "vi-VN" ? "Số tiền rút (฿)" : "Withdrawal Amount (THB)")
+                  : (currentLang === "zh-CN" || currentLang === "hk-TW" ? "出金金额(USDT)" : currentLang === "th-TH" ? "จำนวนเงินที่ถอน (USDT)" : currentLang === "vi-VN" ? "Số tiền rút (USDT)" : "Withdrawal Amount (USDT)")}
               </span>
               <button
                 type="button"
@@ -436,7 +404,9 @@ function SpotlineWithdrawContent() {
               </button>
             </div>
             <div className="flex items-baseline gap-2 border-b border-[#f3f4f6] pb-2 mb-2">
-              <span className="text-[20px] font-extrabold text-[#111827]">USDT</span>
+              <span className="text-[20px] font-extrabold text-[#111827]">
+                {withdrawType === "bank_card" ? "฿" : "USDT"}
+              </span>
               <input
                 type="number"
                 step="0.01"
@@ -450,7 +420,7 @@ function SpotlineWithdrawContent() {
               <span>
                 {t.availableBalance}:{" "}
                 <strong className="text-[#3b82f6] font-semibold">
-                  {availableBalance.toFixed(2)} USDT
+                  {availableBalance.toFixed(2)} {withdrawType === "bank_card" ? "฿" : "USDT"}
                 </strong>
               </span>
               <span>{t.fee}: 0%</span>

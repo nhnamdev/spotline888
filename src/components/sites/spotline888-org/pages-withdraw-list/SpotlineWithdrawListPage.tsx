@@ -4,10 +4,121 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
-import { I18nProvider, useI18n } from "../pages-login-login/i18n";
+import { I18nProvider, useI18n, LanguageCode } from "../pages-login-login/i18n";
 import { WITHDRAW_LIST_TRANSLATIONS } from "./withdrawListI18n";
 import { withdrawApi, rechargeApi } from "@/lib/api";
 import { getR2Url } from "@/lib/r2";
+
+function formatTypeBadge(
+  payType: string | undefined,
+  withdrawType: string | undefined,
+  lang: LanguageCode,
+  listType: "deposit" | "withdraw"
+): string {
+  const raw = String(withdrawType || payType || "").toLowerCase();
+
+  if (raw.includes("usdt") || raw.includes("trc20") || raw.includes("erc20")) {
+    if (listType === "deposit") {
+      switch (lang) {
+        case "th-TH": return "ฝาก USDT";
+        case "vi-VN": return "Nạp USDT";
+        case "zh-CN": case "hk-TW": return "USDT充值";
+        default: return "USDT Deposit";
+      }
+    }
+    return "USDT";
+  }
+
+  if (raw.includes("后台") || raw.includes("管理员") || raw.includes("admin") || raw.includes("system")) {
+    switch (lang) {
+      case "th-TH": return "ฝากเงินจากระบบ";
+      case "vi-VN": return "Nạp từ hệ thống";
+      case "zh-CN": case "hk-TW": return "系统充值";
+      default: return "System Deposit";
+    }
+  }
+
+  if (raw.includes("bank") || raw.includes("银行卡") || raw.includes("銀行卡")) {
+    switch (lang) {
+      case "th-TH": return "บัญชีธนาคาร";
+      case "vi-VN": return "Tài khoản ngân hàng";
+      case "zh-CN": case "hk-TW": return "银行卡";
+      default: return "Bank Card";
+    }
+  }
+
+  if (listType === "deposit") {
+    switch (lang) {
+      case "th-TH": return "ฝากเงิน";
+      case "vi-VN": return "Nạp tiền";
+      case "zh-CN": case "hk-TW": return "充值";
+      default: return "Deposit";
+    }
+  }
+
+  return "USDT";
+}
+
+function formatRecordNote(
+  noteStr: string,
+  lang: LanguageCode,
+  listType: "deposit" | "withdraw"
+): string {
+  if (!noteStr) return "";
+  let text = String(noteStr);
+
+  // 1. Trạng thái duyệt
+  if (text.includes("审核通过") || text.includes("審核通過") || text.toLowerCase().includes("approved")) {
+    switch (lang) {
+      case "th-TH": return "อนุมัติแล้ว";
+      case "vi-VN": return "Đã duyệt thành công";
+      case "en-US": return "Approved";
+      case "zh-CN": return "审核通过";
+      case "hk-TW": return "審核通過";
+      default: return "Approved";
+    }
+  }
+
+  if (text.includes("待审核") || text.includes("待審核") || text.toLowerCase().includes("pending")) {
+    switch (lang) {
+      case "th-TH": return "รอดำเนินการ";
+      case "vi-VN": return "Đang chờ duyệt";
+      case "en-US": return "Pending";
+      default: return "Pending";
+    }
+  }
+
+  if (text.includes("审核未通过") || text.includes("审核拒绝") || text.includes("驳回")) {
+    switch (lang) {
+      case "th-TH": return "ถูกปฏิเสธ";
+      case "vi-VN": return "Bị từ chối";
+      case "en-US": return "Rejected";
+      default: return "Rejected";
+    }
+  }
+
+  // 2. Nạp tiền / 充值入金
+  if (text.includes("充值入金") || text.includes("充值") || text.includes("加款") || text.includes("Recharge")) {
+    const amtMatch = text.match(/(?:\+?)([0-9\.]+)/);
+    const amt = amtMatch ? `+${amtMatch[1]}` : "";
+    const unit = (lang === "th-TH" || lang === "vi-VN" || listType === "deposit") ? "฿" : "THB";
+    switch (lang) {
+      case "th-TH": return amt ? `ฝากเงินเข้าบัญชี: ${amt} ${unit}` : "ฝากเงินเข้าบัญชี";
+      case "vi-VN": return amt ? `Nạp tiền: ${amt} ${unit}` : "Nạp tiền";
+      case "en-US": return amt ? `Deposit: ${amt} ${unit}` : "Deposit";
+      case "zh-CN": return amt ? `充值入金: ${amt} 泰铢` : "充值入金";
+      case "hk-TW": return amt ? `充值入金: ${amt} 泰銖` : "充值入金";
+      default: return amt ? `Deposit: ${amt} ${unit}` : "Deposit";
+    }
+  }
+
+  // 3. Nếu là tiếng Thái, thay thế mọi chữ USDT/USD thành ฿
+  if (lang === "th-TH") {
+    text = text.replace(/\b(usdt|usd)\b/gi, "฿");
+  }
+
+  return text;
+}
 
 interface SpotlineWithdrawListProps {
   type: "deposit" | "withdraw";
@@ -116,7 +227,9 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center -mt-10 py-16 text-gray-400">
             <Loader2 className="w-8 h-8 animate-spin text-[#3b82f6] mb-2" />
-            <span className="text-[13px]">加载中...</span>
+            <span className="text-[13px]">
+              {currentLang === "th-TH" ? "กำลังโหลด..." : currentLang === "vi-VN" ? "Đang tải..." : currentLang === "en-US" ? "Loading..." : "加载中..."}
+            </span>
           </div>
         ) : records.length === 0 ? (
           /* Center Empty State */
@@ -151,10 +264,21 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
                     .slice(0, 19)
                     .replace("T", " ")
                 : "-";
-              const typeBadge =
-                item.withdraw_type === "usdt"
-                  ? "USDT"
-                  : item.pay_type || "USDT";
+              const typeBadge = formatTypeBadge(
+                item.pay_type,
+                item.withdraw_type,
+                currentLang,
+                type
+              );
+              const noteText = formatRecordNote(
+                item.note || item.member_note || "",
+                currentLang,
+                type
+              );
+              const currencySymbol =
+                type === "deposit"
+                  ? "฿"
+                  : (item.withdraw_type === "bank_card" || item.pay_type === "bank_card" ? "฿" : "USDT");
 
               return (
                 <div
@@ -182,7 +306,7 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
                         {type === "withdraw" ? `-${numVal}` : `+${numVal}`}
                       </span>
                       <span className="text-[13px] font-bold text-gray-500">
-                        USDT
+                        {currencySymbol}
                       </span>
                     </div>
 
@@ -194,9 +318,9 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
                   {/* Row 3: Time & Note */}
                   <div className="flex items-center justify-between text-[11.5px] text-gray-400">
                     <span>{timeStr}</span>
-                    {(item.note || item.member_note) && (
-                      <span className="text-rose-500 italic max-w-[180px] truncate text-right">
-                        {item.note || item.member_note}
+                    {noteText && (
+                      <span className="text-rose-500 italic max-w-[200px] truncate text-right">
+                        {noteText}
                       </span>
                     )}
                   </div>

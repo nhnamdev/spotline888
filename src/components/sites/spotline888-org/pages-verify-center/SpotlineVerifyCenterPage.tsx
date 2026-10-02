@@ -4,10 +4,141 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Upload, CheckCircle2, AlertCircle, Loader2, ShieldCheck, RefreshCw } from "lucide-react";
-import { I18nProvider, useI18n } from "../pages-login-login/i18n";
+import { I18nProvider, useI18n, LanguageCode } from "../pages-login-login/i18n";
 import { VERIFY_CENTER_TRANSLATIONS } from "./verifyCenterI18n";
 import { getR2Url } from "@/lib/r2";
 import { verifyApi, uploadApi } from "@/lib/api";
+
+function getKycLabels(lang: LanguageCode) {
+  switch (lang) {
+    case "th-TH":
+      return {
+        basicInfo: "ข้อมูลพื้นฐาน",
+        uploadIdDoc: "อัปโหลดเอกสารระบุตัวตน (บัตรประชาชน / หนังสือเดินทาง)",
+        uploadRequirement: "โปรดตรวจสอบให้แน่ใจว่ารูปถ่ายชัดเจน ไม่มีแสงสะท้อน และเห็นครบทุกมุม",
+        frontHint: "ด้านหน้าพร้อมรูปถ่าย ตรวจสอบให้แน่ใจว่าข้อมูลชัดเจน",
+        backHint: "ด้านหลัง ตรวจสอบให้แน่ใจว่ายังไม่หมดอายุ",
+        changePhoto: "เปลี่ยนรูปภาพ",
+        statusLabel: "สถานะ:",
+        statusPendingText: "รอดำเนินการ",
+        securityLevelLabel: "ระดับความปลอดภัย:",
+        highestLevelText: "ระดับสูงสุด",
+        loadingText: "กำลังโหลดข้อมูล...",
+        defaultProfession: "อาชีพอิสระ",
+        submitFailed: "การส่งข้อมูลล้มเหลว",
+        submitError: "เกิดข้อผิดพลาดในการส่งข้อมูล",
+        defaultRejectReason: "ภาพถ่ายไม่ชัดเจนหรือข้อมูลไม่ตรงกัน",
+      };
+    case "vi-VN":
+      return {
+        basicInfo: "Thông tin cơ bản",
+        uploadIdDoc: "Tải lên giấy tờ định danh (CCCD / Hộ chiếu)",
+        uploadRequirement: "Vui lòng chụp ảnh rõ nét, không bị lóa sáng, không bị mất góc.",
+        frontHint: "Mặt trước có ảnh chân dung và số thẻ",
+        backHint: "Mặt sau có đặc điểm nhận dạng & dấu vân tay",
+        changePhoto: "Đổi ảnh khác",
+        statusLabel: "Trạng thái:",
+        statusPendingText: "Chờ phê duyệt",
+        securityLevelLabel: "Bảo mật cấp độ:",
+        highestLevelText: "Cấp cao nhất",
+        loadingText: "Đang tải dữ liệu hồ sơ...",
+        defaultProfession: "Kinh doanh tự do",
+        submitFailed: "Gửi hồ sơ thất bại",
+        submitError: "Lỗi gửi hồ sơ xác minh",
+        defaultRejectReason: "Hình ảnh mờ hoặc thông tin không trùng khớp",
+      };
+    case "zh-CN":
+      return {
+        basicInfo: "基本信息",
+        uploadIdDoc: "上传身份证明文件（身份证/护照）",
+        uploadRequirement: "请确保照片清晰，无反光，无缺角。",
+        frontHint: "人像面，确保信息清晰",
+        backHint: "国徽面，确保信息清晰",
+        changePhoto: "更换图片",
+        statusLabel: "状态:",
+        statusPendingText: "待审核",
+        securityLevelLabel: "安全等级:",
+        highestLevelText: "最高级",
+        loadingText: "加载中...",
+        defaultProfession: "自由职业",
+        submitFailed: "提交失败",
+        submitError: "提交认证资料失败",
+        defaultRejectReason: "图片模糊或信息不符",
+      };
+    case "hk-TW":
+      return {
+        basicInfo: "基本信息",
+        uploadIdDoc: "上傳身份證明文件（身份證/護照）",
+        uploadRequirement: "請確保照片清晰，無反光，無缺角。",
+        frontHint: "人像面，確保信息清晰",
+        backHint: "國徽面，確保信息清晰",
+        changePhoto: "更換圖片",
+        statusLabel: "狀態:",
+        statusPendingText: "待審核",
+        securityLevelLabel: "安全等級:",
+        highestLevelText: "最高級",
+        loadingText: "加載中...",
+        defaultProfession: "自由職業",
+        submitFailed: "提交失敗",
+        submitError: "提交認證資料失敗",
+        defaultRejectReason: "圖片模糊或信息不符",
+      };
+    case "ja-JP":
+      return {
+        basicInfo: "基本情報",
+        uploadIdDoc: "本人確認書類のアップロード（身分証明書 / パスポート）",
+        uploadRequirement: "写真は鮮明で、反射や角の欠けがないことを確認してください。",
+        frontHint: "表面、情報が鮮明であることを確認してください",
+        backHint: "裏面、有効期限内であることを確認してください",
+        changePhoto: "写真を変更",
+        statusLabel: "状態:",
+        statusPendingText: "審査中",
+        securityLevelLabel: "セキュリティレベル:",
+        highestLevelText: "最高レベル",
+        loadingText: "読み込み中...",
+        defaultProfession: "自由業",
+        submitFailed: "送信に失敗しました",
+        submitError: "確認書類の送信エラー",
+        defaultRejectReason: "画像が不鮮明、または情報が一致しません",
+      };
+    case "ko-KR":
+      return {
+        basicInfo: "기본 정보",
+        uploadIdDoc: "신분증 제출 (주민등록증 / 여권)",
+        uploadRequirement: "사진이 선명하고 반사되거나 잘린 부분이 없는지 확인하세요.",
+        frontHint: "앞면 사진, 정보가 선명한지 확인하세요",
+        backHint: "뒷면 사진, 유효기간을 확인하세요",
+        changePhoto: "사진 변경",
+        statusLabel: "상태:",
+        statusPendingText: "심사 대기 중",
+        securityLevelLabel: "보안 등급:",
+        highestLevelText: "최고 등급",
+        loadingText: "로딩 중...",
+        defaultProfession: "자영업 / 프리랜서",
+        submitFailed: "제출 실패",
+        submitError: "인증 서류 제출 오류",
+        defaultRejectReason: "사진이 흐리거나 정보가 일치하지 않습니다",
+      };
+    default:
+      return {
+        basicInfo: "Basic Information",
+        uploadIdDoc: "Upload Identity Documents (ID Card / Passport)",
+        uploadRequirement: "Please ensure the photo is clear, without glare or cut corners.",
+        frontHint: "Portrait side, ensure information is clear",
+        backHint: "Back side, ensure it is within validity period",
+        changePhoto: "Change photo",
+        statusLabel: "Status:",
+        statusPendingText: "Pending Review",
+        securityLevelLabel: "Security Level:",
+        highestLevelText: "Highest",
+        loadingText: "Loading...",
+        defaultProfession: "Freelancer",
+        submitFailed: "Submission failed",
+        submitError: "Failed to submit verification documents",
+        defaultRejectReason: "Image is blurry or information does not match",
+      };
+  }
+}
 
 function SpotlineVerifyCenterContent() {
   const router = useRouter();
@@ -15,6 +146,7 @@ function SpotlineVerifyCenterContent() {
   const t =
     VERIFY_CENTER_TRANSLATIONS[currentLang] ||
     VERIFY_CENTER_TRANSLATIONS["zh-CN"];
+  const kycText = getKycLabels(currentLang);
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -102,17 +234,17 @@ function SpotlineVerifyCenterContent() {
         idCard: idCard.trim(),
         frontImg,
         backImg,
-        profession: profession.trim() || (currentLang === "vi-VN" ? "Kinh doanh" : "自由职业"),
+        profession: profession.trim() || kycText.defaultProfession,
       });
 
       if (res.code === 1) {
         setAlertMsg({ type: "success", text: t.submitSuccess });
         setIsAuth(1); // Chuyển sang trạng thái chờ duyệt
       } else {
-        setAlertMsg({ type: "error", text: res.msg || (currentLang === "vi-VN" ? "Gửi hồ sơ thất bại" : "提交失败") });
+        setAlertMsg({ type: "error", text: res.msg || kycText.submitFailed });
       }
     } catch (err: any) {
-      setAlertMsg({ type: "error", text: err.message || (currentLang === "vi-VN" ? "Lỗi gửi hồ sơ xác minh" : "提交认证资料失败") });
+      setAlertMsg({ type: "error", text: err.message || kycText.submitError });
     } finally {
       setSubmitting(false);
     }
@@ -149,7 +281,7 @@ function SpotlineVerifyCenterContent() {
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center py-20 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mb-3" />
-            <span className="text-sm">{currentLang === "vi-VN" ? "Đang tải dữ liệu hồ sơ..." : "加载中..."}</span>
+            <span className="text-sm">{kycText.loadingText}</span>
           </div>
         ) : isAuth === 1 ? (
           /* TRẠNG THÁI 1: CHỜ XÉT DUYỆT */
@@ -157,7 +289,7 @@ function SpotlineVerifyCenterContent() {
             <div className="w-28 h-28 relative mb-6 drop-shadow-md">
               <Image
                 src={getR2Url("/sites/spotline888-org/pages-verify/verify_clock.png")}
-                alt={t.statusReviewing || "审核中"}
+                alt={t.statusReviewing}
                 fill
                 className="object-contain animate-pulse"
               />
@@ -175,9 +307,9 @@ function SpotlineVerifyCenterContent() {
                 <span className="font-semibold text-slate-800">{idCard}</span>
               </div>
               <div className="flex justify-between text-sm py-1">
-                <span className="text-slate-500">{currentLang === "vi-VN" ? "Trạng thái:" : "状态:"}</span>
+                <span className="text-slate-500">{kycText.statusLabel}</span>
                 <span className="font-semibold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full text-xs">
-                  {currentLang === "vi-VN" ? "Chờ phê duyệt" : "待审核"}
+                  {kycText.statusPendingText}
                 </span>
               </div>
             </div>
@@ -203,9 +335,9 @@ function SpotlineVerifyCenterContent() {
                 </span>
               </div>
               <div className="flex justify-between text-sm py-1">
-                <span className="text-slate-500">{currentLang === "vi-VN" ? "Bảo mật cấp độ:" : "安全等级:"}</span>
+                <span className="text-slate-500">{kycText.securityLevelLabel}</span>
                 <span className="font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full text-xs">
-                  {currentLang === "vi-VN" ? "Cấp cao nhất" : "最高级"}
+                  {kycText.highestLevelText}
                 </span>
               </div>
             </div>
@@ -219,7 +351,7 @@ function SpotlineVerifyCenterContent() {
                 <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-rose-900 mb-1">{t.statusRejected}</h4>
-                  <p className="text-rose-700 leading-snug">{t.reason} <strong>{errorReason || (currentLang === "vi-VN" ? "Hình ảnh mờ hoặc thông tin không trùng khớp" : "图片模糊或信息不符")}</strong></p>
+                  <p className="text-rose-700 leading-snug">{t.reason} <strong>{errorReason || kycText.defaultRejectReason}</strong></p>
                   <p className="text-xs text-rose-500 mt-1">{t.descRejected}</p>
                 </div>
               </div>
@@ -241,7 +373,7 @@ function SpotlineVerifyCenterContent() {
             {/* Khối nhập thông tin cá nhân */}
             <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 space-y-4">
               <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">
-                {currentLang === "vi-VN" ? "Thông tin cơ bản" : "基本信息"}
+                {kycText.basicInfo}
               </h3>
 
               <div>
@@ -283,10 +415,10 @@ function SpotlineVerifyCenterContent() {
             {/* Khối upload ảnh giấy tờ lên Cloudflare R2 */}
             <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 space-y-4">
               <h3 className="text-sm font-bold text-slate-800 border-l-3 border-indigo-600 pl-2">
-                {currentLang === "vi-VN" ? "Tải lên giấy tờ định danh (CCCD / Hộ chiếu)" : "上传身份证明文件（身份证/护照）"}
+                {kycText.uploadIdDoc}
               </h3>
               <p className="text-xs text-slate-400">
-                {currentLang === "vi-VN" ? "Vui lòng chụp ảnh rõ nét, không bị lóa sáng, không bị mất góc." : "请确保照片清晰，无反光，无缺角。"}
+                {kycText.uploadRequirement}
               </p>
 
               {/* Mặt trước */}
@@ -317,7 +449,7 @@ function SpotlineVerifyCenterContent() {
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-1.5">
-                        <Upload className="w-4 h-4" /> {currentLang === "vi-VN" ? "Đổi ảnh khác" : "更换图片"}
+                        <Upload className="w-4 h-4" /> {kycText.changePhoto}
                       </div>
                     </>
                   ) : (
@@ -327,7 +459,7 @@ function SpotlineVerifyCenterContent() {
                       </div>
                       <span className="text-xs font-medium text-slate-600">{t.uploadHint}</span>
                       <span className="text-[11px] text-slate-400">
-                        {currentLang === "vi-VN" ? "Mặt trước có ảnh chân dung và số thẻ" : "人像面，确保信息清晰"}
+                        {kycText.frontHint}
                       </span>
                     </div>
                   )}
@@ -362,7 +494,7 @@ function SpotlineVerifyCenterContent() {
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-medium gap-1.5">
-                        <Upload className="w-4 h-4" /> {currentLang === "vi-VN" ? "Đổi ảnh khác" : "更换图片"}
+                        <Upload className="w-4 h-4" /> {kycText.changePhoto}
                       </div>
                     </>
                   ) : (
@@ -372,7 +504,7 @@ function SpotlineVerifyCenterContent() {
                       </div>
                       <span className="text-xs font-medium text-slate-600">{t.uploadHint}</span>
                       <span className="text-[11px] text-slate-400">
-                        {currentLang === "vi-VN" ? "Mặt sau có đặc điểm nhận dạng & dấu vân tay" : "国徽面，确保信息清晰"}
+                        {kycText.backHint}
                       </span>
                     </div>
                   )}

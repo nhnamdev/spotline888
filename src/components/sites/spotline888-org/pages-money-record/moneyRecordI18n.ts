@@ -184,7 +184,12 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
   const rechargeMatch = memo.match(/(?:充值入金|管理员加款|管理員加款|管理员直接修改设定余额|管理員直接修改設定餘額|修改设定余额|修改設定餘額|设定余额|設定餘額|充值|Recharge Deposit):?\s*\+?([0-9\.]+)?(?:\s*([A-Za-z]+))?/i);
   if (rechargeMatch) {
     const amt = rechargeMatch[1] ? `: +${rechargeMatch[1]}` : "";
-    const curr = rechargeMatch[2] ? ` ${rechargeMatch[2]}` : "";
+    let rawCurr = rechargeMatch[2] ? rechargeMatch[2].trim() : "";
+    // Đổi USDT / USD thành Baht Thái theo yêu cầu khách
+    if (/^(usdt|usd)$/i.test(rawCurr)) {
+      rawCurr = lang === "zh-CN" || lang === "hk-TW" ? "泰铢" : "฿";
+    }
+    const curr = rawCurr ? ` ${rawCurr}` : "";
     const suffix = amt ? `${amt}${curr}` : "";
     switch (lang) {
       case "en-US": return `Recharge Deposit${suffix}`;
@@ -288,6 +293,10 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
       case "de-DE": return "Aus Yu'ebao übertragen";
       default: return "余额宝转出";
     }
+  }
+
+  if (lang === "th-TH" && memo) {
+    return memo.replace(/\b(usdt|usd)\b/gi, "฿");
   }
 
   return memo;
