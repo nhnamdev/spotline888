@@ -1316,7 +1316,7 @@ export default function AdminUserContent() {
                 </div>
                 <div className="info-item">
                   <span className="info-label">现金余额:</span>
-                  <strong className="info-value" style={{ color: '#18bc9c' }}>$ {balanceModal.user.money}</strong>
+                  <strong className="info-value" style={{ color: '#18bc9c' }}>฿ {balanceModal.user.money}</strong>
                 </div>
                 <div className="info-item">
                   <span className="info-label">USDT余额:</span>
@@ -1335,7 +1335,7 @@ export default function AdminUserContent() {
                       checked={balanceModal.currency === 'USD'} 
                       onChange={() => setBalanceModal(prev => ({ ...prev, currency: 'USD' }))}
                     />
-                    <i className="fa fa-dollar"></i> 现金账户 (USD $)
+                    <i className="fa fa-money"></i> 现金账户 (THB ฿)
                   </label>
                   <label className={`radio-pill ${balanceModal.currency === 'USDT' ? 'active sub' : ''}`}>
                     <input 
@@ -1390,53 +1390,58 @@ export default function AdminUserContent() {
               </div>
 
               {/* Dynamic Live Calculation preview when setting balance directly */}
-              {balanceModal.type === 'set' && (() => {
+              {(() => {
+                const currSymbol = balanceModal.currency === 'USDT' ? 'USDT' : '฿';
                 const currentVal = parseFloat(balanceModal.currency === 'USDT' ? balanceModal.user.usdtBalance : balanceModal.user.money) || 0;
                 const inputVal = parseFloat(balanceModal.amount);
                 const hasInput = !isNaN(inputVal) && inputVal >= 0;
                 const diffVal = hasInput ? parseFloat((inputVal - currentVal).toFixed(2)) : 0;
                 return (
-                  <div style={{
-                    background: '#f8fafc',
-                    border: '1px dashed #cbd5e1',
-                    borderRadius: '6px',
-                    padding: '10px 14px',
-                    marginBottom: '14px',
-                    fontSize: '13px'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ color: '#64748b' }}>当前{balanceModal.currency}余额:</span>
-                      <strong>{currentVal.toFixed(2)} {balanceModal.currency}</strong>
+                  <>
+                    {balanceModal.type === 'set' && (
+                      <div style={{
+                        background: '#f8fafc',
+                        border: '1px dashed #cbd5e1',
+                        borderRadius: '6px',
+                        padding: '10px 14px',
+                        marginBottom: '14px',
+                        fontSize: '13px'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ color: '#64748b' }}>当前{currSymbol}余额:</span>
+                          <strong>{currentVal.toFixed(2)} {currSymbol}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ color: '#64748b' }}>修改后目标新余额:</span>
+                          <strong style={{ color: '#2563eb' }}>{hasInput ? inputVal.toFixed(2) : '--'} {currSymbol}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e2e8f0', paddingTop: '4px' }}>
+                          <span style={{ color: '#64748b' }}>系统变动差额:</span>
+                          <strong style={{ color: diffVal > 0 ? '#16a34a' : (diffVal < 0 ? '#dc2626' : '#64748b') }}>
+                            {hasInput ? `${diffVal >= 0 ? '+' : ''}${diffVal.toFixed(2)} ${currSymbol}` : '--'}
+                          </strong>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="form-field-group">
+                      <label className="field-label">
+                        {balanceModal.type === 'set' ? `设定目标新余额 (${currSymbol})` : `调整金额 (${currSymbol})`}{' '}
+                        <span style={{ color: '#e74c3c' }}>*</span>
+                      </label>
+                      <input 
+                        type="number" 
+                        className="modal-input" 
+                        placeholder={balanceModal.type === 'set' ? `输入目标账户总额 (如: 5000)` : `输入调整金额 (例如: 1000)`}
+                        min={balanceModal.type === 'set' ? "0" : "0.01"}
+                        step="any"
+                        value={balanceModal.amount}
+                        onChange={(e) => setBalanceModal(prev => ({ ...prev, amount: e.target.value }))}
+                      />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ color: '#64748b' }}>修改后目标新余额:</span>
-                      <strong style={{ color: '#2563eb' }}>{hasInput ? inputVal.toFixed(2) : '--'} {balanceModal.currency}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e2e8f0', paddingTop: '4px' }}>
-                      <span style={{ color: '#64748b' }}>系统变动差额:</span>
-                      <strong style={{ color: diffVal > 0 ? '#16a34a' : (diffVal < 0 ? '#dc2626' : '#64748b') }}>
-                        {hasInput ? `${diffVal >= 0 ? '+' : ''}${diffVal.toFixed(2)} ${balanceModal.currency}` : '--'}
-                      </strong>
-                    </div>
-                  </div>
+                  </>
                 );
               })()}
-
-              <div className="form-field-group">
-                <label className="field-label">
-                  {balanceModal.type === 'set' ? `设定目标新余额 (${balanceModal.currency})` : `调整金额 (${balanceModal.currency})`}{' '}
-                  <span style={{ color: '#e74c3c' }}>*</span>
-                </label>
-                <input 
-                  type="number" 
-                  className="modal-input" 
-                  placeholder={balanceModal.type === 'set' ? `输入目标账户总额 (如: 5000)` : `输入调整金额 (例如: 1000)`}
-                  min={balanceModal.type === 'set' ? "0" : "0.01"}
-                  step="any"
-                  value={balanceModal.amount}
-                  onChange={(e) => setBalanceModal(prev => ({ ...prev, amount: e.target.value }))}
-                />
-              </div>
 
               <div className="form-field-group">
                 <label className="field-label">备注说明</label>

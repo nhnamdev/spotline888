@@ -74,16 +74,7 @@ function SpotlineAboutUsContent() {
             </ul>
           </div>
 
-          {/* Philosophy Banner */}
-          <div className="relative w-full aspect-[464/170] rounded-[10px] overflow-hidden mt-2 shadow-[0_2px_10px_rgba(0,0,0,0.08)]">
-            <Image
-              src={getR2Url("/sites/spotline888-org/pages-yinsi-gy/about_banner.png")}
-              alt="Philosophy"
-              fill
-              className="object-cover"
-              sizes="(max-width: 480px) 100vw, 480px"
-            />
-          </div>
+
         </div>
       </div>
     </div>

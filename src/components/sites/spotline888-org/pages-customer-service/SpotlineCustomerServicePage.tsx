@@ -13,7 +13,7 @@ function SpotlineCustomerServiceContent() {
   const { currentLang } = useI18n();
   const t =
     CUSTOMER_SERVICE_TRANSLATIONS[currentLang] ||
-    CUSTOMER_SERVICE_TRANSLATIONS["zh-CN"];
+    CUSTOMER_SERVICE_TRANSLATIONS["th-TH"];
 
   const [kefuUrl, setKefuUrl] = useState("https://wa.me/447838456993");
 

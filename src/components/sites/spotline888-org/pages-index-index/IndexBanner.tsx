@@ -6,12 +6,8 @@ import { contentApi } from "@/lib/api";
 import { getR2Url } from "@/lib/r2";
 
 const DEFAULT_BANNERS = [
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_0.jpg"),
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_1.jpg"),
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_2.jpg"),
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_3.jpg"),
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_4.jpg"),
-  getR2Url("/sites/spotline888-org/pages-index-index/banner_5.jpg"),
+  "/images/banners/banner_rangers.jpg",
+  "/images/banners/banner_review.jpg",
 ];
 
 export const IndexBanner: React.FC = () => {

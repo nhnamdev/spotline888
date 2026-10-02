@@ -207,14 +207,6 @@ function SpotlineUserPageContent() {
   // Quick List definitions
   const quickList = [
     {
-      title: t.quickTransfer,
-      icon: USER_ICONS.transfer,
-      rotate45: true,
-      onClick: () => {
-        router.push("/pages/transfer/account-transfer");
-      },
-    },
-    {
       title: t.onlineService,
       icon: USER_ICONS.service,
       rotate45: false,
@@ -368,10 +360,10 @@ function SpotlineUserPageContent() {
               {/* Top Block: Total Assets */}
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <div className="text-xs font-medium text-[#4b5563]">
-                  {t.totalAssets}($)
+                  {t.totalAssets}(฿)
                 </div>
                 <div className="pice" style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-                  <span className="unit font-semibold text-[16px] text-[#111827]">$</span>
+                  <span className="unit font-semibold text-[16px] text-[#111827]">฿</span>
                   <span>{totalAssets}</span>
                 </div>
               </div>
@@ -390,10 +382,10 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size" style={{ whiteSpace: "nowrap" }}>
-                    {t.yuebaoTotal}($ )
+                    {t.yuebaoTotal}(฿)
                   </div>
                   <div className="big-size">
-                    ${yuebaoData.all_money || "0.00"}
+                    ฿{yuebaoData.all_money || "0.00"}
                   </div>
                 </div>
 
@@ -407,7 +399,7 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size">{t.accountPL}</div>
-                  <div className="big-size">${userInfo.yk || "0.00"}</div>
+                  <div className="big-size">฿{userInfo.yk || "0.00"}</div>
                 </div>
 
                 {/* Col 3: Today's P&L */}
@@ -419,14 +411,14 @@ function SpotlineUserPageContent() {
                   }}
                 >
                   <div className="all-size">{t.todayPL}</div>
-                  <div className="big-size">${userInfo.yk_today || "0.00"}</div>
+                  <div className="big-size">฿{userInfo.yk_today || "0.00"}</div>
                 </div>
               </div>
 
               {/* Currency Position Badge on top right */}
               <div className="tui-position" style={{ width: "auto", height: "auto" }}>
                 <div className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-50/90 border border-blue-200/60 shadow-xs text-blue-600 font-bold text-sm">
-                  $
+                  ฿
                 </div>
               </div>
             </div>
@@ -437,10 +429,10 @@ function SpotlineUserPageContent() {
             {/* Available Balance */}
             <div className="tui-spendMoneyItem">
               <div className="cny">
-                {t.availableBalance}$
+                {t.availableBalance} ฿
               </div>
               <div className="pice" style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-                <span style={{ fontSize: "14px", fontWeight: "600", color: "#111827" }}>$</span>
+                <span style={{ fontSize: "14px", fontWeight: "600", color: "#111827" }}>฿</span>
                 <span>{userInfo.money}</span>
               </div>
             </div>

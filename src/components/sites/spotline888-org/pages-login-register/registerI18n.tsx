@@ -351,9 +351,9 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useI18n = () => {
   const base = useBaseI18n();
-  const currentLang = normalizeLanguageCode(base?.currentLang || "zh-CN");
+  const currentLang = normalizeLanguageCode(base?.currentLang || "th-TH");
   const t =
-    REGISTER_TRANSLATIONS[currentLang] || REGISTER_TRANSLATIONS["zh-CN"];
+    REGISTER_TRANSLATIONS[currentLang] || REGISTER_TRANSLATIONS["th-TH"];
   return {
     currentLang,
     setLang: base?.setLang || (() => {}),

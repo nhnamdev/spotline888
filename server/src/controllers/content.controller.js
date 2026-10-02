@@ -157,9 +157,9 @@ async function getPublicConfig(req, res) {
 
     return success(res, 'Lấy cấu hình thành công', {
       site_name: config['web_name'] || config['name'] || 'Fortrade',
-      currency: config['currency_code'] || 'USD',
-      currency_symbol: config['currency_short'] || '$',
-      currency_name: config['currency_name'] || 'US Dollar',
+      currency: config['currency_code'] || 'THB',
+      currency_symbol: config['currency_short'] || '฿',
+      currency_name: config['currency_name'] || 'Thai Baht',
       kefu_url: activeKefuUrl,
       kefu_script: config['kefu_script'] || activeKefuUrl,
       usdt_rate: parseFloat(config['usdt_cny_rate'] || '4.07'),

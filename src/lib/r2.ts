@@ -18,6 +18,9 @@ export function getR2Url(path?: string | null, fallback = ''): string {
     return path;
   }
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (cleanPath.startsWith('/images/') || cleanPath.startsWith('/uploads/')) {
+    return cleanPath;
+  }
   return `${R2_BASE_URL}${cleanPath}`;
 }
 

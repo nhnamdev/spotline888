@@ -221,7 +221,7 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationDict> = {
 export function normalizeLanguageCode(
   code: string | null | undefined
 ): LanguageCode {
-  if (!code) return "zh-CN";
+  if (!code) return "th-TH";
   const c = code.toLowerCase().trim();
   if (c === "vi" || c.startsWith("vi")) return "vi-VN";
   if (c === "en" || c.startsWith("en")) return "en-US";
@@ -234,7 +234,7 @@ export function normalizeLanguageCode(
   if (c === "ko" || c.startsWith("ko")) return "ko-KR";
   if (c === "fr" || c.startsWith("fr")) return "fr-FR";
   if (c === "de" || c.startsWith("de")) return "de-DE";
-  return "zh-CN";
+  return "th-TH";
 }
 
 interface I18nContextType {
@@ -245,9 +245,9 @@ interface I18nContextType {
 }
 
 const I18nContext = createContext<I18nContextType>({
-  currentLang: "zh-CN",
+  currentLang: "th-TH",
   setLang: () => {},
-  t: TRANSLATIONS["zh-CN"],
+  t: TRANSLATIONS["th-TH"],
   isRoot: false,
 });
 
@@ -259,7 +259,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
     return <>{children}</>;
   }
 
-  const [currentLang, setCurrentLangState] = useState<LanguageCode>("zh-CN");
+  const [currentLang, setCurrentLangState] = useState<LanguageCode>("th-TH");
 
   useEffect(() => {
     try {
@@ -311,7 +311,7 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS["zh-CN"];
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS["th-TH"];
 
   return (
     <I18nContext.Provider value={{ currentLang, setLang, t, isRoot: true }}>
