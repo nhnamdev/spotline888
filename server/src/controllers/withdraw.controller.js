@@ -20,12 +20,12 @@ async function submitWithdraw(req, res) {
     const numAmount = parseFloat(rawAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
       connection.release();
-      return error(res, 'Số tiền rút không hợp lệ');
+      return error(res, 'จำนวนเงินที่ถอนไม่ถูกต้อง');
     }
 
     if (!rawPassword || !rawPassword.trim()) {
       connection.release();
-      return error(res, 'Vui lòng nhập mật khẩu rút tiền');
+      return error(res, 'กรุณาใส่รหัสผ่านการถอนเงิน');
     }
 
     // 1. Kiểm tra trạng thái khóa ví của User
@@ -37,7 +37,7 @@ async function submitWithdraw(req, res) {
     if (users.length === 0) {
       await connection.rollback();
       connection.release();
-      return error(res, 'Tài khoản không tồn tại');
+      return error(res, 'ไม่พบบัญชีผู้ใช้');
     }
 
     const user = users[0];
@@ -45,7 +45,7 @@ async function submitWithdraw(req, res) {
     if (user.fund_status === 1) {
       await connection.rollback();
       connection.release();
-      return error(res, 'Tài khoản của bạn đang bị đóng băng quỹ, không thể thực hiện rút tiền');
+      return error(res, 'บัญชีของคุณถูกระงับ ไม่สามารถทำการถอนเงินได้');
     }
 
     // 2. Xác thực mật khẩu rút tiền (ưu tiên mpassword, fallback sang password đăng nhập)
@@ -60,22 +60,34 @@ async function submitWithdraw(req, res) {
     if (!isMatch) {
       await connection.rollback();
       connection.release();
-      return error(res, 'Mật khẩu rút tiền không chính xác');
+      return error(res, 'รหัสผ่านการถอนเงินไม่ถูกต้อง');
     }
 
-    // 3. Kiểm tra số dư khả dụng (hỗ trợ cả trường money và usdt)
-    const currentBalance = parseFloat(user.money || 0);
-    const currentUsdt = parseFloat(user.usdt || 0);
-    const maxAvailable = Math.max(currentBalance, currentUsdt);
-
-    if (maxAvailable < numAmount) {
-      await connection.rollback();
-      connection.release();
-      return error(res, `Số dư khả dụng (${maxAvailable.toFixed(2)} USDT) không đủ để rút ${numAmount.toFixed(2)} USDT`);
-    }
-
-    // 4. Chuẩn hóa loại rút tiền: fa_downmark yêu cầu ENUM('bank_card','usdt')
+    // 3. Chuẩn hóa loại rút tiền: fa_downmark yêu cầu ENUM('bank_card','usdt')
     const cleanWithdrawType = String(rawWithdrawType).toLowerCase().includes('usdt') ? 'usdt' : 'bank_card';
+    const currentThb = parseFloat(user.money || 0);
+    const currentUsdt = parseFloat(user.usdt || 0) || parseFloat((currentThb / 33.5).toFixed(2));
+
+    let deductThb = 0;
+    let deductUsdt = 0;
+
+    if (cleanWithdrawType === 'usdt') {
+      deductUsdt = numAmount;
+      deductThb = parseFloat((numAmount * 33.5).toFixed(2));
+      if (currentThb < deductThb && currentUsdt < numAmount) {
+        await connection.rollback();
+        connection.release();
+        return error(res, `ยอดคงเหลือไม่เพียงพอ (มีอยู่: ${currentUsdt.toFixed(2)} USDT)`);
+      }
+    } else {
+      deductThb = numAmount;
+      deductUsdt = parseFloat((numAmount / 33.5).toFixed(2));
+      if (currentThb < deductThb) {
+        await connection.rollback();
+        connection.release();
+        return error(res, `ยอดคงเหลือไม่เพียงพอ (มีอยู่: ${currentThb.toFixed(2)} ฿)`);
+      }
+    }
 
     // 5. Lấy hoặc tự động tạo thông tin ví / ngân hàng nhận tiền
     let bankQuery = 'SELECT * FROM fa_user_bank WHERE user_id = ?';
@@ -139,9 +151,9 @@ async function submitWithdraw(req, res) {
     }
 
     // 6. Trừ số dư khả dụng và tăng số dư đóng băng tạm thời
-    const newBalance = Math.max(0, currentBalance - numAmount);
-    const newUsdt = Math.max(0, currentUsdt - numAmount);
-    const newFreeze = parseFloat(user.freeze_funds || 0) + numAmount;
+    const newBalance = Math.max(0, currentThb - deductThb);
+    const newUsdt = Math.max(0, currentUsdt - deductUsdt);
+    const newFreeze = parseFloat(user.freeze_funds || 0) + deductThb;
 
     await connection.query(
       'UPDATE fa_user SET money = ?, usdt = ?, freeze_funds = ? WHERE id = ?',
@@ -156,6 +168,9 @@ async function submitWithdraw(req, res) {
     const bankName = bank.bank_name || (cleanWithdrawType === 'usdt' ? 'USDT (TRC20)' : 'Bank');
     const cardNumber = bank.card_number || 'USDT_WALLET';
     const bankBranch = bank.bank_branch || '';
+
+    const beforeVal = cleanWithdrawType === 'usdt' ? currentUsdt : currentThb;
+    const afterVal = cleanWithdrawType === 'usdt' ? newUsdt : newBalance;
 
     const [result] = await connection.query(
       `INSERT INTO fa_downmark (
@@ -173,8 +188,8 @@ async function submitWithdraw(req, res) {
         bankName,
         cardNumber,
         bankBranch,
-        maxAvailable,
-        maxAvailable - numAmount,
+        beforeVal,
+        afterVal,
         clientIp,
       ]
     );
@@ -182,26 +197,33 @@ async function submitWithdraw(req, res) {
     // 8. Ghi sổ cái fa_user_money_log
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
-       VALUES (?, 'USDT', 'withdraw', ?, ?, ?, '申请提现 USDT', NOW())`,
-      [userId, -numAmount, maxAvailable, maxAvailable - numAmount]
+       VALUES (?, ?, 'withdraw', ?, ?, ?, ?, NOW())`,
+      [
+        userId,
+        cleanWithdrawType === 'usdt' ? 'USDT' : 'USD',
+        -numAmount,
+        beforeVal,
+        afterVal,
+        cleanWithdrawType === 'usdt' ? '申请提现 USDT' : '申请提现 泰铢'
+      ]
     );
 
     await connection.commit();
     connection.release();
 
-    return success(res, 'Yêu cầu rút tiền đã được gửi thành công', {
+    return success(res, 'ส่งคำขอถอนเงินสำเร็จ', {
       id: result.insertId,
       orderId: result.insertId,
       order_sn: orderSn,
       order_no: orderSn,
       orderNo: orderSn,
       amount: numAmount,
-      balance: maxAvailable - numAmount,
+      balance: afterVal,
     });
   } catch (err) {
     await connection.rollback();
     connection.release();
-    return error(res, 'Rút tiền thất bại: ' + err.message);
+    return error(res, 'การถอนเงินล้มเหลว: ' + err.message);
   }
 }
 
@@ -213,7 +235,8 @@ async function getWithdrawList(req, res) {
   try {
     const userId = req.user.id;
     const [rows] = await pool.query(
-      `SELECT id, order_sn, amount, fee, actual_amount, withdraw_type, real_name, bank_name, card_number, status, note, created_at 
+      `SELECT id, order_sn, amount, fee, actual_amount, withdraw_type, real_name, bank_name, card_number, status, note, 
+              DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at 
        FROM fa_downmark 
        WHERE user_id = ? 
        ORDER BY id DESC`,
@@ -234,7 +257,8 @@ async function getMoneyLogs(req, res) {
   try {
     const userId = req.user.id;
     const [rows] = await pool.query(
-      `SELECT id, currency, type, money, before_balance, after_balance, memo, created_at 
+      `SELECT id, currency, type, money, before_balance, after_balance, memo, 
+              DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at 
        FROM fa_user_money_log 
        WHERE user_id = ? 
          AND CAST(money AS DECIMAL(15,2)) != 0

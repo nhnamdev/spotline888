@@ -6,6 +6,7 @@ import { ChevronLeft, Bell, RefreshCw } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { SYSTEM_MESSAGE_TRANSLATIONS } from "./systemMessageI18n";
 import { contentApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 interface MessageItem {
   id: number;
@@ -35,7 +36,7 @@ function SpotlineSystemMessageContent() {
           id: m.id,
           title: m.title && m.title !== m.content ? m.title : undefined,
           content: m.content || m.title || '',
-          date: m.date || (m.created_at ? new Date(m.created_at).toISOString().slice(0, 19).replace("T", " ") : "-"),
+          date: formatThaiTime(m.date || m.created_at),
           isRead: Boolean(m.is_read),
         }));
         setMessages(mapped);

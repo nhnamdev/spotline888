@@ -39,6 +39,12 @@ function SpotlineMoneyPageContent() {
 
   const [gradItem, setGradItem] = useState<number>(0);
   const [availableBalance, setAvailableBalance] = useState<number>(0.0);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 2500);
+  };
 
   // Modals
   const [isLangOpen, setIsLangOpen] = useState<boolean>(false);
@@ -295,12 +301,16 @@ function SpotlineMoneyPageContent() {
   }, [drawProgress, pageData.all_money]);
 
   // Actions
-  const handleOpenTransfer = (type: "buy" | "sell") => {
-    setTransferModal({
-      open: true,
-      type,
-      amount: "",
-    });
+  const handleOpenTransfer = (_type: "buy" | "sell") => {
+    const notActivatedMsg =
+      currentLang === "th-TH"
+        ? "คุณยังไม่ได้เปิดใช้งานฟังก์ชันนี้"
+        : currentLang === "zh-CN" || currentLang === "hk-TW"
+        ? "你未开通此功能"
+        : currentLang === "vi-VN"
+        ? "Bạn chưa mở tính năng này"
+        : "You have not activated this feature";
+    showToast(notActivatedMsg);
   };
 
   const handleExecuteTransfer = async () => {
@@ -510,6 +520,11 @@ function SpotlineMoneyPageContent() {
 
         {/* Outer Uni-app Root View */}
         <div className="tui-content">
+          {toastMsg && (
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[3000] px-4 py-2.5 bg-black/80 backdrop-blur-sm text-white text-[14px] rounded-lg shadow-lg pointer-events-none transition-all duration-200 animate-in fade-in zoom-in-95 text-center max-w-[85vw]">
+              {toastMsg}
+            </div>
+          )}
 
           {/* 1. Header with Top-Right Circular Button */}
           <div className="tui-header">

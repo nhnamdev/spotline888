@@ -112,7 +112,7 @@ async function createOrder(req, res) {
     const numAmount = parseFloat(rawAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
       connection.release();
-      return error(res, 'Số tiền đầu tư không hợp lệ');
+      return error(res, 'จำนวนเงินลงทุนไม่ถูกต้อง');
     }
 
     const ostyle = (rawDirection === 'buy_up' || rawDirection === 'long' || rawDirection === 'buy' || rawDirection === 'call') ? 'buy_up' : 'buy_down';
@@ -130,14 +130,14 @@ async function createOrder(req, res) {
     if (users.length === 0) {
       await connection.rollback();
       connection.release();
-      return error(res, 'Người dùng không tồn tại');
+      return error(res, 'ไม่พบบัญชีผู้ใช้');
     }
 
     const currentBalance = parseFloat(users[0].money);
     if (currentBalance < numAmount) {
       await connection.rollback();
       connection.release();
-      return error(res, `Số dư không đủ để đặt lệnh (Hiện có: ${currentBalance.toFixed(2)})`);
+      return error(res, `ยอดคงเหลือไม่เพียงพอสำหรับการสั่งซื้อ (ปัจจุบันมี: ${currentBalance.toFixed(2)} ฿)`);
     }
 
     // 2. Lấy giá vào lệnh
@@ -195,7 +195,7 @@ async function createOrder(req, res) {
   } catch (err) {
     await connection.rollback();
     connection.release();
-    return error(res, 'Đặt lệnh thất bại: ' + err.message);
+    return error(res, 'การสั่งซื้อล้มเหลว: ' + err.message);
   }
 }
 

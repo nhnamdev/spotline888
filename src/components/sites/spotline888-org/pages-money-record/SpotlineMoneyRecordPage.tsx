@@ -6,6 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { I18nProvider, useI18n } from "../pages-login-login/i18n";
 import { MONEY_RECORD_TRANSLATIONS, formatFundRecordMemo } from "./moneyRecordI18n";
 import { withdrawApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 interface RecordItem {
   id: number;
@@ -13,37 +14,6 @@ interface RecordItem {
   type?: string;
   time: string;
   amount: string;
-}
-
-/**
- * Định dạng thời gian theo múi giờ Vương Quốc Anh (Europe/London: GMT / BST)
- * Định dạng: YYYY-MM-DD HH:mm:ss
- */
-function formatToUKTime(dateStr: string | Date | null | undefined): string {
-  if (!dateStr) return "-";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return String(dateStr);
-
-  try {
-    const formatter = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Europe/London",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-    const parts = formatter.formatToParts(d);
-    const map: Record<string, string> = {};
-    for (const p of parts) {
-      map[p.type] = p.value;
-    }
-    return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second}`;
-  } catch {
-    return new Date(dateStr).toISOString().slice(0, 19).replace("T", " ");
-  }
 }
 
 function SpotlineMoneyRecordContent() {
@@ -78,7 +48,7 @@ function SpotlineMoneyRecordContent() {
               id: r.id,
               rawMemo: r.memo || '',
               type: r.type,
-              time: formatToUKTime(r.created_at),
+              time: formatThaiTime(r.created_at),
               amount: `${parseFloat(r.money || '0') >= 0 ? '+' : ''}${parseFloat(r.money || '0').toFixed(2)}`,
             }));
           setRecords(mapped);

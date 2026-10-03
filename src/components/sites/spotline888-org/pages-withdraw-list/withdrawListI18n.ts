@@ -12,6 +12,9 @@ export interface WithdrawListTranslation {
   statusApproved: string;
   statusRejected: string;
   time: string;
+  view: string;
+  rejectReasonTitle: string;
+  close: string;
 }
 
 export const WITHDRAW_LIST_TRANSLATIONS: Record<
@@ -30,6 +33,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "审核通过",
     statusRejected: "审核未通过",
     time: "时间",
+    view: "查看",
+    rejectReasonTitle: "驳回理由",
+    close: "关闭",
   },
   "hk-TW": {
     depositTitle: "入金明細",
@@ -43,6 +49,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "審核通過",
     statusRejected: "審核未通過",
     time: "時間",
+    view: "查看",
+    rejectReasonTitle: "駁回理由",
+    close: "關閉",
   },
   "en-US": {
     depositTitle: "Deposit Details",
@@ -56,6 +65,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Approved",
     statusRejected: "Rejected",
     time: "Time",
+    view: "View",
+    rejectReasonTitle: "Rejection Reason",
+    close: "Close",
   },
   "vi-VN": {
     depositTitle: "Chi tiết nạp tiền",
@@ -69,6 +81,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Thành công",
     statusRejected: "Bị từ chối",
     time: "Thời gian",
+    view: "Xem",
+    rejectReasonTitle: "Lý do từ chối",
+    close: "Đóng",
   },
   "id-ID": {
     depositTitle: "Rincian Deposit",
@@ -82,6 +97,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Disetujui",
     statusRejected: "Ditolak",
     time: "Waktu",
+    view: "Lihat",
+    rejectReasonTitle: "Alasan Penolakan",
+    close: "Tutup",
   },
   "ms-MY": {
     depositTitle: "Butiran Deposit",
@@ -95,6 +113,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Diluluskan",
     statusRejected: "Ditolak",
     time: "Masa",
+    view: "Lihat",
+    rejectReasonTitle: "Sebab Penolakan",
+    close: "Tutup",
   },
   "ja-JP": {
     depositTitle: "入金履歴",
@@ -108,6 +129,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "承認済み",
     statusRejected: "却下",
     time: "時間",
+    view: "確認",
+    rejectReasonTitle: "却下理由",
+    close: "閉じる",
   },
   "th-TH": {
     depositTitle: "รายละเอียดการฝากเงิน",
@@ -121,6 +145,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "อนุมัติแล้ว",
     statusRejected: "ถูกปฏิเสธ",
     time: "เวลา",
+    view: "ดู",
+    rejectReasonTitle: "เหตุผลที่ปฏิเสธ",
+    close: "ปิด",
   },
   "ko-KR": {
     depositTitle: "입금 내역",
@@ -134,6 +161,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "승인됨",
     statusRejected: "거부됨",
     time: "시간",
+    view: "보기",
+    rejectReasonTitle: "거부 사유",
+    close: "닫기",
   },
   "fr-FR": {
     depositTitle: "Détails du dépôt",
@@ -147,6 +177,9 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Approuvé",
     statusRejected: "Rejeté",
     time: "Heure",
+    view: "Voir",
+    rejectReasonTitle: "Motif du rejet",
+    close: "Fermer",
   },
   "de-DE": {
     depositTitle: "Einzahlungsdetails",
@@ -160,5 +193,8 @@ export const WITHDRAW_LIST_TRANSLATIONS: Record<
     statusApproved: "Genehmigt",
     statusRejected: "Abgelehnt",
     time: "Zeit",
+    view: "Ansehen",
+    rejectReasonTitle: "Ablehnungsgrund",
+    close: "Schließen",
   },
 };

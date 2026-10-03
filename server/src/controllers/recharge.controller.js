@@ -90,7 +90,9 @@ async function getRechargeList(req, res) {
   try {
     const userId = req.user.id;
     const [rows] = await pool.query(
-      `SELECT id, order_sn, money, pay_type, status, member_note, created_at, check_time 
+      `SELECT id, order_sn, money, pay_type, status, member_note, 
+              DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, 
+              DATE_FORMAT(check_time, '%Y-%m-%d %H:%i:%s') AS check_time 
        FROM fa_upmark 
        WHERE user_id = ? 
        ORDER BY id DESC`,

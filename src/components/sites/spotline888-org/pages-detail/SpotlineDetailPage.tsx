@@ -114,7 +114,7 @@ function SpotlineDetailInner() {
         }
 
         if (profRes.code === 1 && profRes.data) {
-          const bal = profRes.data.usdt ?? profRes.data.money;
+          const bal = profRes.data.money ?? profRes.data.usdt;
           if (bal !== undefined && bal !== null) {
             setUserBalance(parseFloat(bal));
           }
@@ -276,7 +276,7 @@ function SpotlineDetailInner() {
     });
 
     if (res.code !== 1) {
-      showToast(res.msg || "Đặt lệnh thất bại");
+      showToast(res.msg || (currentLang === "th-TH" ? "การสั่งซื้อล้มเหลว" : "Đặt lệnh thất bại"));
       return;
     }
 
@@ -569,14 +569,14 @@ function SpotlineDetailInner() {
                           {item.direction === "long" ? t.btnBuyLong : t.btnBuyShort}
                         </span>
                         <span className="text-[11px] text-gray-500">
-                          {item.amount} USDT
+                          {item.amount} ฿
                         </span>
                       </div>
                       <div className="text-[12px] text-[#475569]">
                         {item.entryPrice.toFixed(2)}
                       </div>
                       <div className="text-center text-[12.5px] font-semibold text-emerald-600">
-                        +{(item.amount * item.yieldRate).toFixed(2)} USDT
+                        +{(item.amount * item.yieldRate).toFixed(2)} ฿
                       </div>
                       <div className="text-right text-[12px] font-mono text-[#2563eb] font-bold">
                         {item.remaining}s
@@ -607,7 +607,7 @@ function SpotlineDetailInner() {
                         {item.direction === "long" ? t.btnBuyLong : t.btnBuyShort}
                       </span>
                       <span className="text-[11px] text-gray-500">
-                        {item.amount} USDT
+                        {item.amount} ฿
                       </span>
                     </div>
                     <div className="text-[12px] text-[#475569]">
@@ -621,8 +621,8 @@ function SpotlineDetailInner() {
                       }`}
                     >
                       {item.status === "win"
-                        ? `+${(item.amount * item.yieldRate).toFixed(2)} USDT`
-                        : `-${item.amount.toFixed(2)} USDT`}
+                        ? `+${(item.amount * item.yieldRate).toFixed(2)} ฿`
+                        : `-${item.amount.toFixed(2)} ฿`}
                     </div>
                     <div className="text-right text-[12px] text-gray-500">
                       {item.status === "win" ? "WIN" : "LOSS"}
@@ -720,7 +720,7 @@ function SpotlineDetailInner() {
                     {t.investAmount}
                   </label>
                   <span className="text-[12px] text-[#94a3b8]">
-                    {t.balance}: {userBalance.toFixed(2)} USDT
+                    {t.balance}: {userBalance.toFixed(2)} ฿
                   </span>
                 </div>
                 <div className="relative">
@@ -732,7 +732,7 @@ function SpotlineDetailInner() {
                     className="w-full bg-[#f8fafc] border border-gray-200 rounded-[10px] px-3.5 py-2.5 text-[15px] font-semibold text-[#1e293b] focus:outline-none focus:border-[#2563eb]"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-gray-400 font-medium">
-                    USDT
+                    ฿
                   </span>
                 </div>
                 {/* Quick Chips */}
@@ -757,13 +757,19 @@ function SpotlineDetailInner() {
                 </div>
               </div>
 
-              {/* Summary */}
-              <div className="bg-[#f8fafc] rounded-[10px] p-3 flex items-center justify-between text-[13px]">
-                <span className="text-gray-500">{t.estYield}:</span>
-                <span className="font-bold text-[#10b981]">
-                  +{(parseFloat(investAmount || "0") * 0.85).toFixed(2)} USDT
-                </span>
-              </div>
+              {/* Summary with dynamic return calculation */}
+              {(() => {
+                const currentRate = ({ 60: 15, 120: 20, 180: 25, 300: 30 } as Record<number, number>)[selectedDuration] || 15;
+                const estProfit = ((parseFloat(investAmount || "0") * currentRate) / 100).toFixed(2);
+                return (
+                  <div className="bg-[#f8fafc] rounded-[10px] p-3 flex items-center justify-between text-[13px]">
+                    <span className="text-gray-500">{t.estYield}:</span>
+                    <span className="font-bold text-[#10b981]">
+                      +{estProfit} ฿
+                    </span>
+                  </div>
+                );
+              })()}
 
               {/* Submit Button */}
               <button

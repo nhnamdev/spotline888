@@ -18,9 +18,12 @@ function SpotlineWithdrawContent() {
   const [loading, setLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [availableBalance, setAvailableBalance] = useState(0.0);
+  const [thbBalance, setThbBalance] = useState(0.0);
+  const [usdtBalance, setUsdtBalance] = useState(0.0);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [loadingBanks, setLoadingBanks] = useState(true);
+
+  const currentAvailable = withdrawType === "bank_card" ? thbBalance : usdtBalance;
 
   useEffect(() => {
     // 1. Tải cache local số dư nếu có
@@ -28,10 +31,10 @@ function SpotlineWithdrawContent() {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
-        const bal = parseFloat(parsed.usdt_money ?? parsed.money ?? "0");
-        if (!isNaN(bal) && bal > 0) {
-          setAvailableBalance(bal);
-        }
+        const thb = parseFloat(parsed.money ?? "0");
+        const usdt = parseFloat(parsed.usdt ?? parsed.usdt_money ?? (thb / 33.5).toFixed(2));
+        if (!isNaN(thb)) setThbBalance(thb);
+        if (!isNaN(usdt)) setUsdtBalance(usdt);
       }
     } catch {}
 
@@ -40,10 +43,10 @@ function SpotlineWithdrawContent() {
       try {
         const res = await authApi.getProfile();
         if (res.code === 1 && res.data) {
-          const bal = parseFloat(res.data.usdt ?? res.data.money ?? "0");
-          if (!isNaN(bal)) {
-            setAvailableBalance(bal);
-          }
+          const thb = parseFloat(res.data.money ?? "0");
+          const usdt = parseFloat(res.data.usdt ?? (thb / 33.5).toFixed(2));
+          if (!isNaN(thb)) setThbBalance(thb);
+          if (!isNaN(usdt)) setUsdtBalance(usdt);
         }
       } catch (err) {
         console.error("Lỗi lấy thông tin số dư:", err);
@@ -74,7 +77,7 @@ function SpotlineWithdrawContent() {
   };
 
   const handleAll = () => {
-    setAmount(availableBalance.toFixed(2));
+    setAmount(currentAvailable.toFixed(2));
   };
 
   // Xác định tài khoản đã liên kết tương ứng với loại rút tiền hiện tại
@@ -117,7 +120,7 @@ function SpotlineWithdrawContent() {
     }
 
     const num = parseFloat(amount);
-    if (isNaN(num) || num <= 0 || num > availableBalance) {
+    if (isNaN(num) || num <= 0 || num > currentAvailable) {
       showToast(t.invalidAmount);
       return;
     }
@@ -143,23 +146,43 @@ function SpotlineWithdrawContent() {
       } as any);
 
       if (res.code === 1) {
-        const newBal = Math.max(0, Number((availableBalance - num).toFixed(2)));
-        setAvailableBalance(newBal);
-        try {
-          const stored = localStorage.getItem("userInfo");
-          if (stored) {
-            const u = JSON.parse(stored);
-            u.money = newBal.toFixed(2);
-            u.usdt_money = newBal.toFixed(2);
-            localStorage.setItem("userInfo", JSON.stringify(u));
-          }
-        } catch {}
+        if (withdrawType === "usdt-trc20") {
+          const newUsdt = Math.max(0, Number((usdtBalance - num).toFixed(2)));
+          const newThb = Math.max(0, Number((thbBalance - num * 33.5).toFixed(2)));
+          setUsdtBalance(newUsdt);
+          setThbBalance(newThb);
+          try {
+            const stored = localStorage.getItem("userInfo");
+            if (stored) {
+              const u = JSON.parse(stored);
+              u.money = newThb.toFixed(2);
+              u.usdt = newUsdt.toFixed(2);
+              u.usdt_money = newUsdt.toFixed(2);
+              localStorage.setItem("userInfo", JSON.stringify(u));
+            }
+          } catch {}
+        } else {
+          const newThb = Math.max(0, Number((thbBalance - num).toFixed(2)));
+          const newUsdt = Math.max(0, Number((usdtBalance - num / 33.5).toFixed(2)));
+          setThbBalance(newThb);
+          setUsdtBalance(newUsdt);
+          try {
+            const stored = localStorage.getItem("userInfo");
+            if (stored) {
+              const u = JSON.parse(stored);
+              u.money = newThb.toFixed(2);
+              u.usdt = newUsdt.toFixed(2);
+              u.usdt_money = newUsdt.toFixed(2);
+              localStorage.setItem("userInfo", JSON.stringify(u));
+            }
+          } catch {}
+        }
         setShowSuccessModal(true);
       } else {
         showToast(res.msg || t.invalidPassword);
       }
     } catch (err: any) {
-      showToast(err?.message || "Lỗi gửi yêu cầu rút tiền");
+      showToast(err?.message || (currentLang === "th-TH" ? "ส่งคำขอถอนเงินล้มเหลว" : "Lỗi gửi yêu cầu rút tiền"));
     } finally {
       setLoading(false);
     }
@@ -420,7 +443,7 @@ function SpotlineWithdrawContent() {
               <span>
                 {t.availableBalance}:{" "}
                 <strong className="text-[#3b82f6] font-semibold">
-                  {availableBalance.toFixed(2)} {withdrawType === "bank_card" ? "฿" : "USDT"}
+                  {currentAvailable.toFixed(2)} {withdrawType === "bank_card" ? "฿" : "USDT"}
                 </strong>
               </span>
               <span>{t.fee}: 0%</span>

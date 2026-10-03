@@ -46,6 +46,8 @@ async function getDownmarks(req, res) {
               d.actual_amount as real_money, 
               d.card_number as bank_card, 
               d.note as remark,
+              DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') as createtime,
+              DATE_FORMAT(d.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
               u.account as username, 
               u.phone, 
               u.money as current_balance 
@@ -160,7 +162,7 @@ async function checkDownmark(req, res) {
       // Cập nhật đơn rút
       await connection.query(
         `UPDATE fa_downmark SET status = 'rejected', check_admin_id = ?, check_time = NOW(), note = ? WHERE id = ?`,
-        [req.admin.id, note || '提现申请已拒绝', id]
+        [req.admin.id, note || 'คำขอถอนเงินถูกปฏิเสธ', id]
       );
     }
 

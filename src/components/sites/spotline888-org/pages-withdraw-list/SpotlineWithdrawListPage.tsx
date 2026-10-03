@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ChevronLeft, Clock, CheckCircle2, XCircle, Loader2, AlertCircle } from "lucide-react";
 import { I18nProvider, useI18n, LanguageCode } from "../pages-login-login/i18n";
 import { WITHDRAW_LIST_TRANSLATIONS } from "./withdrawListI18n";
 import { withdrawApi, rechargeApi } from "@/lib/api";
 import { getR2Url } from "@/lib/r2";
+import { formatThaiTime } from "@/lib/utils";
 
 function formatTypeBadge(
   payType: string | undefined,
@@ -88,12 +89,19 @@ function formatRecordNote(
     }
   }
 
-  if (text.includes("审核未通过") || text.includes("审核拒绝") || text.includes("驳回")) {
+  if (
+    text.includes("审核未通过") ||
+    text.includes("审核拒绝") ||
+    text.includes("驳回") ||
+    text.includes("提现申请已拒绝") ||
+    text.includes("已拒绝") ||
+    text.includes("拒绝")
+  ) {
     switch (lang) {
-      case "th-TH": return "ถูกปฏิเสธ";
-      case "vi-VN": return "Bị từ chối";
-      case "en-US": return "Rejected";
-      default: return "Rejected";
+      case "th-TH": return "คำขอถอนเงินถูกปฏิเสธ";
+      case "vi-VN": return "Yêu cầu rút tiền bị từ chối";
+      case "en-US": return "Withdrawal rejected";
+      default: return "Withdrawal rejected";
     }
   }
 
@@ -149,6 +157,10 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
 
   const [records, setRecords] = useState<RecordData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRejectModal, setSelectedRejectModal] = useState<{
+    orderSn: string;
+    reason: string;
+  } | null>(null);
 
   useEffect(() => {
     async function loadRecords() {
@@ -258,12 +270,7 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
               );
               const numVal = isNaN(rawNum) ? "0.00" : rawNum.toFixed(2);
               const orderSn = item.order_sn || `TX${item.id || idx}`;
-              const timeStr = item.created_at
-                ? new Date(item.created_at)
-                    .toISOString()
-                    .slice(0, 19)
-                    .replace("T", " ")
-                : "-";
+              const timeStr = formatThaiTime(item.created_at);
               const typeBadge = formatTypeBadge(
                 item.pay_type,
                 item.withdraw_type,
@@ -315,18 +322,78 @@ function SpotlineWithdrawListContent({ type }: SpotlineWithdrawListProps) {
                     </span>
                   </div>
 
-                  {/* Row 3: Time & Note */}
+                  {/* Row 3: Time & Note & View Reason */}
                   <div className="flex items-center justify-between text-[11.5px] text-gray-400">
                     <span>{timeStr}</span>
-                    {noteText && (
-                      <span className="text-rose-500 italic max-w-[200px] truncate text-right">
-                        {noteText}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1.5 max-w-[250px] justify-end">
+                      {noteText && (
+                        <span className="text-rose-500 italic truncate text-right">
+                          {noteText}
+                        </span>
+                      )}
+                      {type === "withdraw" &&
+                        (String(item.status).toLowerCase() === "rejected" ||
+                          String(item.status) === "2" ||
+                          String(item.status).toLowerCase() === "fail") && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedRejectModal({
+                                orderSn,
+                                reason:
+                                  item.note ||
+                                  item.member_note ||
+                                  noteText ||
+                                  (currentLang === "th-TH"
+                                    ? "คำขอถอนเงินถูกปฏิเสธ"
+                                    : "Bị từ chối"),
+                              })
+                            }
+                            className="text-[#2563eb] font-semibold hover:underline cursor-pointer bg-transparent border-0 p-0 text-[12px] shrink-0"
+                          >
+                            [{t.view}]
+                          </button>
+                        )}
+                    </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Modal Xem chi tiết lý do từ chối rút tiền */}
+        {selectedRejectModal && (
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-[340px] p-5 shadow-2xl text-left animate-in zoom-in-95">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-2.5 mb-3">
+                <h3 className="text-[16px] font-bold text-[#111827] flex items-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-rose-500" />
+                  {t.rejectReasonTitle}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRejectModal(null)}
+                  className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 border-0 cursor-pointer text-[16px]"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="text-[12.5px] text-gray-500 mb-2">
+                <span className="font-medium text-gray-400">{t.orderSn}:</span>{" "}
+                <span className="font-mono text-gray-700 font-semibold">{selectedRejectModal.orderSn}</span>
+              </div>
+              <div className="bg-rose-50/70 border border-rose-100 rounded-xl p-3.5 text-[13.5px] text-rose-700 leading-relaxed break-words whitespace-pre-wrap">
+                {selectedRejectModal.reason}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedRejectModal(null)}
+                className="w-full mt-4 h-10 bg-[#3b82f6] text-white font-semibold rounded-xl text-[14px] hover:bg-[#2563eb] active:scale-98 transition-all cursor-pointer border-0"
+              >
+                {t.close}
+              </button>
+            </div>
           </div>
         )}
       </div>

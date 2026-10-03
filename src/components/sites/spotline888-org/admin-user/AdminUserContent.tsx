@@ -1315,38 +1315,8 @@ export default function AdminUserContent() {
                   <strong className="info-value">{balanceModal.user.uid}</strong>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">现金余额:</span>
+                  <span className="info-label">账户现金余额:</span>
                   <strong className="info-value" style={{ color: '#18bc9c' }}>฿ {balanceModal.user.money}</strong>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">USDT余额:</span>
-                  <strong className="info-value" style={{ color: '#2980b9' }}>{balanceModal.user.usdtBalance} USDT</strong>
-                </div>
-              </div>
-
-              <div className="form-field-group">
-                <label className="field-label">操作币种账户 <span style={{ color: '#e74c3c' }}>*</span></label>
-                <div className="radio-button-group">
-                  <label className={`radio-pill ${balanceModal.currency === 'USD' ? 'active add' : ''}`}>
-                    <input 
-                      type="radio" 
-                      name="balanceCurrency" 
-                      value="USD" 
-                      checked={balanceModal.currency === 'USD'} 
-                      onChange={() => setBalanceModal(prev => ({ ...prev, currency: 'USD' }))}
-                    />
-                    <i className="fa fa-money"></i> 现金账户 (THB ฿)
-                  </label>
-                  <label className={`radio-pill ${balanceModal.currency === 'USDT' ? 'active sub' : ''}`}>
-                    <input 
-                      type="radio" 
-                      name="balanceCurrency" 
-                      value="USDT" 
-                      checked={balanceModal.currency === 'USDT'} 
-                      onChange={() => setBalanceModal(prev => ({ ...prev, currency: 'USDT' }))}
-                    />
-                    <i className="fa fa-bitcoin"></i> 数字资产 (USDT)
-                  </label>
                 </div>
               </div>
 
@@ -1851,7 +1821,7 @@ export default function AdminUserContent() {
                     <div className="info-item">
                       <span className="info-label">现金余额:</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <strong className="info-value" style={{ color: '#18bc9c' }}>$ {detailModal.userDetail?.money ?? detailModal.userItem.money}</strong>
+                        <strong className="info-value" style={{ color: '#18bc9c' }}>฿ {detailModal.userDetail?.money ?? detailModal.userItem.money}</strong>
                         <button
                           type="button"
                           className="btn btn-xs btn-default"
