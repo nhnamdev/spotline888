@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 export interface LoanConfigItem {
   id: number;
@@ -34,7 +35,7 @@ export default function AdminLoanConfigContent() {
           maxAmount: `¥${Number(c.max_amount).toFixed(2)}`,
           status: Boolean(c.status),
           weigh: c.weigh || 1,
-          ctime: c.created_at ? new Date(c.created_at).toISOString().slice(0, 19).replace('T', ' ') : '-',
+          ctime: c.created_at ? formatThaiTime(c.created_at) : '-',
         }));
         setConfigs(mapped);
       }

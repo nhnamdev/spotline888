@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 export interface ProductTypeItem {
   id: number;
@@ -26,7 +27,7 @@ export default function AdminProductTypeContent() {
           name: t.name,
           rank: t.rank || 1000,
           status: Boolean(t.status),
-          ctime: t.created_at ? new Date(t.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          ctime: t.created_at ? formatThaiTime(t.created_at) : "-",
         }));
         setTypes(mapped);
       }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { YuebaoConfigItem } from "./yuebaoConfigData";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 export default function AdminYuebaoConfigContent() {
   const [configs, setConfigs] = useState<YuebaoConfigItem[]>([]);
@@ -22,7 +23,7 @@ export default function AdminYuebaoConfigContent() {
           day: c.day,
           min_money: c.min_money,
           status: Number(c.status),
-          creat_time: c.created_at ? new Date(c.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          creat_time: c.created_at ? formatThaiTime(c.created_at) : "-",
           status_text: Number(c.status) === 1 ? "启用" : "禁用",
         }));
         setConfigs(mapped);

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getR2Url } from "@/lib/r2";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 export interface ProductItem {
   id: number;
@@ -41,10 +42,10 @@ export default function AdminProductListContent() {
           image: getR2Url(p.image),
           typeName: p.type_name || (p.type_id === 1 ? "虚拟币" : p.type_id === 2 ? "外汇" : "商品"),
           price: Number(p.price || 0).toFixed(8),
-          updateTime: p.updated_at ? new Date(p.updated_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          updateTime: p.updated_at ? formatThaiTime(p.updated_at) : "-",
           isOpen: Boolean(p.is_open),
           status: Boolean(p.status),
-          ctime: p.created_at ? new Date(p.created_at).toISOString().slice(0, 19).replace("T", " ") : "-",
+          ctime: p.created_at ? formatThaiTime(p.created_at) : "-",
         }));
         setProducts(mapped);
       }

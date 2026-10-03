@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 import { YuebaoOrderItem } from "./yuebaoOrderData";
 
 export default function AdminYuebaoOrderContent() {
@@ -55,7 +56,7 @@ export default function AdminYuebaoOrderContent() {
           user_id: r.user_id,
           username: r.username || `User_${r.user_id}`,
           amount: parseFloat(r.amount || 0).toFixed(2),
-          create_time: r.created_at ? String(r.created_at).replace('T', ' ').substring(0, 19) : '',
+          create_time: r.created_at ? formatThaiTime(r.created_at) : '',
         }));
         setOrders(mapped);
       }

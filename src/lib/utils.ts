@@ -13,14 +13,21 @@ export function formatThaiTime(dateInput?: string | number | Date | null): strin
   if (!dateInput) return "-";
   try {
     let d: Date;
-    if (typeof dateInput === "string") {
-      // Nếu đã là chuỗi định dạng "YYYY-MM-DD HH:mm:ss" không có Z/offset, kiểm tra và chuẩn hóa
+    if (typeof dateInput === "number") {
+      // Hỗ trợ cả timestamp tính bằng giây (< 1e11) và mili giây
+      d = new Date(dateInput < 1e11 ? dateInput * 1000 : dateInput);
+    } else if (typeof dateInput === "string") {
       const str = dateInput.trim();
-      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(str)) {
-        // Chuỗi dạng "2026-10-02 12:28:52" trả về từ MySQL DATE_FORMAT đã là giờ Thái
+      if (/^\d{10}$/.test(str)) {
+        d = new Date(Number(str) * 1000);
+      } else if (/^\d{13}$/.test(str)) {
+        d = new Date(Number(str));
+      } else if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(str)) {
+        // Chuỗi dạng "2026-10-02 12:28:52" từ MySQL DATE_FORMAT đã là giờ Thái
         return str.length === 16 ? `${str}:00` : str;
+      } else {
+        d = new Date(str);
       }
-      d = new Date(str);
     } else {
       d = new Date(dateInput);
     }

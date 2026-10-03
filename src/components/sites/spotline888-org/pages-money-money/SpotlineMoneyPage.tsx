@@ -10,6 +10,7 @@ import { MONEY_ICONS } from "./moneyIcons";
 import { MoneyDetailsModal, TransactionRecord } from "./MoneyDetailsModal";
 import { X, ArrowRightLeft, Globe } from "lucide-react";
 import { authApi, yuebaoApi, withdrawApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 interface PageData {
   all_money: number;
@@ -265,7 +266,7 @@ function SpotlineMoneyPageContent() {
             type: item.type === "recharge" ? "deposit" : item.type === "withdraw" ? "withdraw" : "earnings",
             title: item.memo || (item.type === "recharge" ? tMoney.deposit : tMoney.withdraw),
             amount: Math.abs(parseFloat(item.money || "0")),
-            time: item.created_at ? new Date(item.created_at).toISOString().slice(0, 16).replace("T", " ") : "2025-05-14 10:24",
+            time: item.created_at ? formatThaiTime(item.created_at) : "-",
             status: "Completed",
           }));
           if (mappedLogs.length > 0) {

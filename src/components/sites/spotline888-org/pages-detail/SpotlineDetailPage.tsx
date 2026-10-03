@@ -122,20 +122,27 @@ function SpotlineDetailInner() {
 
         if (ordersRes.code === 1 && Array.isArray(ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data)) {
           const rawOrders = ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data;
-          const mappedOrders: ActiveTrade[] = rawOrders.map((o: any) => ({
-            id: String(o.id || o.order_sn),
-            symbol: o.symbol || codenameParam,
-            direction: o.ostyle === "buy_up" ? "long" : "short",
-            amount: parseFloat(o.money || o.amount || "0"),
-            entryPrice: parseFloat(o.buy_price || "0") || basePrice,
-            duration: Number(o.second || 60),
-            remaining: Math.max(0, Math.floor(((new Date(o.settle_time || o.created_at).getTime() + (Number(o.second || 60) * 1000)) - Date.now()) / 1000)),
-            yieldRate: parseFloat(o.yield_rate || "15") / 100,
-            status: o.status === "open" ? "trading" : (o.is_win === 1 ? "win" : "loss"),
-          }));
-          if (mappedOrders.length > 0) {
-            setTrades(mappedOrders);
-          }
+          const mappedOrders: ActiveTrade[] = rawOrders.map((o: any) => {
+            const isHolding = o.status === "holding" || o.status === "open";
+            const buyMoney = parseFloat(o.buy_money || o.money || o.amount || "0");
+            const duration = Number(o.duration || o.second || 60);
+            const remaining = isHolding
+              ? Math.max(0, Math.floor(((new Date(o.sell_time || o.created_at).getTime()) - Date.now()) / 1000))
+              : 0;
+            const isWin = o.ploss !== undefined ? parseFloat(o.ploss) > 0 : o.is_win === 1;
+            return {
+              id: String(o.id || o.order_sn),
+              symbol: o.product_title || o.symbol || codenameParam,
+              direction: o.ostyle === "buy_up" ? "long" : "short",
+              amount: buyMoney,
+              entryPrice: parseFloat(o.buy_price || "0") || basePrice,
+              duration,
+              remaining: isHolding && remaining > 0 ? remaining : 0,
+              yieldRate: parseFloat(o.yield_rate || "15") / 100,
+              status: (isHolding && remaining > 0 ? "trading" : (isWin ? "win" : "loss")) as "trading" | "win" | "loss",
+            };
+          });
+          setTrades(mappedOrders);
         }
       } catch (err) {
         console.error("Lỗi đồng bộ kline và số dư:", err);
@@ -174,10 +181,12 @@ function SpotlineDetailInner() {
   // Countdown timer for active trades
   useEffect(() => {
     const timer = setInterval(() => {
-      setTrades((prev) =>
-        prev.map((trade) => {
+      let expiredTrade = false;
+      setTrades((prev) => {
+        const next: ActiveTrade[] = prev.map((trade): ActiveTrade => {
           if (trade.status !== "trading") return trade;
           if (trade.remaining <= 1) {
+            expiredTrade = true;
             const isWin =
               trade.direction === "long"
                 ? basePrice >= trade.entryPrice
@@ -189,11 +198,55 @@ function SpotlineDetailInner() {
             };
           }
           return { ...trade, remaining: trade.remaining - 1 };
-        })
-      );
+        });
+        return next;
+      });
+
+      if (expiredTrade) {
+        setTimeout(async () => {
+          try {
+            const [ordersRes, profRes] = await Promise.all([
+              tradingApi.getMyOrders("all", 1, 20),
+              authApi.getProfile(),
+            ]);
+            if (ordersRes.code === 1 && Array.isArray(ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data)) {
+              const rawOrders = ordersRes.data?.rows || ordersRes.data?.list || ordersRes.data;
+              const mappedOrders: ActiveTrade[] = rawOrders.map((o: any) => {
+                const isHolding = o.status === "holding" || o.status === "open";
+                const buyMoney = parseFloat(o.buy_money || o.money || o.amount || "0");
+                const duration = Number(o.duration || o.second || 60);
+                const remaining = isHolding
+                  ? Math.max(0, Math.floor(((new Date(o.sell_time || o.created_at).getTime()) - Date.now()) / 1000))
+                  : 0;
+                const isWin = o.ploss !== undefined ? parseFloat(o.ploss) > 0 : o.is_win === 1;
+                return {
+                  id: String(o.id || o.order_sn),
+                  symbol: o.product_title || o.symbol || codenameParam,
+                  direction: o.ostyle === "buy_up" ? "long" : "short",
+                  amount: buyMoney,
+                  entryPrice: parseFloat(o.buy_price || "0") || basePrice,
+                  duration,
+                  remaining: isHolding && remaining > 0 ? remaining : 0,
+                  yieldRate: parseFloat(o.yield_rate || "15") / 100,
+                  status: (isHolding && remaining > 0 ? "trading" : (isWin ? "win" : "loss")) as "trading" | "win" | "loss",
+                };
+              });
+              setTrades(mappedOrders);
+            }
+            if (profRes.code === 1 && profRes.data) {
+              const bal = profRes.data.money ?? profRes.data.usdt;
+              if (bal !== undefined && bal !== null) {
+                setUserBalance(parseFloat(bal));
+              }
+            }
+          } catch (e) {
+            console.error("Lỗi đồng bộ sau chốt lệnh:", e);
+          }
+        }, 1200);
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [basePrice]);
+  }, [basePrice, codenameParam]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);

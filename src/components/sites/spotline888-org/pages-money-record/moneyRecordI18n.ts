@@ -140,43 +140,41 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
     }
   }
 
-  // 3. 订单结算盈利
-  const profitMatch = memo.match(/(?:订单结算盈利|訂單結算盈利|Order Profit)\s*([A-Za-z0-9\/]+)?(?:\s*\(\+?([0-9\.]+)\))?/i);
+  // 3. 订单结算盈利 (xóa bỏ BTC/USDT theo yêu cầu khách)
+  const profitMatch = memo.match(/(?:订单结算盈利|訂單結算盈利|Order Profit)(?:\s*[A-Za-z0-9\/]+)?(?:\s*\(\+?([0-9\.]+)\))?/i);
   if (profitMatch) {
-    const pair = profitMatch[1] ? ` ${profitMatch[1]}` : "";
-    const amt = profitMatch[2] ? ` (+${profitMatch[2]})` : "";
+    const amt = profitMatch[1] ? ` (+${profitMatch[1]})` : "";
     switch (lang) {
-      case "en-US": return `Order Profit${pair}${amt}`;
-      case "vi-VN": return `Lợi nhuận lệnh${pair}${amt}`;
-      case "hk-TW": return `訂單結算盈利${pair}${amt}`;
-      case "ja-JP": return `決済利益${pair}${amt}`;
-      case "ko-KR": return `주문 정산 수익${pair}${amt}`;
-      case "id-ID": return `Keuntungan Pesanan${pair}${amt}`;
-      case "ms-MY": return `Keuntungan Pesanan${pair}${amt}`;
-      case "th-TH": return `กำไรคำสั่งซื้อ${pair}${amt}`;
-      case "fr-FR": return `Bénéfice de l'ordre${pair}${amt}`;
-      case "de-DE": return `Order-Gewinn${pair}${amt}`;
-      default: return `订单结算盈利${pair}${amt}`;
+      case "en-US": return `Order Profit${amt}`;
+      case "vi-VN": return `Lợi nhuận lệnh${amt}`;
+      case "hk-TW": return `訂單結算盈利${amt}`;
+      case "ja-JP": return `決済利益${amt}`;
+      case "ko-KR": return `주문 정산 수익${amt}`;
+      case "id-ID": return `Keuntungan Pesanan${amt}`;
+      case "ms-MY": return `Keuntungan Pesanan${amt}`;
+      case "th-TH": return `กำไรคำสั่งซื้อ${amt}`;
+      case "fr-FR": return `Bénéfice de l'ordre${amt}`;
+      case "de-DE": return `Order-Gewinn${amt}`;
+      default: return `订单结算盈利${amt}`;
     }
   }
 
-  // 4. 订单结算亏损
-  const lossMatch = memo.match(/(?:订单结算亏损|訂單結算虧損|Order Loss)\s*([A-Za-z0-9\/]+)?(?:\s*\(\-?([0-9\.]+)\))?/i);
+  // 4. 订单结算亏损 (xóa bỏ BTC/USDT theo yêu cầu khách)
+  const lossMatch = memo.match(/(?:订单结算亏损|訂單結算虧損|Order Loss)(?:\s*[A-Za-z0-9\/]+)?(?:\s*\(\-?([0-9\.]+)\))?/i);
   if (lossMatch) {
-    const pair = lossMatch[1] ? ` ${lossMatch[1]}` : "";
-    const amt = lossMatch[2] ? ` (-${lossMatch[2]})` : "";
+    const amt = lossMatch[1] ? ` (-${lossMatch[1]})` : "";
     switch (lang) {
-      case "en-US": return `Order Loss${pair}${amt}`;
-      case "vi-VN": return `Thua lỗ lệnh${pair}${amt}`;
-      case "hk-TW": return `訂單結算虧損${pair}${amt}`;
-      case "ja-JP": return `決済損失${pair}${amt}`;
-      case "ko-KR": return `주문 정산 손실${pair}${amt}`;
-      case "id-ID": return `Kerugian Pesanan${pair}${amt}`;
-      case "ms-MY": return `Kerugian Pesanan${pair}${amt}`;
-      case "th-TH": return `ขาดทุนคำสั่งซื้อ${pair}${amt}`;
-      case "fr-FR": return `Perte de l'ordre${pair}${amt}`;
-      case "de-DE": return `Order-Verlust${pair}${amt}`;
-      default: return `订单结算亏损${pair}${amt}`;
+      case "en-US": return `Order Loss${amt}`;
+      case "vi-VN": return `Thua lỗ lệnh${amt}`;
+      case "hk-TW": return `訂單結算虧損${amt}`;
+      case "ja-JP": return `決済損失${amt}`;
+      case "ko-KR": return `주문 정산 손실${amt}`;
+      case "id-ID": return `Kerugian Pesanan${amt}`;
+      case "ms-MY": return `Kerugian Pesanan${amt}`;
+      case "th-TH": return `ขาดทุนคำสั่งซื้อ${amt}`;
+      case "fr-FR": return `Perte de l'ordre${amt}`;
+      case "de-DE": return `Order-Verlust${amt}`;
+      default: return `订单结算亏损${amt}`;
     }
   }
 
@@ -225,40 +223,38 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
     }
   }
 
-  // 7. 下单买涨 / 下单买跌
-  const buyLongMatch = memo.match(/(?:下单买涨|下單買漲|Order Buy Long)\s*([A-Za-z0-9\/]+)?/i);
+  // 7. 下单买涨 / 下单买跌 (xóa bỏ BTC/USDT theo yêu cầu khách)
+  const buyLongMatch = memo.match(/(?:下单买涨|下單買漲|Order Buy Long)(?:\s*[A-Za-z0-9\/]+)?/i);
   if (buyLongMatch) {
-    const pair = buyLongMatch[1] ? ` ${buyLongMatch[1]}` : "";
     switch (lang) {
-      case "en-US": return `Order Buy Long${pair}`;
-      case "vi-VN": return `Đặt lệnh Mua Lên${pair}`;
-      case "hk-TW": return `下單買漲${pair}`;
-      case "ja-JP": return `ロング注文${pair}`;
-      case "ko-KR": return `매수(상승)${pair}`;
-      case "id-ID": return `Beli Naik${pair}`;
-      case "ms-MY": return `Beli Naik${pair}`;
-      case "th-TH": return `เปิดคำสั่งซื้อขึ้น${pair}`;
-      case "fr-FR": return `Ordre d'achat à la hausse${pair}`;
-      case "de-DE": return `Kauforder Long${pair}`;
-      default: return `下单买涨${pair}`;
+      case "en-US": return `Order Buy Long`;
+      case "vi-VN": return `Đặt lệnh Mua Lên`;
+      case "hk-TW": return `下單買漲`;
+      case "ja-JP": return `ロング注文`;
+      case "ko-KR": return `매수(상승)`;
+      case "id-ID": return `Beli Naik`;
+      case "ms-MY": return `Beli Naik`;
+      case "th-TH": return `เปิดคำสั่งซื้อขึ้น`;
+      case "fr-FR": return `Ordre d'achat à la hausse`;
+      case "de-DE": return `Kauforder Long`;
+      default: return `下单买涨`;
     }
   }
 
-  const buyShortMatch = memo.match(/(?:下单买跌|下單買跌|Order Buy Short)\s*([A-Za-z0-9\/]+)?/i);
+  const buyShortMatch = memo.match(/(?:下单买跌|下單買跌|Order Buy Short)(?:\s*[A-Za-z0-9\/]+)?/i);
   if (buyShortMatch) {
-    const pair = buyShortMatch[1] ? ` ${buyShortMatch[1]}` : "";
     switch (lang) {
-      case "en-US": return `Order Buy Short${pair}`;
-      case "vi-VN": return `Đặt lệnh Mua Xuống${pair}`;
-      case "hk-TW": return `下單買跌${pair}`;
-      case "ja-JP": return `ショート注文${pair}`;
-      case "ko-KR": return `매도(하락)${pair}`;
-      case "id-ID": return `Beli Turun${pair}`;
-      case "ms-MY": return `Beli Turun${pair}`;
-      case "th-TH": return `เปิดคำสั่งซื้อลง${pair}`;
-      case "fr-FR": return `Ordre d'achat à la baisse${pair}`;
-      case "de-DE": return `Kauforder Short${pair}`;
-      default: return `下单买跌${pair}`;
+      case "en-US": return `Order Buy Short`;
+      case "vi-VN": return `Đặt lệnh Mua Xuống`;
+      case "hk-TW": return `下單買跌`;
+      case "ja-JP": return `ショート注文`;
+      case "ko-KR": return `매도(하락)`;
+      case "id-ID": return `Beli Turun`;
+      case "ms-MY": return `Beli Turun`;
+      case "th-TH": return `เปิดคำสั่งซื้อลง`;
+      case "fr-FR": return `Ordre d'achat à la baisse`;
+      case "de-DE": return `Kauforder Short`;
+      default: return `下单买跌`;
     }
   }
 
@@ -295,8 +291,12 @@ export function formatFundRecordMemo(memo: string, lang: LanguageCode): string {
     }
   }
 
-  if (lang === "th-TH" && memo) {
-    return memo.replace(/\b(usdt|usd)\b/gi, "฿");
+  if (memo) {
+    let clean = memo.replace(/BTC\/USDT/gi, "").replace(/\s{2,}/g, " ").trim();
+    if (lang === "th-TH") {
+      clean = clean.replace(/\b(usdt|usd)\b/gi, "฿");
+    }
+    return clean;
   }
 
   return memo;

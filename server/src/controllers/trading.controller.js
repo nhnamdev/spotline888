@@ -155,7 +155,7 @@ async function createOrder(req, res) {
     await connection.query(
       `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, created_at)
        VALUES (?, 'USD', 'trade_buy', ?, ?, ?, ?, NOW())`,
-      [userId, -numAmount, currentBalance, newBalance, `下单${ostyle === 'buy_up' ? '买涨' : '买跌'} ${symbol}`]
+      [userId, -numAmount, currentBalance, newBalance, `下单${ostyle === 'buy_up' ? '买涨' : '买跌'}`]
     );
 
     // 5. Lưu lệnh vào fa_order
@@ -206,21 +206,35 @@ async function createOrder(req, res) {
 async function getMyOrders(req, res) {
   try {
     const userId = req.user.id;
-    const { status = 'holding' } = req.query; // 'holding' hoặc 'settled'
+    const { status } = req.query;
 
     // Trước khi trả về, tự động kích hoạt chốt các lệnh đã hết hạn
     await settleExpiredOrders();
 
-    const [rows] = await pool.query(
-      `SELECT id, product_title, ostyle, buy_money, buy_price, sell_price, 
-              duration, yield_rate, ploss, kong_type, status, buy_time, sell_time,
-              TIMESTAMPDIFF(SECOND, NOW(), sell_time) as remaining_seconds
-       FROM fa_order 
-       WHERE user_id = ? AND status = ? 
-       ORDER BY id DESC 
-       LIMIT 50`,
-      [userId, status]
-    );
+    let sql = `
+      SELECT id, product_id, product_title, product_title as symbol, ostyle, 
+             buy_money, buy_money as money, buy_money as amount,
+             buy_price, sell_price, 
+             duration, duration as second, yield_rate, ploss, kong_type, status, 
+             buy_time, sell_time, created_at,
+             (CASE WHEN ploss > 0 THEN 1 ELSE 0 END) as is_win,
+             TIMESTAMPDIFF(SECOND, NOW(), sell_time) as remaining_seconds
+      FROM fa_order 
+      WHERE user_id = ?
+    `;
+    const params = [userId];
+
+    if (status && status !== 'all') {
+      let dbStatus = status;
+      if (status === 'open' || status === 'trading') dbStatus = 'holding';
+      if (status === 'closed') dbStatus = 'settled';
+      sql += ' AND status = ?';
+      params.push(dbStatus);
+    }
+
+    sql += ' ORDER BY id DESC LIMIT 50';
+
+    const [rows] = await pool.query(sql, params);
 
     return success(res, 'Lấy danh sách lệnh thành công', rows);
   } catch (err) {
@@ -297,7 +311,7 @@ async function settleExpiredOrders() {
         await connection.query(
           `INSERT INTO fa_user_money_log (user_id, currency, type, money, before_balance, after_balance, memo, ext_id, created_at)
            VALUES (?, 'USD', 'trade_win', ?, ?, ?, ?, ?, NOW())`,
-          [ord.user_id, totalReturn, currentMoney, newMoney, `订单结算盈利 ${ord.product_title} (+${winProfit.toFixed(2)})`, ord.id]
+          [ord.user_id, totalReturn, currentMoney, newMoney, `订单结算盈利 (+${winProfit.toFixed(2)})`, ord.id]
         );
       }
 

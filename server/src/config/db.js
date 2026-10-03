@@ -15,11 +15,17 @@ const pool = mysql.createPool({
   timezone: '+07:00',
 });
 
+// Thiết lập múi giờ Thái Lan (Asia/Bangkok: UTC+7) cho mọi connection
+pool.on('connection', (connection) => {
+  connection.query("SET time_zone = '+07:00'");
+});
+
 // Hàm kiểm tra kết nối CSDL
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ [MySQL] Kết nối thành công đến cơ sở dữ liệu: ' + (process.env.DB_NAME || 'fortrade_db'));
+    await connection.query("SET time_zone = '+07:00'");
+    console.log('✅ [MySQL] Kết nối thành công đến cơ sở dữ liệu: ' + (process.env.DB_NAME || 'fortrade_db') + ' (Múi giờ: UTC+7 Thái Lan)');
     connection.release();
     return true;
   } catch (error) {

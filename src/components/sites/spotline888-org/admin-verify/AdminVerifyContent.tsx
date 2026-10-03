@@ -5,6 +5,7 @@ import Image from "next/image";
 import { adminApi } from "@/lib/api";
 import { getR2Url } from "@/lib/r2";
 import { Loader2, Check, X, Eye, RefreshCw, AlertCircle } from "lucide-react";
+import { formatThaiTime } from "@/lib/utils";
 
 interface VerifyItem {
   id: number;
@@ -283,7 +284,7 @@ export default function AdminVerifyContent() {
                               <span className="text-gray-300 text-xs">无</span>
                             )}
                           </td>
-                          <td className="cell-time text-xs text-gray-500">{item.created_at?.slice(0, 19).replace("T", " ")}</td>
+                          <td className="cell-time text-xs text-gray-500">{formatThaiTime(item.created_at)}</td>
                           <td className="text-xs text-rose-600">{item.error_reason || "-"}</td>
                           <td>
                             {item.status === 2 ? (

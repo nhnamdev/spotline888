@@ -10,6 +10,7 @@ import { IndexTabBar } from "../pages-index-index/IndexTabBar";
 import { INDEX_TRANSLATIONS } from "../pages-index-index/indexI18n";
 import { tradingApi } from "@/lib/api";
 import { getR2Url } from "@/lib/r2";
+import { formatThaiTime } from "@/lib/utils";
 
 interface OrderItem {
   id: string;
@@ -39,18 +40,28 @@ function SpotlineOrderContent() {
         const res = await tradingApi.getMyOrders("all", 1, 50);
         if (res.code === 1 && Array.isArray(res.data?.rows || res.data?.list || res.data)) {
           const raw = res.data?.rows || res.data?.list || res.data;
-          const mapped: OrderItem[] = raw.map((o: any) => ({
-            id: String(o.order_sn || o.id),
-            symbol: o.symbol || "BTC/USDT",
-            direction: o.ostyle === "buy_up" ? "buy" : "sell",
-            openPrice: parseFloat(o.buy_price || "0").toFixed(2),
-            closePrice: o.sell_price ? parseFloat(o.sell_price).toFixed(2) : undefined,
-            amount: parseFloat(o.money || "0").toFixed(2),
-            profit: o.status === "settled" ? (o.is_win === 1 ? `+${(parseFloat(o.money || "0") * 0.85).toFixed(2)}` : `-${parseFloat(o.money || "0").toFixed(2)}`) : "0.00",
-            fee: "0.00",
-            time: o.created_at ? new Date(o.created_at).toLocaleString("vi-VN") : "",
-            status: o.status === "open" ? "holding" : "settled",
-          }));
+          const mapped: OrderItem[] = raw.map((o: any) => {
+            const isHolding = o.status === "holding" || o.status === "open";
+            const buyMoney = parseFloat(o.buy_money || o.money || o.amount || "0");
+            const ploss = parseFloat(o.ploss || "0");
+            const isWin = ploss > 0 || o.is_win === 1;
+            const yieldRate = parseFloat(o.yield_rate || "15") / 100;
+            const profitStr = !isHolding
+              ? (isWin ? `+${ploss > 0 ? ploss.toFixed(2) : (buyMoney * yieldRate).toFixed(2)}` : `-${buyMoney.toFixed(2)}`)
+              : "0.00";
+            return {
+              id: String(o.id || o.order_sn),
+              symbol: o.product_title || o.symbol || "BTC/USDT",
+              direction: o.ostyle === "buy_up" ? "buy" : "sell",
+              openPrice: parseFloat(o.buy_price || "0").toFixed(2),
+              closePrice: o.sell_price ? parseFloat(o.sell_price).toFixed(2) : undefined,
+              amount: buyMoney.toFixed(2),
+              profit: profitStr,
+              fee: "0.00",
+              time: formatThaiTime(o.buy_time || o.created_at),
+              status: isHolding ? "holding" : "settled",
+            };
+          });
           setOrders(mapped);
         }
       } catch (err) {

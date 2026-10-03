@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { adminApi } from "@/lib/api";
 import { Loader2, Check, X, RefreshCw, AlertCircle } from "lucide-react";
+import { formatThaiTime } from "@/lib/utils";
 
 interface DownmarkItem {
   id: number;
@@ -257,7 +258,7 @@ export default function AdminDownmarkContent() {
                           </td>
                           <td>{item.bank_name || "-"}</td>
                           <td className="font-mono text-xs font-bold text-slate-800">{item.bank_card || "-"}</td>
-                          <td className="cell-time text-xs text-gray-500">{item.created_at?.slice(0, 19).replace("T", " ")}</td>
+                          <td className="cell-time text-xs text-gray-500">{formatThaiTime(item.created_at)}</td>
                           <td className="text-xs">{item.remark || "-"}</td>
                           <td>
                             {item.status === "approved" ? (

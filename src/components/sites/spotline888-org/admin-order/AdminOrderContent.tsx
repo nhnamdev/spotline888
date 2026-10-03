@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { adminApi } from "@/lib/api";
+import { formatThaiTime } from "@/lib/utils";
 
 interface OrderItem {
   id: number;
@@ -65,8 +66,8 @@ export default function AdminOrderContent() {
           balanceBuyAfter: parseFloat(row.balance_after || 0).toFixed(2),
           buyPrice: String(row.buy_price || 0),
           sellPrice: String(row.sell_price || 0),
-          buyTime: row.buy_time ? String(row.buy_time).replace('T', ' ').substring(0, 19) : '',
-          sellTime: row.sell_time ? String(row.sell_time).replace('T', ' ').substring(0, 19) : '',
+          buyTime: formatThaiTime(row.buy_time),
+          sellTime: formatThaiTime(row.sell_time),
           type: row.duration ? `${row.duration}/${row.yield_rate || 15}%` : (row.type_desc || '60/15%'),
           ploss: parseFloat(row.ploss || 0).toFixed(0),
           kongType: (row.kong_type || 'default') as "default" | "win" | "loss" | "closed",
