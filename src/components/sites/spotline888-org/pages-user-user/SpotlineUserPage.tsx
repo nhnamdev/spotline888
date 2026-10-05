@@ -41,20 +41,20 @@ function SpotlineUserPageContent() {
     INDEX_TRANSLATIONS[currentLang] || INDEX_TRANSLATIONS["zh-CN"];
 
   const [userInfo, setUserInfo] = useState<UserInfoData>({
-    username: "ak111",
-    real_name: "复**",
+    username: "",
+    real_name: "",
     credit_score: 100,
-    money: "2429.00",
-    usdt_money: "335",
-    yk: "0",
-    yk_today: "0",
+    money: "0.00",
+    usdt_money: "0.00",
+    yk: "0.00",
+    yk_today: "0.00",
     user_avatar: USER_ICONS.avatar,
     is_auth: 0,
     id_auth_error: "",
   });
 
   const [yuebaoData, setYuebaoData] = useState<YuebaoData>({
-    all_money: "23",
+    all_money: "0.00",
     today_income: "0.00",
     total_income: "0.00",
   });
@@ -79,12 +79,13 @@ function SpotlineUserPageContent() {
       const storedUser = localStorage.getItem("userInfo");
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
-        const storedMoney = parsed.usdt_money || parsed.money || "0.00";
+        const storedMoney = parsed.money ?? "0.00";
+        const storedUsdt = parsed.usdt_money ?? parsed.usdt ?? "0.00";
         setUserInfo((prev) => ({
           ...prev,
           ...parsed,
           money: storedMoney,
-          usdt_money: storedMoney,
+          usdt_money: storedUsdt,
         }));
       }
     } catch {}
@@ -95,13 +96,14 @@ function SpotlineUserPageContent() {
         const res = await authApi.getProfile();
         if (res.code === 1 && res.data) {
           const u = res.data;
-          const liveBalance = parseFloat(u.usdt ?? u.money ?? "0").toFixed(2);
+          const liveMoney = parseFloat(u.money ?? "0").toFixed(2);
+          const liveUsdt = parseFloat(u.usdt ?? "0").toFixed(2);
           const updatedUser: UserInfoData = {
-            username: u.username || u.account || "ak111",
-            real_name: u.real_name || "Chưa xác minh",
+            username: u.username || u.account || "",
+            real_name: u.real_name || "",
             credit_score: u.credit_score ?? 100,
-            money: liveBalance,
-            usdt_money: liveBalance,
+            money: liveMoney,
+            usdt_money: liveUsdt,
             yk: "0.00",
             yk_today: "0.00",
             user_avatar: u.avatar || USER_ICONS.avatar,
@@ -121,10 +123,11 @@ function SpotlineUserPageContent() {
         const yRes = await yuebaoApi.getInfo();
         if (yRes.code === 1 && yRes.data) {
           const y = yRes.data;
+          const yBalance = parseFloat(y.yuebaoBalance ?? y.balance ?? "0").toFixed(2);
           setYuebaoData({
-            all_money: parseFloat(y.balance || "0").toFixed(2),
-            today_income: parseFloat(y.today_profit || "0").toFixed(2),
-            total_income: parseFloat(y.total_profit || "0").toFixed(2),
+            all_money: yBalance,
+            today_income: parseFloat(y.yesterdayProfit ?? y.today_profit ?? "0").toFixed(2),
+            total_income: parseFloat(y.total_profit ?? "0").toFixed(2),
           });
         }
       } catch (err) {

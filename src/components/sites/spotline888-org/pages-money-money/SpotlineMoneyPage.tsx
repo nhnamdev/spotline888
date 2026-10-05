@@ -239,7 +239,7 @@ function SpotlineMoneyPageContent() {
           withdrawApi.getMoneyRecords(1, 20),
         ]);
 
-        let curAvail = 1870.0;
+        let curAvail = 0.0;
         if (profRes.code === 1 && profRes.data) {
           curAvail = parseFloat(profRes.data.money || "0");
           setAvailableBalance(curAvail);
@@ -247,12 +247,12 @@ function SpotlineMoneyPageContent() {
 
         if (yueRes.code === 1 && yueRes.data) {
           const y = yueRes.data;
-          const yBalance = parseFloat(y.balance || "0");
+          const yBalance = parseFloat(y.yuebaoBalance ?? y.balance ?? "0");
           setPageData({
-            all_money: curAvail + yBalance,
+            all_money: yBalance,
             yue_start_money: yBalance,
             yue_stop_money: 0.0,
-            sy: parseFloat(y.total_profit || "0"),
+            sy: parseFloat(y.yesterdayProfit ?? y.today_income ?? y.total_profit ?? "0"),
             yield: y.yield_rate || "0.50%",
             ru_count: 5,
             chu_count: 5,
